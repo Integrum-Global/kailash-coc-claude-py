@@ -12,7 +12,7 @@
 3. Create the accompanying skills in `.claude/skills/project`
    - please web research how Claude skills should be written, what the best practices are, and how they should be used.
    - do not create any more subdirectories
-   - ensure single entry point for skills (SKILL.md) that references multiple skills files in the same directory
+   - ensure single entry point for skills (`SKILL.md`) that references multiple skills files in the same directory
      - skills must be as detailed as possible to the extent that the agents can deliver most of their work just by using them
      - do not treat skills as the knowledge base
        - it's supposed to contain the most critical information and logical links/frameworks between the information in the knowledge base

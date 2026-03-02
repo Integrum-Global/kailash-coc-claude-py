@@ -56,4 +56,9 @@ secrets/
 .claude/rules/learned-instincts.md
 
 # Internal docs (not for distribution)
-docs/01-kailash-vibe-cc-internals/
+/docs/01-kailash-vibe-cc-internals/
+
+# Generated script outputs (sdk-users examples)
+**/scripts/data/
+**/scripts/outputs/
+**/scripts/*.log

@@ -7,6 +7,7 @@ Complete guide to domain configs, BaseAgentConfig, and auto-conversion patterns 
 **Key Innovation**: Use domain-specific configs, BaseAgent auto-converts to BaseAgentConfig.
 
 **Benefits:**
+
 - ✅ No boilerplate BaseAgentConfig creation
 - ✅ Keep domain-specific fields separate
 - ✅ Type-safe configuration
@@ -176,6 +177,40 @@ class MultiProviderConfig:
                 "anthropic": {"max_retries": 3}
             }
 ```
+
+## FallbackRouter for Resilient LLM Routing
+
+`FallbackRouter` extends `LLMRouter` with automatic fallback chains for handling provider failures and rate limits.
+
+**Import**: `from kaizen.llm.routing.fallback import FallbackRouter, FallbackRejectedError`
+
+```python
+from kaizen.llm.routing.fallback import FallbackRouter, FallbackRejectedError
+
+# Basic usage with fallback chain
+router = FallbackRouter(
+    primary_model="gpt-4",
+    fallback_chain=["claude-3-opus", "gemini-pro"],
+)
+
+# Safety: on_fallback callback fires BEFORE each fallback attempt
+def check_fallback(event):
+    """Reject fallback to small models for critical tasks."""
+    if event.fallback_model in SMALL_MODELS:
+        raise FallbackRejectedError("Cannot downgrade for critical task")
+
+router = FallbackRouter(
+    primary_model="gpt-4",
+    fallback_chain=["claude-3-opus"],
+    on_fallback=check_fallback,  # Fires before each fallback
+)
+```
+
+**Safety features**:
+
+- `on_fallback` callback fires BEFORE each fallback (raise `FallbackRejectedError` to block)
+- WARNING-level logging on every fallback event
+- Capability validation skips incompatible models automatically
 
 ## Memory Configuration
 
@@ -354,12 +389,14 @@ class GoogleGeminiConfig:
 ```
 
 **Available Models**:
+
 - Chat: `gemini-2.0-flash`, `gemini-1.5-pro`, `gemini-1.5-flash`
 - Embeddings: `text-embedding-004` (768 dimensions)
 
 **Features**: Chat completions, vision/multimodal support, embeddings, tool calling, async support.
 
 **Direct Provider Usage**:
+
 ```python
 from kaizen.nodes.ai import GoogleGeminiProvider
 
@@ -511,12 +548,14 @@ def test_config_auto_extraction():
 ## CRITICAL RULES
 
 **ALWAYS:**
+
 - ✅ Use domain configs (e.g., `QAConfig`, `RAGConfig`)
 - ✅ Let BaseAgent auto-extract core fields
 - ✅ Keep domain-specific fields in domain config
 - ✅ Load `.env` with `load_dotenv()` before creating configs
 
 **NEVER:**
+
 - ❌ Create BaseAgentConfig manually
 - ❌ Mix BaseAgent fields with domain fields in BaseAgentConfig
 - ❌ Skip config validation for production code

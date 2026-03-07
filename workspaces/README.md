@@ -1,64 +1,97 @@
 # Workspaces
 
-This is the human-facing work surface of the COC setup. All project work happens here.
+Workspaces are session/run records. They capture what you want done and what the agents produced. The actual solution (`src/`, `apps/`, `docs/`) lives at the project root.
+
+**`briefs/` is the only place users write.** Everything else is agent output.
+
+## Quick Start
+
+```bash
+# Copy the template to create a new workspace
+cp -r workspaces/_template workspaces/my-project
+
+# Write your brief
+edit workspaces/my-project/briefs/01-product-brief.md
+
+# Run the phases
+/analyze
+/todos
+/implement   # repeat until all todos complete
+/redteam
+/codify
+```
 
 ## Structure
 
 ```
-workspaces/
-  instructions/          # Reference templates (DO NOT edit directly)
-  <project-name>/        # One directory per sprint/session/run
-    instructions/        # Copied from reference, customized per project
-    01-analysis/         # Research, value propositions, platform analysis
-    02-plans/            # Implementation plans, architecture decisions
-    03-user-flows/       # Detailed user workflow storyboards
-    04-validate/         # Validation results, red team findings
-    05-gaps/             # Identified gaps and remediation plans
-    todos/               # Task tracking (active/, completed/)
-    docs/                # Project documentation and authority docs
-    src/                 # Backend codebase
-    apps/                # Frontend codebases (web/, mobile/)
+project-root/
+  src/                     # Backend codebase (persistent)
+  apps/web/                # Web frontend (persistent)
+  apps/mobile/             # Mobile frontend (persistent)
+  docs/                    # Project documentation (persistent)
+  docs/00-authority/       # Authority docs (persistent)
+  workspaces/
+    _template/             # Copy this to start a new workspace
+      briefs/              # User input (the ONLY place users write)
+        01-product-brief.md
+      01-analysis/         # Agent output: research
+      02-plans/            # Agent output: implementation plans
+      03-user-flows/       # Agent output: user storyboards
+      04-validate/         # Agent output: red team results
+      todos/               # Task tracking (active/, completed/)
+    <session-name>/        # One directory per sprint/session/run
 ```
 
 ## How It Works
 
 ### 1. Create a workspace
 
-Create a new directory under `workspaces/` for each sprint, session, or project run. Copy `workspaces/instructions/` into it.
+Copy the template:
 
 ```
-workspaces/my-saas-app/
-  instructions/          # Copied from workspaces/instructions/
+cp -r workspaces/_template workspaces/my-saas-app
 ```
 
-### 2. Follow the phases using slash commands
+### 2. Write your briefs
 
-Each phase has a slash command that loads the instruction template and checks workspace state. No manual copy-paste needed.
+Add files to `briefs/` — this is the only place you write. Number them sequentially:
 
-| Phase | Command      | Output                                               | Gate              |
-| ----- | ------------ | ---------------------------------------------------- | ----------------- |
-| 01    | `/analyze`   | `01-analysis/`, `02-plans/`, `03-user-flows/`        | Human review      |
-| 02    | `/todos`     | `todos/active/`                                      | Human approval    |
-| 03    | `/implement` | `src/`, `apps/`, `docs/`                             | All tests passing |
-| 04    | `/redteam`   | `04-validate/`                                       | Red team sign-off |
-| 05    | `/codify`    | `.claude/agents/project/`, `.claude/skills/project/` | Human review      |
+- `01-product-brief.md` — initial vision, tech stack, constraints, users
+- `02-add-auth.md` — new feature request mid-session
+- `03-gap-feedback.md` — corrections after reviewing agent output
+
+All phase commands read every file in `briefs/` for context.
+
+### 3. Follow the phases using slash commands
+
+Each command is self-contained: it detects the workspace, reads your briefs, includes all workflow steps, and deploys the right agent teams.
+
+| Phase | Command      | Workspace Output                              | Project Root Output                                  | Gate              |
+| ----- | ------------ | --------------------------------------------- | ---------------------------------------------------- | ----------------- |
+| 01    | `/analyze`   | `01-analysis/`, `02-plans/`, `03-user-flows/` |                                                      | Human review      |
+| 02    | `/todos`     | `todos/active/`                               |                                                      | Human approval    |
+| 03    | `/implement` | `todos/active/` -> `todos/completed/`         | `src/`, `apps/`, `docs/`                             | All tests passing |
+| 04    | `/redteam`   | `04-validate/`                                |                                                      | Red team sign-off |
+| 05    | `/codify`    |                                               | `.claude/agents/project/`, `.claude/skills/project/` | Human review      |
 
 Additional commands: `/ws` (status dashboard), `/wrapup` (save session notes before ending).
 
-### 3. Iterate within and between phases
+### 4. Iterate within and between phases
 
 - Phase 03 (implement) is designed to be repeated until all todos move from `todos/active/` to `todos/completed/`
+- Phase 03 writes code to `src/`, `apps/` and updates `docs/` at the project root
 - Phase 04 (validate) feeds back into 03 — gaps found trigger implementation fixes
-- Each iteration documents its findings in the workspace
+- Phase 05 (codify) distills knowledge into reusable project agents and skills
+- Add new briefs to `briefs/` at any time — agents pick them up on the next command run
 
 ## Key Principles
 
-**The workspace is institutional memory.** It accumulates decisions, rationale, and state across sessions. Agents read it to restore context. It prevents amnesia.
+**`briefs/` is the user input surface.** Under COC, this is the only place users write in the workspace. Everything else is agent output. Users express intent here; agents do the rest.
 
-**Modification protocol.** If phase instructions need changing during a session, update the workspace's `instructions/` file first, get human confirmation, then act. Never act on undocumented process changes.
+**Workspaces are session records, not codebases.** They track briefs, analysis, plans, and validation. The actual code and docs live at the project root.
 
-**Reference templates are read-only.** `workspaces/instructions/` contains the canonical templates. Each project gets its own copy to customize.
+**Commands are self-contained.** Each phase command includes workspace detection, workflow steps, and agent team definitions.
 
-**`.claude/` is infrastructure, not workbench.** The agents, skills, rules, and hooks are the cognitive infrastructure underneath. Do not modify them during project sessions — except for `project/` subdirectories in phase 05.
+**`.claude/` is infrastructure, not workbench.** Do not modify during project sessions — except for `project/` subdirectories in phase 05.
 
-**Session continuity.** Run `/wrapup` before ending a session to save `.session-notes` in the workspace. The next session automatically detects the workspace and shows progress. If you forget, the system gracefully falls back to filesystem-derived state (todo counts, directory presence).
+**Session continuity.** Run `/wrapup` before ending a session to save `.session-notes` in the workspace. The next session automatically detects and resumes.

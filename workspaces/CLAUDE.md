@@ -1,29 +1,48 @@
 # Workspaces Scope
 
-Work only within `workspaces/<project-name>/`. Read `.claude/` freely but never write to it except `.claude/agents/project/` and `.claude/skills/project/` during phase 05.
+Workspaces are session/run records. The `briefs/` directory is the **only place users write** — everything else is agent output. The actual codebase (`src/`, `apps/`, `docs/`) lives at the **project root**, not inside workspaces.
+
+Read `.claude/` freely but never write to it except `.claude/agents/project/` and `.claude/skills/project/` during phase 05.
 
 ## Phase Contract
 
-Follow phases in order using slash commands. Each phase has a human gate — do not proceed without approval.
+Follow phases in order using slash commands. Each command is self-contained — it includes workspace detection, workflow steps, and agent teams.
 
-| Phase | Command      | Output                                               | Gate              |
-| ----- | ------------ | ---------------------------------------------------- | ----------------- |
-| 01    | `/analyze`   | `01-analysis/`, `02-plans/`, `03-user-flows/`        | Human review      |
-| 02    | `/todos`     | `todos/active/`                                      | Human approval    |
-| 03    | `/implement` | `src/`, `apps/`, `docs/`                             | All tests passing |
-| 04    | `/redteam`   | `04-validate/`                                       | Red team sign-off |
-| 05    | `/codify`    | `.claude/agents/project/`, `.claude/skills/project/` | Human review      |
+Each phase has a human gate — do not proceed without approval.
+
+| Phase | Command      | Workspace Output                              | Project Root Output                                  | Gate              |
+| ----- | ------------ | --------------------------------------------- | ---------------------------------------------------- | ----------------- |
+| 01    | `/analyze`   | `01-analysis/`, `02-plans/`, `03-user-flows/` |                                                      | Human review      |
+| 02    | `/todos`     | `todos/active/`                               |                                                      | Human approval    |
+| 03    | `/implement` | `todos/active/` -> `todos/completed/`         | `src/`, `apps/`, `docs/`                             | All tests passing |
+| 04    | `/redteam`   | `04-validate/`                                |                                                      | Red team sign-off |
+| 05    | `/codify`    |                                               | `.claude/agents/project/`, `.claude/skills/project/` | Human review      |
 
 Additional: `/ws` (status dashboard), `/wrapup` (save session notes before ending).
 
-## Modification Protocol
+## User Input Surface
 
-To change how a phase works: update the workspace's `instructions/` file first, get human confirmation, then act. Never modify documentation or instructions outside the current workspace.
+`briefs/` is the only directory users write to. All commands read it for context. Users add numbered files over time:
 
-## Codebase Locations
+- `01-product-brief.md` — initial vision, tech stack, constraints, users
+- `02-add-payments.md` — new feature request
+- `03-gap-feedback.md` — corrections or feedback on agent output
+- etc.
 
-- Backend: `src/`
-- Web frontend: `apps/web/`
-- Mobile frontend: `apps/mobile/`
-- Authority docs: `docs/00-authority/` (includes project-level `CLAUDE.md`)
-- Todos: `todos/active/`, `todos/completed/`
+Copy `workspaces/_template/` to start a new workspace.
+
+## What Lives Where
+
+**Workspace** (`workspaces/<name>/`) — session record:
+
+- `briefs/` — user input (the ONLY place users write)
+- `01-analysis/`, `02-plans/`, `03-user-flows/` — agent research output
+- `04-validate/` — red team results
+- `todos/` — task tracking
+
+**Project root** — the actual solution:
+
+- `src/` — backend codebase
+- `apps/web/`, `apps/mobile/` — frontend codebases
+- `docs/`, `docs/00-authority/` — project documentation
+- `.claude/agents/project/`, `.claude/skills/project/` — codified knowledge

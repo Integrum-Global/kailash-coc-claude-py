@@ -3,6 +3,14 @@ name: redteam
 description: "Load phase 04 (validate) for the current workspace. Red team testing."
 ---
 
+## What This Phase Does (present to user)
+
+Test everything from a real user's perspective — walking through the application, trying edge cases, and looking for anything that doesn't work as expected. Think of it as a dress rehearsal: we use the product the way your users would and report what works and what doesn't.
+
+## Your Role (communicate to user)
+
+Review the test results and confirm they match your expectations. Results will be presented as user stories: "A user tried to do X, and the result was Y." You decide whether Y is acceptable.
+
 ## Workspace Resolution
 
 1. If `$ARGUMENTS` specifies a project name, use `workspaces/$ARGUMENTS/`
@@ -48,9 +56,15 @@ Continuously engage red team agents:
 - Test and ensure no regressions
 - Keep iterating until red team agents find no more gaps/issues/improvements
 
-### 4. Report results
+### 4. Report results (in plain language)
 
-Report all detailed steps and results taken in validation and testing tasks.
+Report results as user stories the user can evaluate:
+
+- **What was tested**: Describe each flow in narrative form ("A new user visits the site, clicks Sign Up, enters their email and password...")
+- **What worked**: Confirm which user journeys succeed end-to-end
+- **What didn't work**: Describe failures as user experiences ("When a user enters an invalid email, the error message is unclear — it says 'validation error' instead of 'please enter a valid email address'")
+- **What was fixed**: Describe fixes in terms of improved user experience
+- **Overall confidence**: Summarize as "X out of Y user flows work perfectly. The remaining issues are: [plain description]"
 
 ### 5. Parity check (if required)
 

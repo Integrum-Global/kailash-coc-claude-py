@@ -3,6 +3,14 @@ name: codify
 description: "Load phase 05 (codify) for the current workspace. Create project agents and skills."
 ---
 
+## What This Phase Does (present to user)
+
+Capture everything we learned while building this project — the decisions, patterns, and domain knowledge — so that future work starts with full context instead of from scratch. Think of it as writing the institutional memory: next time anyone works on this project, the AI already knows how everything works and why.
+
+## Your Role (communicate to user)
+
+Confirm that the captured knowledge accurately represents how you want the project to work going forward. You're reviewing for intent and accuracy — "Does this describe what we built and why?" — not for technical correctness.
+
 ## Workspace Resolution
 
 1. If `$ARGUMENTS` specifies a project name, use `workspaces/$ARGUMENTS/`

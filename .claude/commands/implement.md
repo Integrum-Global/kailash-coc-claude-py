@@ -3,6 +3,14 @@ name: implement
 description: "Load phase 03 (implement) for the current workspace. Repeat until all todos complete."
 ---
 
+## What This Phase Does (present to user)
+
+Build the project one task at a time from the approved roadmap. Each run of `/implement` completes one task. The AI writes code, tests it, reviews it for quality and security, then moves to the next task.
+
+## Your Role (communicate to user)
+
+You don't need to look at code. Your role is to answer questions when decisions come up during building — these will always be about what the product should do, not how it's coded. You can check progress anytime with `/ws`.
+
 ## Workspace Resolution
 
 1. If `$ARGUMENTS` specifies a project name or todo, parse accordingly
@@ -67,7 +75,16 @@ When writing and testing agents, always utilize the LLM's capabilities instead o
 - Always check `.env` for api keys and model names to use in development
   - Always assume model names in memory are outdated — perform a web check on model names in `.env` before declaring them invalid
 
-### 6. Update docs and close todos
+### 6. Communicate progress and surface decisions
+
+When reporting to the user:
+
+- **Progress**: State what users can now do, not what files changed. "Users can now reset their password via email" not "Added password reset endpoint and email template"
+- **Decisions needed**: Present choices with impact. "Should password reset links expire after 1 hour or 24 hours? Shorter is more secure but less convenient for users who check email infrequently."
+- **Scope changes**: If implementation reveals something not in the plan, explain what and why: "While building the signup flow, I noticed we don't have a way to handle duplicate emails. Should I add that now (adds ~30 minutes) or save it for later?"
+- **Blockers**: Translate technical blockers into business language. Never present raw error messages.
+
+### 7. Update docs and close todos
 
 After completing each todo:
 

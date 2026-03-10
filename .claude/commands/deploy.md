@@ -2,6 +2,14 @@
 
 Standalone deployment command. Not a workspace phase — runs independently after any number of implement/redteam cycles.
 
+## What This Phase Does (present to user)
+
+Get the project live — whether that's publishing a software package, deploying to the cloud, or both. If this is your first deployment, we'll walk through setup questions. Nothing goes live without your explicit approval at every step.
+
+## Your Role (communicate to user)
+
+Answer setup questions about where and how to deploy (we'll explain each option and its implications), and approve each step before it happens. You'll always know what's about to happen before it does.
+
 ## Deployment Config
 
 Read `deploy/deployment-config.md` at the project root. This is the single source of truth for how this project deploys.
@@ -21,15 +29,15 @@ Run the deployment onboarding process:
    - What database backends does DataFlow use? (check model definitions for `DataFlowModel`, `FieldDef`)
    - Does the app use Nexus? (check for `NexusPlatform`, workflow registration, multi-channel endpoints)
 
-2. **Ask the human**
-   - Release track: package release, cloud deployment, or both?
-   - If package: target registry (PyPI, npm, GitHub Packages), docs tool (sphinx, mkdocs)
-   - If cloud: provider (AWS, Azure, GCP), region, SSO profile
-   - Infrastructure: compute, database, cache, managed vs self-hosted preferences
-   - Cost: reserved instances, savings plans, budget constraints
-   - Networking: domain name, SSL, CDN
-   - Monitoring: preferred tools, alerting targets
-   - Security: WAF, vulnerability scanning, secrets management
+2. **Ask the human (explain implications of each choice)**
+
+   For each question, explain what the options mean and recommend based on context:
+
+   - **How should we release this?** Explain: "A package release means other developers can install your software. A cloud deployment means users access it via a website or app. You might need both."
+   - **Where should we host it?** Don't just list "AWS, Azure, GCP" — explain: "AWS is the most widely used with the broadest services. Azure works well if your organization already uses Microsoft tools. GCP is strong for data and AI. All three are fine — do you have existing accounts or preferences?"
+   - **What about costs?** Provide estimates where possible: "A basic cloud setup typically costs $X-Y/month. The main costs are [explain]. Want me to look at budget-friendly options?"
+   - **Domain and security**: Explain in practical terms: "Do you have a website address (domain name) for this? If not, we can set one up. We'll automatically set up secure connections (HTTPS) so your users' data is protected."
+   - **Monitoring**: "Should we set up alerts so you're notified if the app goes down or has problems? I'd recommend this for anything user-facing."
    - **Kailash-specific (if applicable)**:
      - If DataFlow: Database provider preference? (managed PostgreSQL, self-hosted MySQL, SQLite for dev only, MongoDB)
      - If Nexus: API domain? Reverse proxy preference (nginx, Caddy, cloud ALB)? CORS configuration?

@@ -3,6 +3,14 @@ name: todos
 description: "Load phase 02 (todos) for the current workspace"
 ---
 
+## What This Phase Does (present to user)
+
+Turn the research and plans into a complete project roadmap — every task needed to build the entire project, organized by what users will be able to do at each milestone.
+
+## Your Role (communicate to user)
+
+Review and approve the roadmap before building starts. This is your most important checkpoint — the roadmap is a contract for what gets built. You don't need to understand the technical details of each task; focus on whether the milestones describe the product you want.
+
 ## Workspace Resolution
 
 1. If `$ARGUMENTS` specifies a project name, use `workspaces/$ARGUMENTS/`
@@ -48,7 +56,23 @@ Create detailed todos for EVERY task required. Place them in `todos/active/`.
 
 Review with red team agents continuously until they are satisfied there are no gaps remaining.
 
-### 5. STOP — wait for human approval before proceeding to implementation.
+### 5. STOP — present roadmap and wait for human approval
+
+Present the complete roadmap organized by milestones. For each milestone, explain:
+
+- **What users will be able to do** after this milestone is complete
+- **How many tasks** are involved (gives a sense of relative effort)
+- **Dependencies** — which milestones must come first (in plain language: "We need to build user accounts before we can build team features")
+
+Then ask these specific questions:
+
+1. "Does this roadmap cover everything you described in your brief?"
+2. "Is anything here that you didn't ask for or don't need right now?"
+3. "Is anything missing that you expected to see?"
+4. "Does the milestone order make sense — are the most important things built first?"
+5. "Are there any milestones you'd like to split up or combine?"
+
+**Do NOT proceed to implementation until the user explicitly approves.**
 
 ## Agent Teams
 

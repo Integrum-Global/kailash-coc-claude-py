@@ -125,6 +125,7 @@ Before any production deployment:
 - [ ] Database migrations reviewed for destructive operations (DROP, ALTER DROP COLUMN)
 - [ ] Rollback procedure documented and tested
 - [ ] Right-sizing verified (check reserved instances / savings plans first)
+- [ ] README.md and docs/ (Sphinx) version numbers updated to match release
 - [ ] DNS configured
 - [ ] Human approval obtained
 

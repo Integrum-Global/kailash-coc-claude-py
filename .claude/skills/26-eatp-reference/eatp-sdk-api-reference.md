@@ -1,7 +1,8 @@
-# EATP SDK -- API Reference (v0.1.0)
+# EATP SDK — API Reference (v0.1.0)
 
 Complete API surface for the standalone EATP Python SDK.
 
+**Package**: `eatp/`
 **Install**: `pip install eatp`
 **License**: Apache 2.0 (Terrene Foundation)
 **Python**: >=3.11
@@ -31,6 +32,14 @@ Complete API surface for the standalone EATP Python SDK.
 | `VerificationLevel`     | Enum      | `eatp.chain` |
 | `AuthorityType`         | Enum      | `eatp.chain` |
 | `CapabilityType`        | Enum      | `eatp.chain` |
+| `ConstraintType`        | Enum      | `eatp.chain` |
+
+### Reasoning Traces
+
+| Export                 | Type      | Module           |
+| ---------------------- | --------- | ---------------- |
+| `ReasoningTrace`       | Dataclass | `eatp.reasoning` |
+| `ConfidentialityLevel` | Enum      | `eatp.reasoning` |
 
 ### Stores
 
@@ -70,7 +79,7 @@ Complete API surface for the standalone EATP Python SDK.
 
 ## Module Reference
 
-### `eatp.operations` -- Core Operations
+### `eatp.operations` — Core Operations
 
 ```python
 class TrustOperations:
@@ -95,6 +104,7 @@ class TrustOperations:
         expires_at: Optional[datetime] = None,
         metadata: Optional[Dict[str, Any]] = None,
         context: Optional[ExecutionContext] = None,
+        reasoning_trace: Optional[ReasoningTrace] = None,  # Reasoning extension
     ) -> DelegationRecord: ...
 
     async def verify(
@@ -113,10 +123,11 @@ class TrustOperations:
         resource: Optional[str] = None,
         result: ActionResult = ActionResult.SUCCESS,
         context_data: Optional[Dict[str, Any]] = None,
+        reasoning_trace: Optional[ReasoningTrace] = None,  # Reasoning extension
     ) -> AuditAnchor: ...
 ```
 
-### `eatp.authority` -- Authority Types
+### `eatp.authority` — Authority Types
 
 ```python
 class AuthorityPermission(Enum):
@@ -154,7 +165,7 @@ class AuthorityRegistryProtocol(Protocol):
 OrganizationalAuthorityRegistry = AuthorityRegistryProtocol
 ```
 
-### `eatp.chain` -- Data Structures
+### `eatp.chain` — Data Structures
 
 ```python
 class AuthorityType(Enum):
@@ -173,20 +184,33 @@ class ActionResult(Enum):
     DENIED = "denied"
     PARTIAL = "partial"
 
+class ConstraintType(Enum):
+    RESOURCE_LIMIT = "resource_limit"
+    TEMPORAL = "temporal"
+    DATA_SCOPE = "data_scope"
+    ACTION_RESTRICTION = "action_restriction"
+    AUDIT_REQUIREMENT = "audit_requirement"
+    REASONING_REQUIRED = "reasoning_required"  # Reasoning trace extension
+
 class VerificationLevel(Enum):
     QUICK = "quick"       # Hash + expiration (~1ms)
-    STANDARD = "standard" # + Capability match, constraints (~5ms)
-    FULL = "full"         # + Signature verification (~50ms)
+    STANDARD = "standard" # + Capability match, constraints, reasoning presence (~5ms)
+    FULL = "full"         # + Signature verification, reasoning hash/sig verification (~50ms)
 
 @dataclass
 class VerificationResult:
     valid: bool
     level: VerificationLevel
     reason: Optional[str] = None
-    # ... additional fields
+    capability_used: Optional[str] = None
+    effective_constraints: List[str] = []
+    violations: List[Dict[str, str]] = []
+    # Reasoning trace extension
+    reasoning_present: Optional[bool] = None   # True/False/None (STANDARD+)
+    reasoning_verified: Optional[bool] = None  # True/False/None (FULL only)
 ```
 
-### `eatp.crypto` -- Cryptographic Primitives
+### `eatp.crypto` — Cryptographic Primitives
 
 ```python
 def generate_keypair() -> Tuple[str, str]:
@@ -203,9 +227,19 @@ def hash_chain(data: str) -> str:
 
 def serialize_for_signing(obj: Any) -> str:
     """Deterministic JSON serialization for signing."""
+
+# Reasoning trace crypto functions
+def hash_reasoning_trace(trace: ReasoningTrace) -> str:
+    """SHA-256 hash of reasoning trace signing payload. Returns 64-char hex string."""
+
+def sign_reasoning_trace(trace: ReasoningTrace, private_key: str) -> str:
+    """Sign reasoning trace with Ed25519 key. Returns base64-encoded signature."""
+
+def verify_reasoning_signature(trace: ReasoningTrace, signature: str, public_key: str) -> bool:
+    """Verify reasoning trace Ed25519 signature."""
 ```
 
-### `eatp.store` -- Storage
+### `eatp.store` — Storage
 
 ```python
 class TrustStore(ABC):
@@ -222,7 +256,7 @@ class InMemoryTrustStore(TrustStore): ...      # eatp.store.memory
 class FilesystemStore(TrustStore): ...          # eatp.store.filesystem
 ```
 
-### `eatp.enforce` -- Enforcement
+### `eatp.enforce` — Enforcement
 
 ```python
 class Verdict(Enum):
@@ -240,7 +274,7 @@ class EATPBlockedError(PermissionError): ...
 class EATPHeldError(PermissionError): ...
 ```
 
-### `eatp.postures` -- Trust Postures
+### `eatp.postures` — Trust Postures
 
 ```python
 class TrustPosture(str, Enum):
@@ -256,7 +290,7 @@ class TrustPosture(str, Enum):
     def can_downgrade_to(self, target: TrustPosture) -> bool: ...
 ```
 
-### `eatp.exceptions` -- Error Hierarchy
+### `eatp.exceptions` — Error Hierarchy
 
 ```python
 class TrustError(Exception): ...                    # Base
@@ -276,6 +310,8 @@ class VerificationFailedError(TrustError): ...       # VERIFY operation failed
 
 | Module                             | Purpose                         | Key Classes                                                    |
 | ---------------------------------- | ------------------------------- | -------------------------------------------------------------- |
+| `eatp.reasoning`                   | Reasoning trace extension       | `ReasoningTrace`, `ConfidentialityLevel`                       |
+| `eatp.scoring`                     | Trust score computation         | `compute_trust_score()`, `analyse_trust_chain()`               |
 | `eatp.trusted_agent`               | Trust-enhanced agent wrapper    | `TrustedAgent`, `TrustedAgentConfig`, `TrustedSupervisorAgent` |
 | `eatp.constraint_validator`        | Constraint tightening logic     | `ConstraintValidator`                                          |
 | `eatp.constraints.builtin`         | Built-in constraint types       | Financial, temporal, operational constraints                   |

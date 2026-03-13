@@ -1,8 +1,8 @@
-# EATP SDK -- Implementation Patterns & Gotchas
+# EATP SDK — Implementation Patterns & Gotchas
 
 Critical patterns, security considerations, and gotchas discovered during the EATP SDK extraction and red team validation.
 
-**Install**: `pip install eatp` | **Tests**: 1177 passed | **Red team**: 2 rounds, 5 agents, all critical/high resolved
+**Source**: `eatp/` | **Tests**: 1557 passed | **Red team**: 3 rounds, 5 agents, all critical/high resolved
 
 ## Critical Gotchas
 
@@ -17,7 +17,7 @@ private_key, public_key = generate_keypair()  # CORRECT: private first
 
 NEVER swap the order. `generate_keypair()` returns `(private_key_base64, public_key_base64)`.
 
-### 2. AuthorityRegistryProtocol -- All 3 Methods Required
+### 2. AuthorityRegistryProtocol — All 3 Methods Required
 
 ```python
 from eatp.authority import AuthorityRegistryProtocol
@@ -31,16 +31,16 @@ class MyRegistry:
 
 Missing `update_authority()` will fail at runtime when `CredentialRotationManager` tries to update authority keys. The canonical Protocol class lives in `eatp.authority` (not `eatp.operations`).
 
-### 3. StrictEnforcer -- No Positional or trust_operations Arg
+### 3. StrictEnforcer — No Positional or trust_operations Arg
 
 ```python
 from eatp.enforce.strict import StrictEnforcer, Verdict
 
-# CORRECT -- optional keyword args only: on_held, held_callback, flag_threshold
+# CORRECT — optional keyword args only: on_held, held_callback, flag_threshold
 enforcer = StrictEnforcer()
 enforcer = StrictEnforcer(on_held=HeldBehavior.RAISE, flag_threshold=0.8)
 
-# WRONG -- these do NOT exist as constructor args:
+# WRONG — these do NOT exist as constructor args:
 # enforcer = StrictEnforcer(trust_operations=ops)   # TypeError
 # enforcer.check(agent_id="...", action="...")       # AttributeError
 
@@ -69,7 +69,7 @@ Constraints live on `CapabilityAttestation`, not `GenesisRecord`:
 # WRONG
 genesis.constraints  # AttributeError!
 
-# CORRECT -- get constraints from capabilities
+# CORRECT — get constraints from capabilities
 all_constraints = list(dict.fromkeys(
     c for cap in chain.capabilities for c in cap.constraints
 ))
@@ -85,11 +85,148 @@ chain_hash = chain.hash()           # NOT chain.compute_hash()
 payload = genesis.to_signing_payload()  # NOT genesis.signing_payload (it's a method, not property)
 ```
 
+### 7. Reasoning Signature Signs Trace Content, Not Parent Record
+
+```python
+from eatp.crypto import sign_reasoning_trace, verify_reasoning_signature
+
+# The reasoning_signature is computed from trace.to_signing_payload()
+# It is NOT part of the parent DelegationRecord/AuditAnchor signature
+sig = sign_reasoning_trace(trace, private_key)
+ok = verify_reasoning_signature(trace, sig, public_key)
+
+# This means: adding/removing a reasoning trace does NOT invalidate
+# the parent record's existing signature. Backward compatible by design.
+```
+
+### 8. ConfidentialityLevel Affects Serialization
+
+Higher confidentiality levels cause automatic redaction in interop formats:
+
+| Level        | W3C VC / SD-JWT Behavior                                        |
+| ------------ | --------------------------------------------------------------- |
+| PUBLIC       | Full trace included                                             |
+| RESTRICTED   | Included when `disclose_reasoning=True`                         |
+| CONFIDENTIAL | Included when disclosed, but `alternatives_considered` stripped |
+| SECRET       | Only hash survives, trace withheld                              |
+| TOP_SECRET   | Only hash survives, trace withheld                              |
+
+Hash and signature are always included (they are integrity proofs, not confidential content).
+
+### 9. REASONING_REQUIRED Enforcement Depends on Verification Level
+
+When `REASONING_REQUIRED` is active and reasoning is missing, behavior depends on the verification level:
+
+- **STANDARD level**: Produces a **warning-severity violation** (`valid=True`). Advisory only.
+- **FULL level**: Produces a **hard failure** (`valid=False`). Blocks the action.
+
+```python
+# At STANDARD level (default):
+# result.violations = [{"constraint_type": "reasoning_required", "severity": "warning", ...}]
+# result.reasoning_present = False
+# result.valid = True  (advisory warning only)
+
+# At FULL level:
+# result.valid = False  (hard failure)
+# result.reason = "REASONING_REQUIRED constraint active but no reasoning trace present..."
+```
+
+This is important: the same constraint has different enforcement semantics depending on verification level.
+
+### 10. Standalone Reasoning Signatures Differ from Operations Signatures
+
+When `ops.delegate()` or `ops.audit()` signs a reasoning trace, it binds the signature to the parent record via `context_id=record.id`. Standalone `sign_reasoning_trace(trace, key)` without `context_id` produces a **different signature** that won't verify against the operations-created one.
+
+```python
+# Operations-created signature (uses context_id internally):
+delegation = await ops.delegate(..., reasoning_trace=trace)
+# delegation.reasoning_signature is bound to delegation.id
+
+# Standalone verification MUST match:
+ok = verify_reasoning_signature(trace, delegation.reasoning_signature, pub_key,
+                                 context_id=delegation.id)  # Must pass context_id!
+
+# Without context_id → silent crypto failure:
+ok = verify_reasoning_signature(trace, delegation.reasoning_signature, pub_key)  # False!
+```
+
+## Reasoning Trace Patterns
+
+### Pattern: Privacy-First Reasoning (Classify Before Creating)
+
+Always set the confidentiality level before attaching evidence or alternatives:
+
+```python
+from eatp.reasoning import ReasoningTrace, ConfidentialityLevel
+from datetime import datetime, timezone
+
+# CORRECT: classify first, then populate
+trace = ReasoningTrace(
+    decision="Grant elevated access for incident response",
+    rationale="Active security incident requires immediate analyst access",
+    confidentiality=ConfidentialityLevel.SECRET,  # Set first
+    timestamp=datetime.now(timezone.utc),
+    evidence=[{"type": "incident_ticket", "id": "INC-4521"}],
+    methodology="incident_response_protocol",
+    confidence=0.95,
+)
+
+# WRONG: creating with PUBLIC then upgrading later risks
+# the trace having already been serialized/transmitted at PUBLIC level
+```
+
+### Pattern: Using REASONING_REQUIRED for Compliance Workflows
+
+```python
+from eatp import CapabilityRequest, TrustOperations
+from eatp.chain import CapabilityType, ConstraintType
+
+# Establish agent with REASONING_REQUIRED constraint
+chain = await ops.establish(
+    agent_id="compliance-agent",
+    authority_id="org-acme",
+    capabilities=[
+        CapabilityRequest(
+            capability="approve_transaction",
+            capability_type=CapabilityType.ACTION,
+        ),
+    ],
+    constraints=["reasoning_required"],
+)
+
+# Now delegations and audits without reasoning_trace
+# will generate warning violations during VERIFY
+result = await ops.verify(
+    agent_id="compliance-agent",
+    action="approve_transaction",
+)
+# result.reasoning_present will be False if no traces attached
+# result.violations will include a "reasoning_required" warning
+```
+
+### Anti-Pattern: Storing Unencrypted TOP_SECRET Reasoning
+
+```python
+# WRONG: TOP_SECRET reasoning stored in plaintext logs/databases
+trace = ReasoningTrace(
+    decision="Critical infrastructure access decision",
+    rationale="Nuclear facility override authorization",
+    confidentiality=ConfidentialityLevel.TOP_SECRET,
+    timestamp=datetime.now(timezone.utc),
+)
+logger.info(f"Reasoning: {trace.to_dict()}")  # Leaks TOP_SECRET to logs!
+
+# CORRECT: Use selective disclosure; only store hash
+from eatp.crypto import hash_reasoning_trace
+trace_hash = hash_reasoning_trace(trace)
+logger.info(f"Reasoning hash: {trace_hash}")  # Safe: only hash in logs
+```
+
 ## Security Patterns
 
 ### SQL Injection Prevention (ESA Database)
 
-The `esa.database` module uses parameterized queries with column name validation:
+`eatp.esa.database` uses parameterized queries with column name validation:
 
 ```python
 # Column names validated against: _ident_re = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
@@ -148,9 +285,9 @@ for c in cap_request.constraints + global_constraints:
 
 Every action through `TrustedAgent` follows:
 
-1. **VERIFY** -- Check trust before action
-2. **EXECUTE** -- Perform the action
-3. **AUDIT** -- Record in immutable trail
+1. **VERIFY** — Check trust before action
+2. **EXECUTE** — Perform the action
+3. **AUDIT** — Record in immutable trail
 
 ```python
 from eatp.trusted_agent import TrustedAgent, TrustedAgentConfig
@@ -165,7 +302,7 @@ result = await trusted.execute_async(inputs={"question": "What is AI?"})
 
 ### PDP/PEP Separation
 
-The SDK is the **Policy Decision Point** (PDP) -- it computes verdicts. Your application is the **Policy Enforcement Point** (PEP) -- it must enforce them.
+The SDK is the **Policy Decision Point** (PDP) — it computes verdicts. Your application is the **Policy Enforcement Point** (PEP) — it must enforce them.
 
 | Responsibility                           | Standalone SDK  | Host Application |
 | ---------------------------------------- | --------------- | ---------------- |
@@ -179,23 +316,23 @@ The SDK is the **Policy Decision Point** (PDP) -- it computes verdicts. Your app
 After extraction, Kaizen trust files are thin shims:
 
 ```python
-# kaizen/trust/chain.py
+# kaizen/kaizen/trust/chain.py
 from eatp.chain import *  # noqa: F401,F403
 ```
 
 This means:
 
-- Canonical code lives in the `eatp` package
+- Canonical code lives in `eatp/`
 - Kaizen tests exercise the same code through shim imports
-- 1177 EATP tests + 1623 Kaizen trust tests = 2800 total coverage
+- 1557 EATP tests + Kaizen trust shim tests for total coverage
 
 ### Store Architecture
 
 ```
 TrustStore (ABC)
-+-- InMemoryTrustStore    -- Fast, no persistence, transaction support
-+-- FilesystemStore       -- JSON files, thread-safe writes, soft-delete
-+-- PostgresTrustStore    -- Production (in kailash-kaizen, not standalone)
+├── InMemoryTrustStore    — Fast, no persistence, transaction support
+├── FilesystemStore       — JSON files, thread-safe writes, soft-delete
+└── PostgresTrustStore    — Production (in kailash-kaizen, not standalone)
 ```
 
 All stores require `await store.initialize()` before use. All stores implement `transaction()` for atomic multi-chain updates.
@@ -283,7 +420,7 @@ These are documented for future improvement:
 
 ```bash
 # Run EATP standalone tests
-pip install eatp[dev]
+cd packages/eatp
 python -m pytest tests/ -v
 
 # Run specific test categories
@@ -292,6 +429,5 @@ python -m pytest tests/integration/ -v             # Integration tests
 python -m pytest tests/unit/test_jwt_interop.py -v # JWT interop
 
 # Run Kaizen trust tests (exercises same code via shims)
-pip install kailash-kaizen[dev]
 python -m pytest kaizen/tests/unit/trust/ -v
 ```

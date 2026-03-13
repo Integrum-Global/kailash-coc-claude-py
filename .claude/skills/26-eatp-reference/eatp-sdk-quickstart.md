@@ -1,6 +1,9 @@
-# EATP Standalone SDK -- Quick Start
+# EATP Standalone SDK — Quick Start
 
 The standalone EATP SDK (`pip install eatp`) provides cryptographic trust chains, delegation, and verification for AI agent systems. Apache 2.0, published by the Terrene Foundation.
+
+**Source**: `eatp/`
+**Examples**: `eatp/examples/quickstart.py`
 
 ## Installation
 
@@ -23,7 +26,6 @@ from eatp.chain import ActionResult, AuthorityType, CapabilityType
 from eatp.crypto import generate_keypair
 from eatp.store.memory import InMemoryTrustStore
 
-
 class SimpleAuthorityRegistry:
     """Minimal registry satisfying AuthorityRegistryProtocol."""
 
@@ -44,7 +46,6 @@ class SimpleAuthorityRegistry:
 
     async def update_authority(self, authority: OrganizationalAuthority):
         self._authorities[authority.id] = authority
-
 
 async def main():
     # 1. Setup infrastructure
@@ -74,7 +75,7 @@ async def main():
         trust_store=store,
     )
 
-    # 2. ESTABLISH -- create trust for an agent
+    # 2. ESTABLISH — create trust for an agent
     chain = await ops.establish(
         agent_id="agent-analyst",
         authority_id="org-acme",
@@ -92,11 +93,11 @@ async def main():
     )
     print(f"Established: {len(chain.capabilities)} capabilities")
 
-    # 3. VERIFY -- check if agent can act
+    # 3. VERIFY — check if agent can act
     result = await ops.verify(agent_id="agent-analyst", action="analyze_data")
     print(f"Verified: {result.valid} (level={result.level.value})")
 
-    # 4. DELEGATE -- transfer capability to another agent
+    # 4. DELEGATE — transfer capability to another agent
     delegation = await ops.delegate(
         delegator_id="agent-analyst",
         delegatee_id="agent-junior",
@@ -106,7 +107,7 @@ async def main():
     )
     print(f"Delegated: {delegation.id}")
 
-    # 5. AUDIT -- record action in immutable trail
+    # 5. AUDIT — record action in immutable trail
     anchor = await ops.audit(
         agent_id="agent-analyst",
         action="analyze_data",
@@ -115,7 +116,6 @@ async def main():
         context_data={"rows_processed": 1200},
     )
     print(f"Audited: {anchor.id}")
-
 
 asyncio.run(main())
 ```
@@ -163,7 +163,7 @@ The SDK is the Policy Decision Point (PDP). It returns verdicts; your applicatio
 ```python
 from eatp.enforce.strict import StrictEnforcer, Verdict, EATPBlockedError
 
-enforcer = StrictEnforcer()  # All args optional (on_held, held_callback, flag_threshold)
+enforcer = StrictEnforcer()  # No constructor args
 
 result = await ops.verify(agent_id="agent-001", action="spend_money")
 verdict = enforcer.classify(result)
@@ -177,7 +177,7 @@ elif verdict == Verdict.HELD:
 elif verdict == Verdict.FLAGGED:
     # Proceed but log for review
     log_warning(result)
-# AUTO_APPROVED -- proceed normally
+# AUTO_APPROVED — proceed normally
 ```
 
 ## Trust Postures
@@ -226,14 +226,66 @@ result = await rotation_mgr.rotate("agent-001")
 ## CLI
 
 ```bash
-# Quickstart -- interactive trust setup
+# Quickstart — interactive trust setup
 eatp quickstart
 
 # Other commands via the CLI module
 eatp --help
 ```
 
+## Reasoning Traces
+
+Reasoning traces capture WHY a decision was made. They are fully optional and backward compatible.
+
+```python
+from eatp.reasoning import ReasoningTrace, ConfidentialityLevel
+from eatp.crypto import hash_reasoning_trace, sign_reasoning_trace, verify_reasoning_signature
+from datetime import datetime, timezone
+
+# 1. Create a reasoning trace
+trace = ReasoningTrace(
+    decision="Delegate data analysis to junior agent",
+    rationale="Junior agent has demonstrated competence in quarterly reports",
+    confidentiality=ConfidentialityLevel.RESTRICTED,
+    timestamp=datetime.now(timezone.utc),
+    alternatives_considered=["Senior agent (unavailable)", "Manual processing"],
+    evidence=[{"type": "performance_review", "score": 0.92}],
+    methodology="capability_matching",
+    confidence=0.85,
+)
+
+# 2. Attach to delegation
+delegation = await ops.delegate(
+    delegator_id="agent-analyst",
+    delegatee_id="agent-junior",
+    task_id="task-q4-report",
+    capabilities=["analyze_data"],
+    reasoning_trace=trace,  # Optional
+)
+# delegation.reasoning_trace_hash and delegation.reasoning_signature
+# are automatically computed
+
+# 3. Attach to audit
+anchor = await ops.audit(
+    agent_id="agent-analyst",
+    action="analyze_data",
+    reasoning_trace=trace,  # Optional
+)
+
+# 4. Standalone crypto operations
+trace_hash = hash_reasoning_trace(trace)           # 64-char hex string
+signature = sign_reasoning_trace(trace, private_key)  # base64 string
+is_valid = verify_reasoning_signature(trace, signature, public_key)  # bool
+```
+
+Confidentiality levels support ordering: `PUBLIC < RESTRICTED < CONFIDENTIAL < SECRET < TOP_SECRET`. Higher levels trigger automatic redaction in interop formats (W3C VC, SD-JWT).
+
+For deep coverage, see `.claude/skills/26-eatp-reference/eatp-sdk-reasoning-traces.md`.
+
 ## For More Detail
 
 - **API Reference**: `.claude/skills/26-eatp-reference/eatp-sdk-api-reference.md`
 - **Patterns & Gotchas**: `.claude/skills/26-eatp-reference/eatp-sdk-patterns.md`
+- **Reasoning Traces**: `.claude/skills/26-eatp-reference/eatp-sdk-reasoning-traces.md`
+- **Full Working Example**: `eatp/examples/quickstart.py`
+- **Foundation Demo**: `eatp/examples/foundation_deployment.py`

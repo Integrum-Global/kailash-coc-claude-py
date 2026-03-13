@@ -67,6 +67,7 @@ Phase commands replace the manual copy-paste workflow. Each loads the correspond
 | Kailash SDK execution patterns    | `rules/patterns.md`          | `**/*.py`, `**/*.ts`, `**/*.js`                     |
 | Security (secrets, injection)     | `rules/security.md`          | Global                                              |
 | 3-tier testing strategy           | `rules/testing.md`           | `tests/**`, `**/*test*`, `**/*spec*`, `conftest.py` |
+| README & Sphinx docs maintenance  | `rules/documentation.md`     | `README.md`, `docs/**`, `CHANGELOG.md`              |
 | Auto-generated workflow instincts | `rules/learned-instincts.md` | Global                                              |
 
 **Note**: Rules with path scoping are loaded only when editing matching files. Global rules load every session.

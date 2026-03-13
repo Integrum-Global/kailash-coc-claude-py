@@ -697,5 +697,5 @@ app = Nexus(
 
 For security issues or questions:
 - Check the [troubleshooting guide](./nexus-troubleshooting.md)
-- Review [GitHub issues](https://github.com/kailash-sdk/nexus/issues)
+- Review [GitHub issues](https://github.com/terrene-foundation/kailash-py/issues)
 - Contact security team for critical vulnerabilities

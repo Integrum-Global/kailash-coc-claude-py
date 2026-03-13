@@ -286,7 +286,7 @@ This focused architecture maintains the essential workflow while dramatically re
 ```
 1. > Use the flutter-specialist subagent for:
    - Flutter 3.27+ Material Design 3 patterns
-   - **CRITICAL**: Check Your-Project design system component catalogue FIRST
+   - **CRITICAL**: Check the project's design system component catalogue FIRST
    - Use existing components from lib/core/design/design_system.dart
    - Riverpod state management
    - Responsive design (mobile/tablet/desktop)

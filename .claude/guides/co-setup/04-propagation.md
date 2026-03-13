@@ -1,10 +1,10 @@
 # Propagating CO Setup Updates
 
-How to apply updates from the canonical source (terrene) to other repositories.
+How to apply updates from the canonical source to other repositories.
 
 ## Canonical Source
 
-The terrene knowledge base (`./canonical`) is the canonical source for:
+The canonical source repository for shared CO components is:
 
 - Core workflow improvements (implement.md, codify.md, todos.md)
 - Shared agents (analysis, review, management, standards experts)
@@ -83,22 +83,13 @@ After propagation, verify:
 
 ## Repository Inventory
 
-Current repositories and their archetypes:
+Maintain a project-specific inventory of repositories that share CO components. Each repo should list:
 
-| Repository            | Path                                    | Archetype                      |
-| --------------------- | --------------------------------------- | ------------------------------ |
-| setup-py              | `.` | Coding (Kailash SDK)           |
-| setup-rb              | `.` | Coding (Kailash SDK) — minimal |
-| setup-rs              | `.` | Coding (Kailash SDK)           |
-| app                   | `./app`                     | Coding (commercial platform)   |
-| project-2             | `./project`                    | Coding                         |
-| project-3             | `./project`                    | Coding                         |
-| your-project            | `./project`                | Coding                         |
-| project-5             | `./project`                     | Coding                         |
-| project-6             | `./project`                  | Coding                         |
-| platform              | `./care`                  | Platform (hybrid)              |
-| project-8             | `./project`              | Education (non-coding)         |
-| canonical             | `./canonical`               | Governance (canonical source)  |
+- Repository name
+- Archetype (Coding, Governance, Education, Platform)
+- Which shared components it uses
+
+This inventory is internal to your organization and should NOT be committed to public repositories.
 
 ## Automation
 
@@ -108,5 +99,3 @@ For batch propagation, use parallel agents:
 2. Launch one agent per group with explicit edit instructions
 3. Each agent reads the target file first, then applies targeted edits
 4. Preserve all existing project-specific content
-
-See the March 2026 propagation session for a worked example of batch updates across 11 repos.

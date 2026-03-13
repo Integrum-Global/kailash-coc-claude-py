@@ -479,7 +479,7 @@ gh issue list --limit 100 | grep "Story" | sort | uniq -d
 ## 📚 References
 
 - **GitHub Repository**: `your-org/your-project`
-- **GitHub Project**: https://github.com/orgs/your-org/projects/64
+- **GitHub Project**: `https://github.com/orgs/your-org/projects/1`
 - **This Guide**: `.claude/guides/todo-github-sync-guide.md`
 
 ---

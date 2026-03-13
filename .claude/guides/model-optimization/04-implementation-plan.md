@@ -23,7 +23,7 @@ Valid values: `opus`, `sonnet`, `haiku`, or omit for inherit.
 
 ## Changes Per Repo
 
-### 1. Terrene Foundation (`./canonical`)
+### 1. Terrene Foundation (`<governance-kb-repo>`)
 
 **1 agent to update:**
 
@@ -31,7 +31,7 @@ Valid values: `opus`, `sonnet`, `haiku`, or omit for inherit.
 | ------------------------------------------- | ------------------------------- |
 | `.claude/agents/management/todo-manager.md` | `model: opus` → `model: sonnet` |
 
-### 2. Kailash Python SDK BUILD (`./sdk`)
+### 2. Kailash Python SDK BUILD (`<sdk-repo>`)
 
 **6 agents to update:**
 
@@ -44,7 +44,7 @@ Valid values: `opus`, `sonnet`, `haiku`, or omit for inherit.
 | `.claude/agents/e2e-runner.md`              | `model: opus` → `model: sonnet`    |
 | `.claude/agents/gh-manager.md`              | Add `model: sonnet` if not present |
 
-### 3. Kailash Python USE (`.`)
+### 3. Kailash Python USE (`<python-use-repo>`)
 
 **6 agents to update:**
 
@@ -57,7 +57,7 @@ Valid values: `opus`, `sonnet`, `haiku`, or omit for inherit.
 | `.claude/agents/e2e-runner.md`              | `model: opus` → `model: sonnet` |
 | `.claude/agents/todo-manager.md`            | `model: opus` → `model: sonnet` |
 
-### 4. Kailash Rust BUILD/USE (`.`)
+### 4. Kailash Rust BUILD/USE (`<rust-repo>`)
 
 **6 agents to update:**
 

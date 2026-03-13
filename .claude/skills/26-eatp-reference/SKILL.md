@@ -1,24 +1,19 @@
 ---
 name: eatp-reference
-description: Load EATP Framework technical reference. Use when explaining EATP concepts, trust lineage, attestation, verification gradient, trust postures, comparing to other identity standards, or working with the standalone EATP SDK (`pip install eatp`).
+description: Load EATP Framework technical reference. Use when explaining EATP concepts, trust lineage, attestation, verification gradient, trust postures, or comparing to other identity standards.
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
 ---
 
 # EATP Framework Reference
 
 This skill provides the technical reference for the Enterprise Agent Trust Protocol (EATP) - the trust verification protocol for enterprise AI agents.
 
-## SDK Skill Files
+## Knowledge Sources
 
-For standalone EATP SDK implementation knowledge, see these companion files:
-
-- **[eatp-sdk-quickstart.md](eatp-sdk-quickstart.md)** -- Getting started with `pip install eatp`, 4-operation lifecycle, store selection
-- **[eatp-sdk-api-reference.md](eatp-sdk-api-reference.md)** -- Complete API surface: all exports, module reference, type signatures
-- **[eatp-sdk-patterns.md](eatp-sdk-patterns.md)** -- Implementation patterns, critical gotchas, security findings, architecture patterns
-
-## Authoritative Sources
-
-### PRIMARY: This Skill Document
-This file is the in-repo EATP reference. The concepts below are drawn from the EATP specification and the standalone EATP Python SDK (`pip install eatp`, Apache 2.0, Terrene Foundation).
+This skill is self-contained — all essential EATP knowledge is distilled below from the EATP Core Thesis by Dr. Jack Hong and the EATP specification. If Foundation source docs exist in this repo, read them for additional depth.
 
 ## What is EATP?
 
@@ -139,9 +134,9 @@ Human Authority
       v [Trust Lineage Chain]
    Traceable to Human
 
-Verification: Auto-approved -> Flagged -> Held -> Blocked
-Postures: Pseudo-Agent -> Supervised -> Shared Planning -> Continuous Insight -> Delegated
-Operations: ESTABLISH -> DELEGATE -> VERIFY -> AUDIT
+Verification: Auto-approved → Flagged → Held → Blocked
+Postures: Pseudo-Agent → Supervised → Shared Planning → Continuous Insight → Delegated
+Operations: ESTABLISH → DELEGATE → VERIFY → AUDIT
 ```
 
 ## Relationship to Companion Frameworks
@@ -152,27 +147,6 @@ Operations: ESTABLISH -> DELEGATE -> VERIFY -> AUDIT
 | **COC**     | COC maps EATP concepts to development guardrails  |
 | **Kailash** | Reference implementation (Apache 2.0)             |
 
-## Standalone SDK (v0.1.0)
-
-The EATP specification is implemented as a standalone Python SDK:
-
-- **Install**: `pip install eatp`
-- **License**: Apache 2.0 (Terrene Foundation)
-- **Tests**: 1177 passed (+ 1623 through Kaizen shims = 2800 total)
-
-Kaizen's `kaizen.trust` module is now a shim layer that re-exports from the standalone SDK. Canonical code lives in the `eatp` package.
-
-For SDK implementation details, see the companion skill files linked above.
-
 ## For Detailed Information
 
-For standalone SDK implementation details, see the companion skill files:
-- **[eatp-sdk-quickstart.md](eatp-sdk-quickstart.md)** -- Getting started
-- **[eatp-sdk-api-reference.md](eatp-sdk-api-reference.md)** -- Complete API surface
-- **[eatp-sdk-patterns.md](eatp-sdk-patterns.md)** -- Implementation patterns and gotchas
-
-Related skills:
-- `.claude/skills/27-care-reference/` - CARE governance philosophy
-- `.claude/skills/28-coc-reference/` - COC development guardrails
-
-For comprehensive analysis, invoke the **eatp-expert** agent.
+If Foundation source docs exist in this repo, read the EATP Core Thesis and EATP specification for additional depth. For comprehensive analysis, invoke the **eatp-expert** agent.

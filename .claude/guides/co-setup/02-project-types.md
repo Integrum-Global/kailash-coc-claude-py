@@ -8,7 +8,7 @@ Every project using CO falls into one of several archetypes. The archetype deter
 
 Software development projects. The AI writes code, tests it, deploys it.
 
-**Examples**: Kailash SDK repos, SDK repos, web apps, API services, mobile backends
+**Examples**: SDK repos, web apps, API services, mobile backends
 
 **Characteristics**:
 
@@ -43,7 +43,7 @@ Software development projects. The AI writes code, tests it, deploys it.
 
 Strategic, legal, or governance knowledge work. The AI researches, drafts, reviews, and publishes documents.
 
-**Examples**: Terrene Foundation knowledge base
+**Examples**: Foundation knowledge bases, standards bodies, policy organizations
 
 **Characteristics**:
 
@@ -110,7 +110,7 @@ Non-coding content creation. The AI helps design, write, and organize educationa
 
 Projects that implement governance standards in code. Part coding, part governance.
 
-**Examples**: CARE Platform (`terrene/care`)
+**Examples**: Standards-implementing platforms, governance-in-code projects
 
 **Characteristics**:
 
@@ -193,10 +193,10 @@ Write a project-level CLAUDE.md that:
 
 ## Canonical Source
 
-The terrene knowledge base (`./canonical`) is the canonical source for:
+The canonical source repository for shared CO components is:
 
 - Shared components (utility commands, shared agents, guides)
 - The CO setup guide itself
 - Improvements to the core workflow commands (implement, codify, todos)
 
-When improvements are made in terrene, they should be propagated to other repos using the process described in [04 - Propagation](04-propagation.md).
+When improvements are made in the canonical source, they should be propagated to other repos using the process described in [04 - Propagation](04-propagation.md).

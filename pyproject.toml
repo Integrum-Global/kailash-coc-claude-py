@@ -26,6 +26,7 @@ dependencies = [
     "kailash-dataflow>=0.12.4",
     "kailash-kaizen>=1.2.5",
     "eatp>=0.1.0",
+    "trust-plane>=0.2.0",
     # CLI Framework
     "click>=8.0",
     "rich>=13.0.0",

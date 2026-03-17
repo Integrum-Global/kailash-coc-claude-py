@@ -7,11 +7,11 @@ Complete guide to signature-based programming with InputField and OutputField fo
 Signatures define **type-safe inputs and outputs** for AI agents. Think of them as contracts that specify what data an agent accepts and produces.
 
 **Benefits:**
-- Type safety - catch errors at design time
-- Auto-validation - framework validates inputs/outputs
-- Self-documenting - descriptions built into code
-- LLM-friendly - descriptions become prompt context
-- A2A integration - automatic capability card generation
+- ✅ Type safety - catch errors at design time
+- ✅ Auto-validation - framework validates inputs/outputs
+- ✅ Self-documenting - descriptions built into code
+- ✅ LLM-friendly - descriptions become prompt context
+- ✅ A2A integration - automatic capability card generation
 
 ## Basic Signature Pattern
 
@@ -101,10 +101,10 @@ confidence: float = OutputField(
 Descriptions are **critical** - they become part of the LLM prompt:
 
 ```python
-# BAD - Vague description
+# ❌ BAD - Vague description
 answer: str = OutputField(description="The answer")
 
-# GOOD - Specific, actionable description
+# ✅ GOOD - Specific, actionable description
 answer: str = OutputField(
     description="Concise answer to the user's question, 2-3 sentences maximum"
 )
@@ -305,11 +305,11 @@ class MyAgent(BaseAgent):
 ### Automatic Validation
 
 BaseAgent automatically validates:
-- All required input fields are provided
-- Input types match signature definitions
-- Constraints are satisfied (ge, le, min_length, etc.)
-- Output contains all required fields
-- Output types match signature definitions
+- ✅ All required input fields are provided
+- ✅ Input types match signature definitions
+- ✅ Constraints are satisfied (ge, le, min_length, etc.)
+- ✅ Output contains all required fields
+- ✅ Output types match signature definitions
 
 ### Manual Validation
 
@@ -349,25 +349,25 @@ def create_qa_signature(include_reasoning: bool = True):
 ## CRITICAL RULES
 
 **Descriptions:**
-- Be specific and actionable
-- Include format expectations (e.g., "as JSON array")
-- Specify length/range constraints in description
-- Don't use vague descriptions like "the answer"
+- ✅ Be specific and actionable
+- ✅ Include format expectations (e.g., "as JSON array")
+- ✅ Specify length/range constraints in description
+- ❌ Don't use vague descriptions like "the answer"
 
 **Defaults:**
-- Use defaults for optional fields
-- Set sensible defaults (0.7 for temperature, not 0.0)
-- Don't make all fields optional
+- ✅ Use defaults for optional fields
+- ✅ Set sensible defaults (0.7 for temperature, not 0.0)
+- ❌ Don't make all fields optional
 
 **Types:**
-- Use specific types (str, int, float, List[str], dict)
-- Use Union for multiple accepted types
-- Don't use generic types like Any unless necessary
+- ✅ Use specific types (str, int, float, List[str], dict)
+- ✅ Use Union for multiple accepted types
+- ❌ Don't use generic types like Any unless necessary
 
 **Validation:**
-- Add constraints (ge, le, min_length, max_length)
-- Use patterns for format validation (email, URL, etc.)
-- Don't skip validation for critical fields
+- ✅ Add constraints (ge, le, min_length, max_length)
+- ✅ Use patterns for format validation (email, URL, etc.)
+- ❌ Don't skip validation for critical fields
 
 ## Related Skills
 
@@ -376,6 +376,3 @@ def create_qa_signature(include_reasoning: bool = True):
 - **kaizen-multimodal-pitfalls** - Multi-modal signature issues
 
 ## References
-
-- **Examples**: All agents in `kaizen/examples/`
-- **Tests**: `kaizen/tests/unit/signatures/`

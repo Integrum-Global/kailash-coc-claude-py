@@ -1,6 +1,6 @@
 ---
 name: gold-error-handling
-description: "Gold standard for error handling in Kailash applications. Use when asking 'error handling standard', 'handle errors', or 'error patterns'."
+description: "Gold standard for error handling. Use when asking 'error handling standard', 'handle errors', or 'error patterns'."
 ---
 
 # Gold Standard: Error Handling
@@ -8,211 +8,67 @@ description: "Gold standard for error handling in Kailash applications. Use when
 > **Skill Metadata**
 > Category: `gold-standards`
 > Priority: `HIGH`
+> SDK Version: `0.9.25+`
 
 ## Error Handling Patterns
 
-### 1. Use Try/Except with Specific Exceptions
-
+### 1. Try-Catch at Node Level
 ```python
-from kailash.workflow.builder import WorkflowBuilder
-from kailash.runtime import LocalRuntime
+workflow = WorkflowBuilder()
 
-def run_payment_workflow():
-    workflow = WorkflowBuilder()
+# Critical operation
+workflow.add_node("APICallNode", "payment_api", {
+    "url": "https://api.stripe.com/charge",
+    "method": "POST",
+    "timeout": 30
+})
 
-    # Critical operation
-    workflow.add_node("HTTPRequestNode", "payment_api", {
-        "url": "https://api.stripe.com/charge",
-        "method": "POST",
-        "timeout": 30,
-    })
-
-    runtime = LocalRuntime()
-
-    try:
-        results, run_id = runtime.execute(workflow.build())
-        return results["payment_api"]
-    except RuntimeError as e:
-        raise PaymentError(f"Payment workflow failed: {e}") from e
+# Error handler
+workflow.add_error_handler("payment_api", "log_payment_failure")
+workflow.add_error_handler("payment_api", "refund_user")
 ```
 
-### 2. Define Domain Exceptions
-
+### 2. Validation Before Processing
 ```python
-class PaymentError(Exception):
-    """Base exception for payment operations."""
-    pass
+# ✅ GOOD: Validate first
+workflow.add_node("DataValidationNode", "validate_input", {
+    "schema": {"email": "email", "amount": "decimal > 0"}
+})
 
-class InvalidAmountError(PaymentError):
-    def __init__(self, amount):
-        super().__init__(f"Invalid amount: {amount} (must be positive)")
-        self.amount = amount
-
-class GatewayTimeoutError(PaymentError):
-    def __init__(self, timeout_secs):
-        super().__init__(f"Payment gateway timeout after {timeout_secs}s")
-        self.timeout_secs = timeout_secs
-
-class PaymentDeclinedError(PaymentError):
-    def __init__(self, reason):
-        super().__init__(f"Payment declined: {reason}")
-        self.reason = reason
+workflow.add_node("ConditionalNode", "check_valid", {
+    "condition": "{{validate_input.is_valid}} == true",
+    "true_branch": "process",
+    "false_branch": "error_response"
+})
 ```
 
-### 3. Validation Before Processing
-
+### 3. Graceful Degradation
 ```python
-def validate_payment_input(inputs: dict) -> None:
-    """Validate payment inputs, raising ValueError on invalid data."""
-    amount = inputs.get("amount")
-    if amount is None or not isinstance(amount, (int, float)):
-        raise ValueError("amount is required and must be a number")
+# Primary path
+workflow.add_node("APICallNode", "primary_api", {...})
 
-    if amount <= 0:
-        raise ValueError(f"amount must be positive, got {amount}")
-
-    email = inputs.get("email")
-    if not email or not isinstance(email, str):
-        raise ValueError("email is required")
-
-    if "@" not in email:
-        raise ValueError(f"invalid email format: {email}")
+# Fallback on error
+workflow.add_error_handler("primary_api", "fallback_api")
+workflow.add_node("APICallNode", "fallback_api", {...})
 ```
 
-### 4. Graceful Degradation with Fallback
-
+### 4. Error Logging
 ```python
-import requests
-import logging
-
-logger = logging.getLogger(__name__)
-
-def fetch_with_fallback(primary_url: str, fallback_url: str) -> str:
-    """Fetch from primary URL, falling back to secondary on failure."""
-    try:
-        response = requests.get(primary_url, timeout=10)
-        response.raise_for_status()
-        return response.text
-    except requests.RequestException as e:
-        logger.warning(
-            "Primary API failed (url=%s, error=%s), trying fallback",
-            primary_url, e,
-        )
-        response = requests.get(fallback_url, timeout=10)
-        response.raise_for_status()
-        return response.text
-```
-
-### 5. Structured Error Logging
-
-```python
-from kailash.workflow.builder import WorkflowBuilder
-from kailash.runtime import LocalRuntime
-import logging
-
-logger = logging.getLogger(__name__)
-
-def execute_workflow_with_logging(runtime, workflow, inputs=None):
-    """Execute a workflow with structured logging."""
-    logger.info("Starting workflow execution")
-
-    try:
-        results, run_id = runtime.execute(workflow, inputs or {})
-        logger.info(
-            "Workflow completed successfully",
-            extra={"run_id": run_id, "node_count": len(results)},
-        )
-        return results, run_id
-    except Exception as e:
-        logger.error(
-            "Workflow execution failed",
-            extra={"error": str(e)},
-            exc_info=True,
-        )
-        raise
-```
-
-### 6. Retry with Exponential Backoff
-
-```python
-import time
-import requests
-import logging
-
-logger = logging.getLogger(__name__)
-
-def robust_api_call(url: str, max_retries: int = 3) -> dict:
-    """Call an API with retry and exponential backoff."""
-    last_error = None
-
-    for attempt in range(max_retries):
-        try:
-            response = requests.get(url, timeout=10)
-            if response.ok:
-                return {
-                    "result": response.text,
-                    "status": "success",
-                }
-            last_error = f"HTTP {response.status_code}"
-        except requests.RequestException as e:
-            last_error = str(e)
-
-        # Exponential backoff
-        delay = 0.1 * (2 ** attempt)
-        logger.warning(
-            "Attempt %d failed (error=%s), retrying in %.1fs",
-            attempt + 1, last_error, delay,
-        )
-        time.sleep(delay)
-
-    raise RuntimeError(f"All {max_retries} retries exhausted: {last_error}")
-```
-
-## Anti-Patterns
-
-```python
-# BAD: Bare except
-try:
-    results, run_id = runtime.execute(workflow.build())
-except:  # Catches everything including SystemExit!
-    pass
-
-# BAD: Silently swallowing errors
-try:
-    results, run_id = runtime.execute(workflow.build())
-except Exception:
-    pass  # Error discarded!
-
-# BAD: Catch-all with no context
-try:
-    operation()
-except Exception:
-    raise  # What went wrong? No context added.
-
-# GOOD: Specific exception with context
-try:
-    results, run_id = runtime.execute(workflow.build())
-except RuntimeError as e:
-    raise WorkflowError(f"Failed to execute payment workflow: {e}") from e
-
-# GOOD: Logging before re-raise
-try:
-    results, run_id = runtime.execute(workflow.build())
-except RuntimeError as e:
-    logger.error("Workflow failed: %s", e, exc_info=True)
-    raise
+workflow.add_node("DatabaseExecuteNode", "log_error", {
+    "query": "INSERT INTO error_log (node_id, error, timestamp) VALUES (?, ?, NOW())",
+    "parameters": ["{{error.node_id}}", "{{error.message}}"]
+})
 ```
 
 ## Gold Standard Checklist
 
-- [ ] All fallible operations wrapped in try/except
-- [ ] Custom exception classes defined for domain errors
-- [ ] Specific exceptions caught (never bare `except:`)
+- [ ] Error handlers for all critical nodes
 - [ ] Input validation before processing
 - [ ] Fallback paths for external APIs
-- [ ] Structured error logging with context
-- [ ] Retry logic with exponential backoff for network calls
-- [ ] Error context preserved (`raise ... from e`)
-- [ ] Error tests in test suite (`pytest.raises`)
+- [ ] Error logging for debugging
+- [ ] User-friendly error messages
+- [ ] Retry logic with backoff
+- [ ] Transaction rollback on failure
+- [ ] Error tests in test suite
 
-<!-- Trigger Keywords: error handling standard, handle errors, error patterns, error handling gold standard, exceptions, try except -->
+<!-- Trigger Keywords: error handling standard, handle errors, error patterns, error handling gold standard -->

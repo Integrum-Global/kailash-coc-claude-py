@@ -1,6 +1,6 @@
 # TrustPlane Project Skills
 
-Skills specific to the TrustPlane EATP reference implementation.
+Skills specific to the TrustPlane EATP reference implementation (`packages/trust-plane/`).
 
 ## Available Skills
 
@@ -19,5 +19,6 @@ Skills specific to the TrustPlane EATP reference implementation.
 
 ## Cross-References
 
+- `packages/trust-plane/CLAUDE.md` — Full authoritative reference (loaded automatically)
 - `skills/26-eatp-reference/` — EATP protocol and SDK reference
 - `agents/standards/eatp-expert.md` — EATP expert agent

@@ -112,8 +112,9 @@ git push -u origin feature/[name]
 # Main SDK
 vim pyproject.toml              # [project] version = "x.y.z"
 
-# If monorepo with sub-packages, bump each:
-# vim packages/<sub-package>/pyproject.toml
+# Bundled packages
+
+
 ```
 
 ## Release Branch Workflow
@@ -154,14 +155,16 @@ git tag v[version]
 git push origin v[version]
 
 # 2. Create GitHub Release
-# Go to: https://github.com/terrene-foundation/kailash-py/releases
+# Go to: https://github.com/[org]/kailash_python_sdk/releases
 # - Tag: v[version]
 # - Target: main
 # - Title: v[version] - [Brief Description]
 # - Attach: dist/* files
 
-# 3. PyPI Upload (if monorepo, publish in dependency order: core first, then extensions)
-twine upload dist/*.whl
+# 3. PyPI Upload (order matters — core first, then extensions)
+twine upload dist/*.whl                                    # Core SDK first
+cd ../kailash-nexus && twine upload dist/*.whl             # Nexus third
+cd ../kailash-kaizen && twine upload dist/*.whl            # Kaizen fourth
 ```
 
 ## Validation Tiers

@@ -1,6 +1,11 @@
-# CI/CD Infrastructure for Python Projects
+# CI/CD Infrastructure for Python SDK
 
-Patterns and principles for CI/CD pipelines in Python projects. Covers GitHub Actions workflows, test matrices, documentation deployment, and release automation.
+> **IMPORTANT**: These are REFERENCE PATTERNS only. Do NOT automatically create `.github/workflows/` files.
+> GitHub Actions minutes are a paid, finite resource. Always ask the user first and present
+> cost implications before creating any workflow. See `/deploy` command's "CI/CD GitHub Actions"
+> section for the required approval flow.
+
+Patterns and principles for CI/CD pipelines. Covers GitHub Actions workflows, multi-platform wheel building, test matrices, documentation deployment, and release automation. Use these patterns as templates when the user explicitly requests CI/CD setup.
 
 ## GitHub Actions Workflow Patterns
 
@@ -34,7 +39,49 @@ jobs:
         run: pytest --tb=short
 ```
 
-### Pure Python Package Build
+### Multi-Platform Wheel Build
+
+For Rust-backed Python packages (using maturin):
+
+```yaml
+name: Build Wheels
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build-wheels:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+          - os: macos-latest
+            target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          args: --release --out dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.target }}
+          path: dist/*.whl
+```
+
+For pure Python packages:
 
 ```yaml
   build:
@@ -64,7 +111,7 @@ jobs:
   # ... build jobs above ...
 
   publish-testpypi:
-    needs: [build]
+    needs: [build-wheels]  # or [build] for pure Python
     runs-on: ubuntu-latest
     environment: testpypi
     permissions:
@@ -72,7 +119,8 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: dist
+          pattern: wheels-*
+          merge-multiple: true
           path: dist/
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -87,7 +135,8 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: dist
+          pattern: wheels-*
+          merge-multiple: true
           path: dist/
       - uses: pypa/gh-action-pypi-publish@release/v1
 
@@ -120,8 +169,8 @@ jobs:
 | OS | When to Include | Notes |
 | -- | --------------- | ----- |
 | Linux (ubuntu-latest) | Always | Primary platform |
-| macOS (macos-latest) | If platform-specific code | ARM (M1+) |
-| Windows (windows-latest) | If platform-specific code | MSVC toolchain |
+| macOS (macos-latest) | If platform-specific code or Rust bindings | ARM (M1+) |
+| Windows (windows-latest) | If platform-specific code or Rust bindings | MSVC toolchain |
 
 ### Matrix Optimization
 
@@ -182,13 +231,13 @@ jobs:
 
 ### Preferred: Tag-Triggered Pipeline
 
-The recommended pattern:
+The recommended pattern for SDK repositories:
 
 1. Developer bumps version and updates CHANGELOG
 2. Developer pushes a version tag: `git tag v1.2.3 && git push origin v1.2.3`
 3. CI automatically:
-   - Builds packages
-   - Runs tests on built packages
+   - Builds wheels for all platforms
+   - Runs tests on built wheels
    - Publishes to TestPyPI
    - Publishes to production PyPI
    - Creates GitHub Release with auto-generated notes
@@ -208,16 +257,36 @@ on:
         default: false
 ```
 
+## Self-Hosted Runner Considerations
+
+Consider self-hosted runners when:
+
+- **Rust compilation is slow** on GitHub-hosted runners
+- **Platform-specific hardware** is needed (e.g., GPU testing)
+- **Large test suites** exceed GitHub Actions time limits
+- **Private dependencies** require network access not available on hosted runners
+
+Runner setup:
+
+```bash
+# Install runner (follow GitHub's current instructions)
+# Research: https://docs.github.com/en/actions/hosting-your-own-runners
+
+# Label runners for targeted job assignment
+# runs-on: [self-hosted, linux, x64, rust-builder]
+```
+
 ## CI Debugging
 
 ### Common Failure Patterns
 
 | Symptom | Likely Cause | Fix |
 | ------- | ------------ | --- |
-| Build fails on Linux | Missing system deps | Add `apt-get install` step |
-| Build fails on macOS | Wrong SDK version | Pin macOS runner version |
+| Wheel build fails on Linux | Missing system deps | Add `apt-get install` step |
+| Wheel build fails on macOS | Wrong SDK version | Pin macOS runner version |
 | Tests pass locally, fail on CI | Environment difference | Check Python version, OS, env vars |
 | Publishing fails | Auth misconfigured | Check trusted publisher or token setup |
+| Cross-compile fails | Missing target toolchain | Use appropriate cross-compile action |
 
 ### Debugging Commands
 
@@ -237,148 +306,12 @@ gh run rerun <run-id> --failed
 
 ## What to Research Live
 
-The agent should always research these before configuring -- they change frequently:
+The agent should always research these before configuring — they change frequently:
 
 - Current GitHub Actions action versions (@v4 vs @v5, etc.)
+- Current `maturin-action` version and options
 - Current `gh-action-pypi-publish` version and OIDC setup
 - Current ReadTheDocs build configuration format
 - Current best practices for trusted publisher (OIDC) setup on PyPI
 
 Use `web search` and CLI `--help` rather than relying on trained knowledge.
-
----
-
-## Docker Deployment Patterns (Learned from Production)
-
-These patterns come from running real deployments and represent hard-won lessons about what goes wrong.
-
-### Pattern 1: GIT_HASH Cache Buster in Dockerfiles
-
-The standard `--no-cache` flag is wasteful — it rebuilds everything including OS packages and pip/npm dependencies. The GIT_HASH ARG pattern gives you targeted cache invalidation: only layers that depend on source code are invalidated when your code changes.
-
-```dockerfile
-# Place BEFORE source COPY — everything after this is invalidated when hash changes
-ARG GIT_HASH=dev
-RUN echo "Build: $GIT_HASH"   # This RUN invalidates the cache when GIT_HASH changes
-
-COPY . .
-RUN pip install -e .
-```
-
-```bash
-# Build with cache busting on every real commit, cache hits on re-runs
-export GIT_HASH=$(git rev-parse --short HEAD)
-docker compose -f docker-compose.prod.yml build backend
-```
-
-**Result**: Typical build time drops from 5-10 minutes (--no-cache) to under 60 seconds.
-
-**Rule**: If you find yourself reaching for `--no-cache`, add or fix the `GIT_HASH` ARG instead.
-
-### Pattern 2: NEVER Hot-Patch Running Containers
-
-`docker cp` into a running container is NOT a deployment:
-
-| Change type | Why docker cp fails |
-|-------------|-------------------|
-| Python source code | pip-installed package is in site-packages, not your source tree; module already loaded in memory |
-| FastAPI/Nexus routes | Routes registered at startup; running process never discovers new routes |
-| React/SPA build | Build manifest and asset fingerprints are out of sync; browser may load wrong bundle |
-
-**The only correct procedure**:
-1. Commit the change
-2. `export GIT_HASH=$(git rev-parse --short HEAD)`
-3. `docker compose -f docker-compose.prod.yml build <service>`
-4. `docker compose -f docker-compose.prod.yml up -d <service>`
-
-### Pattern 3: Dev / Staging / Production Compose Separation
-
-Use three separate compose files — never try to express environment differences purely through variables in a single file.
-
-| File | Purpose | Key characteristics |
-|------|---------|-------------------|
-| `docker-compose.dev.yml` | Local development | Source volume mounts, DB ports exposed to loopback, `ENVIRONMENT=development` |
-| `docker-compose.staging.yml` | Pre-production gate | Same Dockerfiles as prod, different ports, isolated volumes, `ENVIRONMENT=staging` |
-| `docker-compose.prod.yml` | Live production | No volume mounts, no exposed DB ports, resource limits, `ENVIRONMENT=production` |
-
-**Why separate files**: Production config must be immediately readable. Mental merging of base + override files introduces errors under pressure.
-
-### Pattern 4: Staging Gate Enforcement
-
-The staging gate prevents code from reaching production without verification. The mechanism uses a `.staging-passed` file containing the verified commit hash.
-
-**Flow**:
-```
-stage.sh                              deploy.sh
-  ↓                                     ↓
-Build same images as prod             Check .staging-passed exists
-Start on staging ports                Verify hash == git rev-parse HEAD
-Run health checks                     If match: proceed
-Run smoke tests (optional)            If missing/stale: BLOCK
-Write .staging-passed = $GIT_HASH     After deploy: rm .staging-passed
-```
-
-**Scripts**: See `deploy/scripts/` for `stage.sh.template`, `deploy.sh.template`, and `promote.sh.template`.
-
-**Hook enforcement**: `validate-prod-deploy.js` (PreToolUse Bash hook) intercepts production docker compose commands and verifies the marker before allowing them to run. This catches accidental bypasses even when running commands manually.
-
-### Pattern 5: nginx Must Serve index.html with No-Cache Headers for SPAs
-
-When nginx serves a React/Vue/Angular app, `index.html` MUST have cache-prevention headers. All other assets (with content-hashed filenames) can be cached aggressively.
-
-```nginx
-# index.html — never cache (entry point to the versioned bundle)
-location = /index.html {
-    add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate";
-    add_header Pragma "no-cache";
-    add_header Expires "0";
-}
-
-# Content-hashed assets — cache forever (filename changes on rebuild)
-location ~* \.(js|css|woff2?|ttf|ico|png|svg)$ {
-    expires 1y;
-    add_header Cache-Control "public, immutable";
-}
-```
-
-**Why this matters**: A browser that caches `index.html` will serve stale JavaScript to users after deployment. The user sees the new URL but runs the old code. This produces ghost bugs that are very hard to diagnose.
-
-See `deploy/nginx-spa.conf.template` for the full nginx configuration.
-
-### Pattern 6: Database Ports Must Not Be Exposed in Production
-
-Production compose files must NOT expose database or cache ports to the host.
-
-```yaml
-# WRONG in production — exposes DB to host and potentially internet
-postgres:
-  ports:
-    - "5432:5432"
-
-# CORRECT — DB accessible only within Docker network
-postgres:
-  # no ports: section
-  networks:
-    - app_network
-```
-
-Development compose may expose ports to `127.0.0.1` for local tooling.
-
-### Pattern 7: Password/Bcrypt Operations Require Python Scripts
-
-Shell variable expansion silently corrupts bcrypt hashes. The `$` in `$2b$12$...` is expanded by bash as an empty variable.
-
-**Wrong**:
-```bash
-# $2b$12$... becomes $2b$12$ after bash expansion — hash is destroyed
-docker exec postgres psql -U app -c "UPDATE users SET hash='$2b$12$...' WHERE ..."
-```
-
-**Correct**:
-```bash
-# Write a Python script, copy it in, run it — Python doesn't mangle $
-docker cp /tmp/reset_password.py app_container:/tmp/reset_password.py
-docker exec -e NEW_PASSWORD="..." app_container python3 /tmp/reset_password.py
-```
-
-**General rule**: For any database operation with special characters (`$`, `\`, quotes), use a Python script inside the container rather than shell interpolation.

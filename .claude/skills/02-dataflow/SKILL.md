@@ -177,5 +177,5 @@ Use DataFlow when you need to:
 For DataFlow-specific questions, invoke:
 
 - `dataflow-specialist` - DataFlow implementation and patterns
-- `testing-specialist` - DataFlow testing strategies (NO MOCKING policy)
+- `testing-specialist` - DataFlow testing strategies (real infrastructure policy)
 - `framework-advisor` - Choose between Core SDK and DataFlow

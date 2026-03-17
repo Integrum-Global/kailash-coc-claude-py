@@ -170,4 +170,3 @@ context = skill_tool.execute(skill="python-patterns")
 | `09-performance-optimization-guide.md` | Performance optimization |
 
 ## Reference
-

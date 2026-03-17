@@ -23,4 +23,3 @@ class CoTAgent(BaseAgent):
 
 ## References
 - **Specialist**: `.claude/agents/frameworks/kaizen-specialist.md` lines 215-227
-- **Examples**: `kaizen/examples/1-single-agent/chain-of-thought/`

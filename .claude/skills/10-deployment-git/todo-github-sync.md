@@ -478,8 +478,9 @@ gh issue list --limit 100 | grep "Story" | sort | uniq -d
 
 ## 📚 References
 
-- **GitHub Repository**: `your-org/your-project`
-- **GitHub Project**: `https://github.com/orgs/your-org/projects/1`
+- **Local Todos**: `
+- **GitHub Repository**: `terrene-foundation/example-project`
+- **GitHub Project**: https://github.com/orgs/terrene-foundation/projects/YOUR_PROJECT_NUMBER
 - **This Guide**: `.claude/guides/todo-github-sync-guide.md`
 
 ---

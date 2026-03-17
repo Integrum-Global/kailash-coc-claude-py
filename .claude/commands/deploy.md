@@ -120,10 +120,29 @@ Read the config and execute the appropriate track:
 - NEVER skip security review before deploy
 - NEVER hot-patch containers with `docker cp` — always rebuild the image
 - NEVER use `--no-cache` in normal builds — use the GIT_HASH ARG cache buster instead
+- NEVER create or modify `.github/workflows/` files without explicit human approval (see CI/CD rule below)
 - ALWAYS get human approval before destructive cloud operations
 - ALWAYS run staging before production (`bash deploy/scripts/stage.sh`)
 - ALWAYS document deployments in `deploy/deployments/`
 - Research current CLI syntax — do not assume stale knowledge is correct
+
+### CI/CD GitHub Actions — ALWAYS ASK FIRST
+
+**Do NOT automatically create, modify, or push GitHub Actions workflow files.** GitHub Actions minutes are a finite, paid resource. A misconfigured workflow can burn through an entire monthly allocation in a single run.
+
+Before touching anything in `.github/workflows/`, you MUST:
+
+1. **Ask the user** whether they want CI/CD automation at all
+2. **Present the options with cost implications**:
+   - **No CI/CD**: Run tests locally. Zero cost. Good for solo projects or early-stage work.
+   - **Minimal CI**: Test on push to main only (no PR triggers, single Python version, single OS). Low cost (~5-10 min/run).
+   - **Standard CI**: Test matrix on PR + push (multiple Python versions, single OS). Moderate cost (~15-30 min/run).
+   - **Full CI**: Multi-OS matrix, wheel builds, docs deploy, PyPI publish. High cost (~60+ min/run per trigger).
+3. **Explain the billing impact**: "GitHub Free gives 2,000 minutes/month. A full matrix with 3 Python versions x 3 OS = 9 jobs per push. If each takes 5 min, that's 45 min per push. Push 10 times a week = 1,800 min/month — nearly your entire budget."
+4. **Wait for explicit approval** before creating any workflow file
+5. **Never enable `on: push` to all branches** — always scope to `main` or specific branches
+
+The CI/CD patterns in `skills/10-deployment-git/deployment-ci.md` are **reference material** for when the user decides to set up CI. They are not instructions to automatically create workflows.
 
 **Automated enforcement**:
 - `validate-deployment.js` hook blocks commits containing cloud credentials in deployment files

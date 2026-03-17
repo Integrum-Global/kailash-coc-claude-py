@@ -29,6 +29,8 @@ class MockNodeExecutor:
     def calls(self) -> list: ...  # Use deque(maxlen=10000), not list
 ```
 
+**Used in**: `nodes/transaction/node_executor.py`, `nodes/transaction/participant_transport.py`
+
 ## 2. Bounded Collections (Security-Critical)
 
 Every long-lived collection MUST be bounded. Unbounded lists/dicts are the #1 red team finding.
@@ -113,7 +115,7 @@ def _validate_url(url: str) -> None:
                 if addr in network:
                     raise ValueError(f"URL resolves to blocked address")
     except socket.gaierror:
-        pass  # DNS failure -- will fail at connection time
+        pass  # DNS failure — will fail at connection time
 ```
 
 ## 5. SQL Identifier Validation
@@ -223,7 +225,7 @@ class LocalNodeTransport:
 
 ## 12. Integration Test Participant Pattern
 
-Integration tests (Tier 2/3) must use REAL registered nodes, never mocks. Create a `TestParticipantNode` via conftest:
+Integration tests (Tier 2/3) should use REAL registered nodes for best results. Create a `TestParticipantNode` via conftest:
 
 ```python
 # tests/integration/nodes/transaction/conftest.py

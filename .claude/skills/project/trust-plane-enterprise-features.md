@@ -1,6 +1,6 @@
 # Skill: TrustPlane Enterprise Features
 
-Quick reference for TrustPlane enterprise capabilities.
+Quick reference for TrustPlane enterprise capabilities. For full documentation, see `packages/trust-plane/CLAUDE.md`.
 
 ## RBAC (`trustplane.rbac`)
 
@@ -84,4 +84,5 @@ All trace to `TrustPlaneError`. Key branches: `TrustPlaneStoreError` (6 subclass
 
 ## See Also
 
+- `packages/trust-plane/CLAUDE.md` — Full reference with code examples
 - `.claude/skills/project/trust-plane-security-patterns.md` — 11 security patterns

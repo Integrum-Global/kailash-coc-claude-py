@@ -279,7 +279,6 @@ async def track_transition(context):
 Complete reference implementation:
 
 ```
-kaizen/examples/journey/healthcare_referral/
 ├── journey.py          # 5 pathways, 3 transitions
 ├── signatures/         # 5 signatures with __intent__, __guidelines__
 ├── agents/             # 5 agents (intake, booking, faq, persuasion, confirmation)

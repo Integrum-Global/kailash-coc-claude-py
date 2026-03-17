@@ -2,7 +2,7 @@
 
 Complete API surface for the standalone EATP Python SDK.
 
-**Package**: `eatp/`
+**Package**: `packages/eatp/src/eatp/`
 **Install**: `pip install eatp`
 **License**: Apache 2.0 (Terrene Foundation)
 **Python**: >=3.11

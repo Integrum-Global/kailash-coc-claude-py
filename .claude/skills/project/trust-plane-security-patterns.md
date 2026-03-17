@@ -1,6 +1,8 @@
 # Skill: TrustPlane Security Patterns
 
-11 hardened security patterns validated through 14 rounds of red teaming. MANDATORY for TrustPlane and EATP code. Recommended for any security-sensitive Python project.
+11 hardened security patterns validated through 14 rounds of red teaming. MANDATORY for `packages/trust-plane/` and `packages/eatp/`. Recommended for any security-sensitive Python project.
+
+For full code examples with DO/DON'T pairs, see `packages/trust-plane/CLAUDE.md`.
 
 ## Quick Checklist
 
@@ -31,4 +33,5 @@ Every `TrustPlaneStore` backend MUST satisfy ALL six:
 
 ## See Also
 
+- `packages/trust-plane/CLAUDE.md` — Full patterns with code examples
 - `.claude/skills/project/store-backend-implementation.md` — Store backend guide

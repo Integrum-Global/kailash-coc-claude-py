@@ -6,12 +6,12 @@ When adding a new `TrustPlaneStore` backend (e.g., PostgreSQL, DynamoDB, or any 
 
 ## Prerequisites
 
-- `TrustPlaneStore` protocol in `trustplane.store`
-- Conformance test suite in `tests/store/test_store_conformance.py`
+- `TrustPlaneStore` protocol: `packages/trust-plane/src/trustplane/store/__init__.py`
+- Conformance test suite: `packages/trust-plane/tests/store/test_store_conformance.py`
 - Existing reference implementations:
-  - SQLite: `trustplane/store/sqlite.py` (698 LOC, default backend)
-  - Filesystem: `trustplane/store/filesystem.py` (305 LOC)
-  - PostgreSQL: `trustplane/store/postgres.py` (production backend)
+  - SQLite: `packages/trust-plane/src/trustplane/store/sqlite.py` (698 LOC, default backend)
+  - Filesystem: `packages/trust-plane/src/trustplane/store/filesystem.py` (305 LOC)
+  - PostgreSQL: `packages/trust-plane/src/trustplane/store/postgres.py` (production backend)
 - Python 3.11+
 
 ## Store Security Contract (Mandatory Checklist)
@@ -48,7 +48,9 @@ Every backend MUST satisfy ALL six requirements. A missing requirement is a secu
 
 ### Step 1: Create the backend module
 
-Create a new module under your TrustPlane store package.
+```
+packages/trust-plane/src/trustplane/store/<backend_name>.py
+```
 
 Required header:
 
@@ -153,7 +155,7 @@ from trustplane.store.<backend> import <BackendName>TrustPlaneStore  # noqa: E40
 
 ### Step 8: Run the conformance test suite
 
-Add your backend to the parametrized fixture in the conformance tests:
+Add your backend to the parametrized fixture in `test_store_conformance.py`:
 
 ```python
 @pytest.fixture(params=["filesystem", "sqlite", "<backend_name>"])
@@ -165,7 +167,7 @@ def store(request, tmp_path):
         store.close()
 ```
 
-Run: `pytest tests/store/test_store_conformance.py -v`
+Run: `pytest packages/trust-plane/tests/store/test_store_conformance.py -v`
 
 All tests MUST pass. The conformance suite tests all six contract requirements.
 
@@ -320,4 +322,7 @@ def _safe_connection(self):
 
 ## See Also
 
-- `.claude/skills/project/trust-plane-security-patterns.md` — 11 security patterns
+- `packages/trust-plane/CLAUDE.md` — Store Architecture section, Store Security Contract
+- `workspaces/trust-plane/04-validate/09-R13-store-red-team.md` — R13 findings that informed this skill
+- `workspaces/trust-plane/04-validate/R14-validation-report.md` — R14 findings (PostgreSQL PoolTimeout, exception wrapping)
+- TODO-24: PostgreSQL backend — first real application of this codified pattern

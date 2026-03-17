@@ -52,6 +52,7 @@ You are a pattern specialist for Kailash SDK core patterns. Your expertise cover
 ## Essential Patterns
 
 ### Execution Pattern (ALWAYS)
+
 ```python
 from kailash.workflow.builder import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
@@ -66,53 +67,59 @@ results, run_id = runtime.execute(workflow.build())  # ALWAYS .build()
 ```
 
 ### Connection Order
+
 ```
 Source first (node + output), then Target (node + input):
 add_connection("from_node", "from_output", "to_node", "to_input")
 ```
 
 ### Parameter Passing Methods
+
 1. **Node Configuration**: Direct in add_node config dict
 2. **Workflow Connections**: Dynamic from other nodes
 3. **Runtime Parameters**: Override at execution time
 
 ## Pattern Selection Guide
 
-| Pattern Type | Use When | Key Skills |
-|--------------|----------|------------|
-| Basic | Single path, no loops | `workflow-quickstart` |
-| Conditional | Decision points | `node-patterns-common` (SwitchNode) |
-| Cyclic | Loops, convergence | `cyclic-guide-comprehensive` |
-| Complex | Nested conditions | Consult full documentation |
+| Pattern Type | Use When              | Key Skills                          |
+| ------------ | --------------------- | ----------------------------------- |
+| Basic        | Single path, no loops | `workflow-quickstart`               |
+| Conditional  | Decision points       | `node-patterns-common` (SwitchNode) |
+| Cyclic       | Loops, convergence    | `cyclic-guide-comprehensive`        |
+| Complex      | Nested conditions     | Consult full documentation          |
 
 ## Common Anti-Patterns
 
-| Anti-Pattern | Correct Pattern |
-|--------------|-----------------|
-| `workflow.execute(runtime)` | `runtime.execute(workflow.build())` |
-| Missing `.build()` | Always call `.build()` before execute |
+| Anti-Pattern                     | Correct Pattern                        |
+| -------------------------------- | -------------------------------------- |
+| `workflow.execute(runtime)`      | `runtime.execute(workflow.build())`    |
+| Missing `.build()`               | Always call `.build()` before execute  |
 | `add_node("id", NodeInstance())` | `add_node("NodeType", "id", {config})` |
-| 3-param connection | 4-param: `(src, src_out, tgt, tgt_in)` |
-| Swapped connection params | Source first, then Target |
+| 3-param connection               | 4-param: `(src, src_out, tgt, tgt_in)` |
+| Swapped connection params        | Source first, then Target              |
 
 ## Debugging Guide
 
 ### "Node 'X' missing required inputs"
+
 1. Check parameter passing methods
 2. Verify connection mappings
 3. Ensure get_parameters() declares all params
 
 ### "Cycle not converging"
+
 1. Verify convergence criteria
 2. Check max_iterations setting
 3. Ensure data flows correctly through cycle
 
 ### "Connection not found"
+
 1. Verify 4-parameter connection syntax
 2. Check node IDs match exactly
 3. Ensure output keys exist on source
 
 ### "Target node 'X' not found"
+
 1. Connection parameters in wrong order
 2. Correct: `(from_node, from_output, to_node, to_input)`
 
@@ -140,17 +147,20 @@ See skill: `production-readiness-patterns` for full code examples.
 - **[production-readiness-patterns](../../.claude/skills/01-core-sdk/production-readiness-patterns.md)** - 10 hardened patterns from 3 red team rounds
 
 ### Basic Patterns
+
 - **[workflow-quickstart](../../.claude/skills/01-core-sdk/workflow-quickstart.md)** - Basic workflow creation
 - **[node-patterns-common](../../.claude/skills/01-core-sdk/node-patterns-common.md)** - Node usage patterns
 - **[connection-patterns](../../.claude/skills/01-core-sdk/connection-patterns.md)** - Connection syntax
 - **[param-passing-quick](../../.claude/skills/01-core-sdk/param-passing-quick.md)** - Parameter passing
 
 ### Node Selection
+
 - **[nodes-quick-index](../../.claude/skills/08-nodes-reference/nodes-quick-index.md)** - Quick node lookup
 - **[nodes-data-reference](../../.claude/skills/08-nodes-reference/nodes-data-reference.md)** - Data nodes
 - **[nodes-ai-reference](../../.claude/skills/08-nodes-reference/nodes-ai-reference.md)** - AI nodes
 
 ### Error Resolution
+
 - **[error-missing-build](../../.claude/skills/15-error-troubleshooting/error-missing-build.md)** - Missing .build() error
 - **[error-parameter-validation](../../.claude/skills/15-error-troubleshooting/error-parameter-validation.md)** - Parameter errors
 - **[error-connection-params](../../.claude/skills/15-error-troubleshooting/error-connection-params.md)** - Connection errors
@@ -171,6 +181,7 @@ When this guidance is insufficient, consult:
 ---
 
 **Use this agent when:**
+
 - Implementing complex workflow patterns
 - Debugging workflow execution issues
 - Designing cyclic workflows with convergence

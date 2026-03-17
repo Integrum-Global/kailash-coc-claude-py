@@ -271,5 +271,6 @@ todo-manager marks complete → gh-manager closes issue
 ## Full Documentation
 
 When this guidance is insufficient, consult:
+- `contrib/project/todos/` - Hierarchical todo structure
 - `.claude/skills/` - Technical patterns for implementation
 - GitHub CLI docs: https://cli.github.com/manual/

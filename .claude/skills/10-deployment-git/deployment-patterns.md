@@ -25,10 +25,10 @@ services:
     container_name: ${PROJECT_NAME}_backend
     environment:
       - ENVIRONMENT=${ENVIRONMENT:-production}
+      - RUNTIME_TYPE=async
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - RUNTIME_TYPE=async
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     volumes:
@@ -52,7 +52,7 @@ services:
           cpus: '2'
           memory: 4G
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -68,9 +68,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
     ports:
-      # WARNING: Remove or restrict in production — exposing DB port to host is a security risk.
-      # Use internal Docker network only, or restrict to 127.0.0.1:5432:5432.
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${POSTGRES_PORT:-5432}:5432"  # Remove in production — only needed for local dev access
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/init-scripts:/docker-entrypoint-initdb.d/
@@ -190,7 +188,7 @@ FRONTEND_PORT=3000
 # ==============================================================================
 # 1. NEVER commit .env files to version control
 # 2. Generate secrets with: openssl rand -hex 32
-# 3. Use secrets management tools (Vault, AWS Secrets Manager)
+# 3. Use a secrets manager (e.g., HashiCorp Vault) in production
 # 4. Rotate secrets regularly
 ```
 
@@ -383,18 +381,15 @@ data:
   POSTGRES_DB: "app_db"
 ---
 # Secrets (sensitive data)
-# EXAMPLES ONLY — these contain weak placeholder values.
-# In production, use `kubectl create secret generic` or a secrets manager (Vault, AWS Secrets Manager).
 apiVersion: v1
 kind: Secret
 metadata:
   name: app-secrets
 type: Opaque
 data:
-  # EXAMPLE ONLY — replace with real base64-encoded credentials
-  # Generate with: echo -n "postgresql://user:$(openssl rand -hex 16)@postgres:5432/db" | base64
+  # EXAMPLES ONLY — replace with real base64-encoded secrets before deploying.
+  # Prefer: kubectl create secret generic app-secrets --from-literal=database-url="..." --from-literal=jwt-secret="..."
   database-url: cG9zdGdyZXNxbDovL3VzZXI6cGFzc0Bwb3N0Z3Jlczo1NDMyL2RiCg==
-  # EXAMPLE ONLY — generate with: echo -n "$(openssl rand -hex 32)" | base64
   jwt-secret: Y2hhbmdlX3RoaXNfdG9fc2VjdXJlX2tleQo=
 ```
 
@@ -435,7 +430,7 @@ kubectl create namespace production
 
 # 2. Create secrets
 kubectl create secret generic app-secrets \
-  --from-literal=database-url="${DATABASE_URL}" \
+  --from-literal=database-url="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}" \
   --from-literal=jwt-secret="$(openssl rand -hex 32)" \
   --namespace=production
 
@@ -493,12 +488,10 @@ async def readiness_check():
         await db.execute("SELECT 1")
         await redis.ping()
         return {"status": "ready"}
-    except Exception as e:
-        import logging
-        logging.getLogger(__name__).error("Readiness check failed: %s", e)
+    except Exception:
         return JSONResponse(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            content={"status": "not ready", "error": "dependency check failed"}
+            content={"status": "not ready"}
         )
 ```
 
@@ -506,8 +499,7 @@ async def readiness_check():
 
 ```yaml
 healthcheck:
-  # Use python urllib instead of curl (python:slim images don't include curl)
-  test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+  test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
   interval: 30s      # Check every 30 seconds
   timeout: 10s       # Wait 10 seconds for response
   retries: 3         # Retry 3 times before marking unhealthy

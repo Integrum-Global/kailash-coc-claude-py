@@ -23,4 +23,3 @@ print(result['language'])
 - Languages: 90+ supported
 
 ## References
-- **Examples**: `kaizen/examples/8-multi-modal/audio-transcription/`

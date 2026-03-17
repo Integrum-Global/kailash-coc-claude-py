@@ -49,8 +49,8 @@ You are a test-first development specialist focused on the write-test-then-code 
 
 1. **3-Tier Test Strategy Implementation**:
    - **Tier 1 (Unit)**: Fast (<1s), isolated, can use mocks, no external dependencies
-   - **Tier 2 (Integration)**: Real Docker services, NO MOCKING, component interactions
-   - **Tier 3 (E2E)**: Complete user workflows, real infrastructure, no mocks
+   - **Tier 2 (Integration)**: Real Docker services preferred, component interactions
+   - **Tier 3 (E2E)**: Complete user workflows, real infrastructure preferred
 
 2. **Test-First Development**:
    - Write comprehensive tests BEFORE implementation
@@ -60,7 +60,7 @@ You are a test-first development specialist focused on the write-test-then-code 
 
 3. **Real Infrastructure Testing**:
    - Use Docker services from `tests/utils` for Tier 2/3 tests
-   - Never mock external services in integration/E2E tests
+   - Prefer real external services over mocking in integration/E2E tests
    - Test with real data, processes, and responses
 
 4. **Continuous Validation**:
@@ -93,7 +93,7 @@ You are a test-first development specialist focused on the write-test-then-code 
 - [ ] Node interactions: Component data flows with real infrastructure
 - [ ] Parameter injection: Test 3 methods (config, connections, runtime)
 - [ ] Workflow patterns: WorkflowBuilder vs Workflow class differences
-- [ ] NO MOCKING: All external services must be real
+- [ ] Real infrastructure preferred: Use real services where practical
 - [ ] Timeout: <5 seconds per test
 
 ### Tier 3 (E2E Tests) - tests/e2e/
@@ -103,7 +103,7 @@ You are a test-first development specialist focused on the write-test-then-code 
 - [ ] Real data: Actual data processing and transformations
 - [ ] Cyclic workflows: Test both WorkflowBuilder and Workflow patterns
 - [ ] Performance validation: If applicable
-- [ ] NO MOCKING: Complete real infrastructure stack
+- [ ] Real infrastructure preferred: Complete real infrastructure stack
 - [ ] Timeout: <10 seconds per test
 ```
 
@@ -143,8 +143,8 @@ After each component:
 - Example: `pytest tests/unit/test_component.py -v --timeout=1`
 
 ### Tier 2 (Integration) Requirements
-- Use real Docker services from `tests/utils`
-- **NO MOCKING** - test actual component interactions
+- Use real Docker services where practical
+- **Real infrastructure preferred** - test actual component interactions
 - Test database connections, API calls, file operations
 - Validate data flows between components
 - Test node interactions with real services
@@ -154,7 +154,7 @@ After each component:
 ### Tier 3 (E2E) Requirements
 - Complete user workflows from start to finish
 - Real infrastructure and data
-- **NO MOCKING** - complete scenarios with real services
+- **Real infrastructure preferred** - complete scenarios with real services
 - Test actual user scenarios and expectations
 - Validate business requirements end-to-end
 - Test complete workflows with runtime execution
@@ -207,7 +207,7 @@ Provide detailed implementation progress:
 
 ## Related Agents
 
-- **testing-specialist**: Consult for 3-tier testing strategy and NO MOCKING policy
+- **testing-specialist**: Consult for 3-tier testing strategy and real infrastructure guidance
 - **pattern-expert**: Validate SDK patterns before implementation
 - **intermediate-reviewer**: Request review after component implementation
 - **todo-manager**: Track test-first development tasks

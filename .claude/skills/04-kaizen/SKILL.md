@@ -96,31 +96,12 @@ blackboard = Pipeline.blackboard(
 
 ### Comprehensive Guides
 
-For in-depth documentation, see `kaizen/docs/`:
 
 **Core Guides:**
 
-- **BaseAgent Architecture** - Complete unified agent system guide
-- **Multi-Agent Coordination** - Google A2A protocol, 5 coordination patterns
-- **Signature Programming** - Complete signature system guide
-- **Hooks System Guide** - Event-driven observability framework
-- **Integration Patterns** - DataFlow, Nexus, MCP integration
-- **Meta-Controller Guide** - Intelligent task delegation
-- **Planning System Guide** - Structured workflow orchestration
 
 **Reference Documentation:**
 
-- **Example Gallery** - 15 production-ready autonomy examples with learning paths
-- **API Reference** - Complete API documentation
-- **Checkpoint API** - State persistence API
-- **Coordination API** - Multi-agent coordination API
-- **Interrupts API** - Graceful shutdown API
-- **Memory API** - 3-tier memory system API
-- **Observability API** - Hooks and monitoring API
-- **Planning Agents API** - Planning/PEV/ToT agents API
-- **Tools API** - Tool calling and approval API
-- **Configuration Guide** - All configuration options
-- **Troubleshooting** - Common issues and solutions
 
 ### Quick Start (Skills)
 
@@ -198,7 +179,6 @@ For in-depth documentation, see `kaizen/docs/`:
 
 ### v1.0 Developer Guides (NEW)
 
-Located in `kaizen/docs/developers/`:
 
 - **Performance Optimization** (`09-performance-optimization-guide.md`) - Caching (10-100x speedup), parallel execution
 - **Specialist System** (`06-specialist-system-guide.md`) - Claude Code-style specialists and skills
@@ -214,7 +194,6 @@ Located in `kaizen/docs/developers/`:
 ### Testing & Quality
 
 - **[kaizen-testing-patterns](kaizen-testing-patterns.md)** - Testing AI agents
-- **Performance Benchmarks** - Measure Kaizen performance
 
 ## Key Concepts
 
@@ -366,12 +345,12 @@ workflow.add_node("KaizenAgent", "agent1", {
 - ✅ Extend BaseAgent for production agents
 - ✅ Use type hints in signatures for validation
 - ✅ Track costs in production environments
-- ✅ Test agents with real infrastructure where practical
+- ✅ Test agents with real infrastructure (recommended over mocking)
 - ✅ Enable hooks for observability
 - ✅ Use AgentRegistry for distributed coordination
-- ❌ NEVER skip signature definitions
-- ❌ NEVER ignore cost tracking in production
-- ❌ Avoid mocking LLM calls in integration tests where possible
+- ❌ Avoid skipping signature definitions
+- ❌ Avoid ignoring cost tracking in production
+- ❌ Prefer real LLM calls over mocking in integration tests
 
 ## Related Skills
 

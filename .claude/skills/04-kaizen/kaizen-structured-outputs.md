@@ -975,7 +975,4 @@ agent = CustomPromptAgent(config=config, signature=signature)
 
 ## Further Reading
 
-- [Kaizen BaseAgent Architecture](../../kaizen/docs/guides/baseagent-architecture.md)
-- [Signature Programming Guide](../../kaizen/docs/guides/signature-programming.md)
 - [OpenAI Structured Outputs Documentation](https://platform.openai.com/docs/guides/structured-outputs)
-- [Kaizen Configuration Guide](../../kaizen/docs/reference/configuration.md)

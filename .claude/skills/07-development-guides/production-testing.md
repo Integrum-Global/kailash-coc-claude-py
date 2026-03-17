@@ -64,7 +64,7 @@ from kailash.runtime import LocalRuntime
 
 @pytest.fixture
 def test_database():
-    """Setup test database - NO MOCKING."""
+    """Setup test database - real infrastructure preferred."""
     import sqlite3
     conn = sqlite3.connect(":memory:")
     cursor = conn.cursor()
@@ -187,7 +187,7 @@ result = {'transformed_data': df.to_dict('records')}
     assert all(output_df['category'].str.isupper())
 ```
 
-### 5. Test Organization (NO MOCKING Policy)
+### 5. Test Organization (real infrastructure preferred Policy)
 
 ```python
 # tests/unit/test_nodes.py
@@ -204,7 +204,7 @@ import pytest
 
 @pytest.fixture(scope="session")
 def test_database():
-    """Real test database - NO MOCKING."""
+    """Real test database - real infrastructure preferred."""
     # Setup real database
     pass
 
@@ -358,7 +358,7 @@ def test_workflow_performance():
 
 ## Critical Testing Rules
 
-1. **NO MOCKING in Tiers 2-3**: Use real infrastructure
+1. **real infrastructure preferred in Tiers 2-3**: Use real infrastructure
 2. **Test All Paths**: Ensure complete code coverage
 3. **Real Data**: Use realistic test data
 4. **Error Scenarios**: Test failures, not just successes
@@ -373,6 +373,6 @@ def test_workflow_performance():
 
 ## Integration with Other Skills
 - Route to **testing-best-practices** for testing strategies
-- Route to **test-organization** for NO MOCKING policy
+- Route to **test-organization** for real infrastructure policy
 - Route to **regression-testing** for regression testing
 - Route to **tdd-implementer** for test-first development

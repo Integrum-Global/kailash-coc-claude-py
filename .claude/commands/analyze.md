@@ -3,14 +3,6 @@ name: analyze
 description: "Load phase 01 (analyze) for the current workspace"
 ---
 
-## What This Phase Does (present to user)
-
-Research and validate the project idea before building begins. We study the market, evaluate the concept, identify who it's for, and create a clear picture of what to build. Nothing gets coded until this research is done.
-
-## Your Role (communicate to user)
-
-Review our research findings and confirm we understood your vision. You'll see an analysis of your idea's strengths, who your users are, how they'll use the product, and a plan for building it. Tell us if anything is off or missing.
-
 ## Workspace Resolution
 
 1. If `$ARGUMENTS` specifies a project name, use `workspaces/$ARGUMENTS/`
@@ -36,8 +28,6 @@ Document in detail in `workspaces/<project>/01-analysis/01-research`.
 - Name them sequentially as 01-, 02-, etc, for easy referencing
 
 ### 3. Ensure strong product focus
-
-**Note**: The frameworks below (platform model, AAA, network effects) are internal analysis tools. Present findings to the user using the plain-language format in step 6 — never use these framework names directly unless the user is familiar with them.
 
 Keep this soft rule in mind for everything:
 
@@ -74,25 +64,13 @@ Document analysis in `workspaces/<project>/01-analysis/`, plans in `workspaces/<
 - Use as many subdirectories and files as required
 - Name them sequentially as 01-, 02-, etc, for easy referencing
 
-### 5. Red team (internal quality check — present results in plain language)
+### 5. Red team
 
 Work with red team agents to scrutinize analysis, plans and user flows.
 
 - Identify any gaps, regardless how small
 - Always go back to first principles, identify the roots, and plan the most optimal and elegant implementations
 - Analysis, user flows must flow into plans
-
-### 6. Present findings to the user
-
-Summarize the analysis in plain language. Cover:
-
-- **What we're building** — one paragraph describing the product
-- **Who it's for** — the users and their needs
-- **What makes it unique** — why someone would choose this over alternatives
-- **How users will experience it** — walk through the key user journeys in narrative form
-- **Risks and considerations** — anything the user should know, explained with business impact
-
-Ask the user: "Does this match your vision? Anything we got wrong, missed, or should rethink?"
 
 ## Agent Teams
 

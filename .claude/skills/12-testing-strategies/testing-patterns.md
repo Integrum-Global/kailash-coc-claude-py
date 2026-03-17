@@ -1,6 +1,6 @@
 ---
 name: testing-patterns
-description: "Test implementation patterns for the 3-tier testing strategy including unit, integration, and E2E tests with NO MOCKING policy. Use for 'test patterns', 'unit test example', 'integration test example', or 'E2E test example'."
+description: "Test implementation patterns for the 3-tier testing strategy including unit, integration, and E2E tests with real infrastructure policy. Use for 'test patterns', 'unit test example', 'integration test example', or 'E2E test example'."
 ---
 
 # Testing Implementation Patterns
@@ -8,7 +8,7 @@ description: "Test implementation patterns for the 3-tier testing strategy inclu
 > **Skill Metadata**
 > Category: `testing`
 > Priority: `HIGH`
-> Policy: NO MOCKING in Tiers 2-3
+> Policy: real infrastructure preferred in Tiers 2-3
 
 ## Tier 1: Unit Test Pattern
 
@@ -232,4 +232,4 @@ TEST_REDIS_URL = "redis://localhost:6380/0"
 TEST_MINIO_URL = "http://localhost:9001"
 ```
 
-<!-- Trigger Keywords: test patterns, unit test example, integration test example, E2E test example, pytest patterns, testing fixtures, test timeout, NO MOCKING -->
+<!-- Trigger Keywords: test patterns, unit test example, integration test example, E2E test example, pytest patterns, testing fixtures, test timeout, real infrastructure preferred -->

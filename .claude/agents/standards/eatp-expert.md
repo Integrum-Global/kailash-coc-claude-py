@@ -153,7 +153,7 @@ Invoke these skills when needed:
 
 ## TrustPlane Reference Implementation
 
-TrustPlane is the EATP reference implementation — a production-grade Python library implementing the full trust chain.
+TrustPlane (`packages/trust-plane/`) is the EATP reference implementation — a production-grade Python library implementing the full trust chain.
 
 ### Trust Chain Coverage
 

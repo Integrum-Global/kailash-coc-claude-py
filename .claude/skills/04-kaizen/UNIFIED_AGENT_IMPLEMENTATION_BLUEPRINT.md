@@ -7,6 +7,7 @@
 ## File Structure
 
 ```
+packages/kailash-kaizen/
 ├── src/kaizen/
 │   ├── __init__.py                    # Export Agent class
 │   ├── core/

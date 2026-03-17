@@ -20,3 +20,4 @@ class StreamingAgent(BaseAgent):
 ```
 
 ## References
+- **Examples**: the package source

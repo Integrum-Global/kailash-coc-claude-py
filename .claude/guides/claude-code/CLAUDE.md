@@ -43,7 +43,7 @@ This means:
 
 **Practical Impact**: When you ask Claude to work with DataFlow, it doesn't try to figure out database operations from first principles. It uses the `dataflow-specialist` agent and the `02-dataflow` skill which contain proven patterns.
 
-### Philosophy 2: Quality is Built-In
+### Philosophy 2: Quality is Non-Negotiable
 
 The setup enforces quality at multiple levels:
 
@@ -53,7 +53,7 @@ The setup enforces quality at multiple levels:
 
 > "Prevent problems rather than fix them."
 
-**Practical Impact**: Claude is encouraged to run security review before commits. Claude prefers real infrastructure over mocking in integration tests.
+**Practical Impact**: Claude cannot commit code without security review. Claude cannot use mocking in integration tests. These aren't suggestions - they're enforced.
 
 ### Philosophy 3: Real Infrastructure, Not Mocks
 
@@ -119,7 +119,7 @@ Think of Claude Code as a **highly capable junior developer** with access to a *
 │  │  1. Use DataFlow (skill 02-dataflow)            │       │
 │  │  2. Consult dataflow-specialist (agent)         │       │
 │  │  3. Generate CRUD nodes                         │       │
-│  │  4. Write tests (real infrastructure preferred)  │       │
+│  │  4. Write tests (real infrastructure preferred)             │       │
 │  │  5. Deploy via Nexus (skill 03-nexus)           │       │
 │  └─────────────────────────────────────────────────┘       │
 │                                                              │
@@ -196,7 +196,7 @@ Think of Claude Code as a **highly capable junior developer** with access to a *
 │   ├── no-stubs.md     # No stubs/TODOs/placeholders
 │   ├── patterns.md     # Kailash pattern rules
 │   ├── security.md     # Security rules
-│   └── testing.md      # Testing policies
+│   └── testing.md      # Testing policies (real infrastructure recommended)
 │
 ├── skills/              # 28 knowledge directories
 │   ├── 01-core-sdk/    # Core SDK patterns
@@ -266,13 +266,13 @@ User: "Create a User model with DataFlow"
 
 5. CLAUDE WRITES TESTS
    └── RULE APPLIED: testing.md
-   └── Real infrastructure preferred in Tier 2-3
+   └── real infrastructure recommended in Tier 2-3 tests
    └── Uses real SQLite database
 
 6. CLAUDE OFFERS TO COMMIT
    └── RULE APPLIED: agents.md
    └── SHOULD delegate to security-reviewer
-   └── Security audit before commit recommended
+   └── MUST pass security audit before commit
 ```
 
 ### Example: User Runs a Dangerous Command
@@ -537,12 +537,12 @@ You don't need to specify which agent to use. Just describe the task:
 
 ### Critical Rules
 
-| Rule                                  | Enforcement                 | Consequence    |
-| ------------------------------------- | --------------------------- | -------------- |
+| Rule                          | Enforcement                 | Consequence         |
+| ----------------------------- | --------------------------- | ------------------- |
 | Real infrastructure in Tier 2-3       | `validate-workflow.js` hook | Warning issued |
-| Security review before commit         | `agents.md` rule            | Recommended    |
-| Absolute imports only                 | `validate-workflow.js` hook | Warning issued |
-| Use `.build()` before execute         | `validate-workflow.js` hook | Warning issued |
+| Security review before commit | `agents.md` rule            | Commit blocked      |
+| Absolute imports only         | `validate-workflow.js` hook | Warning issued      |
+| Use `.build()` before execute | `validate-workflow.js` hook | Warning issued      |
 
 ### Framework Selection
 

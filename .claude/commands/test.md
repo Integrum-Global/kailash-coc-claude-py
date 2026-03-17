@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Load the testing strategies skill for 3-tier testing with real infrastructure policy enforcement in Tier 2-3.
+Load the testing strategies skill for 3-tier testing with real infrastructure recommended policy enforcement in Tier 2-3.
 
 ## Step 0: Detect Project Testing Stack
 
@@ -13,7 +13,7 @@ Before loading test patterns, check what the project uses:
 - Look at `pubspec.yaml` for `flutter_test`, `integration_test`
 - Look for existing test directories (`tests/`, `test/`, `__tests__/`, `spec/`)
 
-Adapt examples to the project's testing framework. The 3-tier strategy and real infrastructure policy apply universally regardless of framework.
+Adapt examples to the project's testing framework. The 3-tier strategy and real infrastructure recommended policy apply universally regardless of framework.
 
 ## Quick Reference
 
@@ -21,13 +21,13 @@ Adapt examples to the project's testing framework. The 3-tier strategy and real 
 | ------------- | ------------------------------------------- |
 | `/test`       | Load testing patterns and tier strategy     |
 | `/test tier1` | Show unit test patterns (mocking allowed)   |
-| `/test tier2` | Show integration test patterns (real infrastructure preferred) |
-| `/test tier3` | Show E2E test patterns (real infrastructure preferred)         |
+| `/test tier2` | Show integration test patterns (real infrastructure recommended) |
+| `/test tier3` | Show E2E test patterns (real infrastructure recommended)         |
 
 ## What You Get
 
 - 3-tier testing strategy
-- real infrastructure preferred enforcement (Tier 2-3)
+- real infrastructure recommended enforcement (Tier 2-3)
 - Real infrastructure patterns
 - Coverage requirements
 
@@ -51,7 +51,7 @@ def db():
     conn.close()
 
 def test_user_creation(db):
-    # Real infrastructure preferred - real database operations
+    # real infrastructure recommended - real database operations
     db.execute("INSERT INTO users (name) VALUES (?)", ("test",))
     result = db.execute("SELECT * FROM users WHERE name = ?", ("test",)).fetchone()
     assert result is not None
@@ -71,7 +71,7 @@ def test_user_creation(db):
     assert result.id is not None
 ```
 
-## Critical Rule - real infrastructure preferred in Tier 2-3
+## Critical Rule - real infrastructure recommended in Tier 2-3
 
 ```python
 # PROHIBITED in integration/e2e tests (any framework)

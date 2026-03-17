@@ -111,10 +111,17 @@ git push -u origin feature/[name]
 ```bash
 # Main SDK
 vim pyproject.toml              # [project] version = "x.y.z"
+vim kailash/__init__.py     # __version__ = "x.y.z"
 
 # Bundled packages
+vim packages/kailash-dataflow/pyproject.toml
+vim packages/kailash-dataflow/src/dataflow/__init__.py
 
+vim packages/kailash-nexus/pyproject.toml
+vim packages/kailash-nexus/src/nexus/__init__.py
 
+vim packages/kailash-kaizen/pyproject.toml
+vim packages/kailash-kaizen/src/kaizen/__init__.py
 ```
 
 ## Release Branch Workflow
@@ -163,6 +170,7 @@ git push origin v[version]
 
 # 3. PyPI Upload (order matters — core first, then extensions)
 twine upload dist/*.whl                                    # Core SDK first
+cd packages/kailash-dataflow && twine upload dist/*.whl        # DataFlow second
 cd ../kailash-nexus && twine upload dist/*.whl             # Nexus third
 cd ../kailash-kaizen && twine upload dist/*.whl            # Kaizen fourth
 ```

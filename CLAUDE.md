@@ -75,6 +75,7 @@ Phase commands replace the manual copy-paste workflow. Each loads the correspond
 | Kailash SDK execution patterns        | `rules/patterns.md`          | `**/*.py`, `**/*.ts`, `**/*.js`                     |
 | Security (secrets, injection)         | `rules/security.md`          | Global                                              |
 | 3-tier testing strategy               | `rules/testing.md`           | `tests/**`, `**/*test*`, `**/*spec*`, `conftest.py` |
+| Infrastructure SQL safety             | `rules/infrastructure-sql.md`| Infrastructure database code                        |
 | README & Sphinx docs maintenance      | `rules/documentation.md`     | `README.md`, `docs/**`, `CHANGELOG.md`              |
 | Auto-generated workflow instincts     | `rules/learned-instincts.md` | Global                                              |
 
@@ -95,6 +96,7 @@ Phase commands replace the manual copy-paste workflow. Each loads the correspond
 - **nexus-specialist** — Multi-channel platform (API/CLI/MCP)
 - **kaizen-specialist** — AI agents, signatures, multi-agent coordination
 - **mcp-specialist** — MCP server implementation
+- **infrastructure-specialist** — Progressive infrastructure (Level 0/1/2), dialect-portable SQL, task queues, idempotency
 
 ### Core Implementation
 
@@ -135,7 +137,7 @@ Phase commands replace the manual copy-paste workflow. Each loads the correspond
 
 ## Skills Navigation
 
-For SDK implementation patterns, see `.claude/skills/` — organized by framework (`01-core-sdk` through `05-kailash-mcp`) and topic (`06-cheatsheets` through `28-coc-reference`).
+For SDK implementation patterns, see `.claude/skills/` — organized by framework (`01-core-sdk` through `05-kailash-mcp`), enterprise infrastructure (`15-enterprise-infrastructure`), and topic (`06-cheatsheets` through `28-coc-reference`).
 
 ## Critical Execution Rules
 

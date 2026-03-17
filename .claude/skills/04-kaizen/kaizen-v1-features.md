@@ -155,6 +155,7 @@ context = skill_tool.execute(skill="python-patterns")
 
 ## Developer Documentation
 
+Full v1.0 documentation in the package source:
 
 | Guide | Description |
 |-------|-------------|
@@ -170,3 +171,7 @@ context = skill_tool.execute(skill="python-patterns")
 | `09-performance-optimization-guide.md` | Performance optimization |
 
 ## Reference
+
+- Specialist guide: the package source
+- TAOD loop: the package source
+- Performance: the package source

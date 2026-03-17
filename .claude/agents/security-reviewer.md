@@ -121,6 +121,7 @@ These checks are MANDATORY for any code touching `packages/trust-plane/` or `pac
 
 ### 9. Production Readiness Security Patterns
 
+These checks apply to ALL code in the SDK source, especially new features touching runtime, transactions, persistence, or HTTP clients. Hardened through 3 red team rounds and 67 findings.
 
 - [ ] **PR1 — Bounded collections**: Every long-lived list MUST be `deque(maxlen=N)`. Dicts with per-key growth need periodic cleanup. **Violation**: unbounded `List[Dict]` in monitoring, metrics, or history tracking.
 - [ ] **PR2 — SSRF prevention**: HTTP clients making requests to user-configurable URLs MUST validate against private IP ranges AND resolve DNS hostnames. **Violation**: `aiohttp.post(user_url)` without `_validate_url()`.

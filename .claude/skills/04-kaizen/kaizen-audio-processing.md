@@ -23,3 +23,4 @@ print(result['language'])
 - Languages: 90+ supported
 
 ## References
+- **Examples**: the package source

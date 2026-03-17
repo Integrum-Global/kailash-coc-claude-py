@@ -328,3 +328,7 @@ All features (logging, error handling, retries, performance tracking, memory) ar
 - **kaizen-agent-execution** - Advanced execution patterns
 
 ## References
+
+- **Source**: the package source
+- **Examples**: the package source
+- **Tests**: the package source

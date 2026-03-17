@@ -225,7 +225,7 @@ class LocalNodeTransport:
 
 ## 12. Integration Test Participant Pattern
 
-Integration tests (Tier 2/3) should use REAL registered nodes for best results. Create a `TestParticipantNode` via conftest:
+Integration tests (Tier 2/3) must use REAL registered nodes, never mocks. Create a `TestParticipantNode` via conftest:
 
 ```python
 # tests/integration/nodes/transaction/conftest.py

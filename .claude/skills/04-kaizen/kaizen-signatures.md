@@ -376,3 +376,7 @@ def create_qa_signature(include_reasoning: bool = True):
 - **kaizen-multimodal-pitfalls** - Multi-modal signature issues
 
 ## References
+
+- **Source**: the package source
+- **Examples**: All agents in the package source
+- **Tests**: the package source

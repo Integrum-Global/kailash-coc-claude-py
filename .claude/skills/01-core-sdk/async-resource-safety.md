@@ -65,6 +65,9 @@ def __del__(self, _warnings=warnings):
 
 | Location                                                           | Class                         | Pattern                                                                    |
 | ------------------------------------------------------------------ | ----------------------------- | -------------------------------------------------------------------------- |
+| the package source | `SQLiteEnterpriseTransaction` | `_warnings=warnings`, class-level `_committed`                             |
+| the package source        | `PostgreSQLTransaction`       | Same pattern                                                               |
+| the package source             | `MySQLTransaction`            | Same pattern                                                               |
 
 ## 2. Double-Check Locking for asyncio
 
@@ -110,6 +113,8 @@ Key invariants:
 
 | Location                                                    | Class                              |
 | ----------------------------------------------------------- | ---------------------------------- |
+| the package source | `WarmMemoryTier._get_connection()` |
+| the package source | `ColdMemoryTier._get_connection()` |
 
 ## 3. Pool Closed-State Guards
 
@@ -198,6 +203,7 @@ class TestNoDirectAiosqliteConnect:
 
     def test_no_bare_aiosqlite_connect(self):
         violations = []
+        for py in Path("kailash/nodes/data").rglob("*.py"):
             if py.name in self._ALLOWED_FILES:
                 continue
             text = py.read_text()

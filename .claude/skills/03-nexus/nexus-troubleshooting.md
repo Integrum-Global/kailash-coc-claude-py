@@ -139,7 +139,7 @@ if not app.session_manager.exists(session_id):
 app = Nexus(auto_discovery=False)
 db = DataFlow(
     "postgresql://...",
-    auto_migrate=True,  # v0.11.0 default: Works in Docker/FastAPI via synchronous DDL operations
+    auto_migrate=True,  # v0.11.0 default: Works in Docker/FastAPI via SyncDDLExecutor
 )
 
 # Should now start in <2 seconds

@@ -24,3 +24,4 @@ result = agent.analyze(image="/path/to/invoice.png")
 ```
 
 ## References
+- **Examples**: the package source

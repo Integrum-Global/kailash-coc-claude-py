@@ -96,12 +96,31 @@ blackboard = Pipeline.blackboard(
 
 ### Comprehensive Guides
 
+For in-depth documentation, see the Kaizen package:
 
 **Core Guides:**
 
+- **[BaseAgent Architecture](kaizen-docs/guides/baseagent-architecture.md)** - Complete unified agent system guide
+- **[Multi-Agent Coordination](kaizen-docs/guides/multi-agent-coordination.md)** - Google A2A protocol, 5 coordination patterns
+- **[Signature Programming](kaizen-docs/guides/signature-programming.md)** - Complete signature system guide
+- **[Hooks System Guide](kaizen-docs/guides/hooks-system-guide.md)** - Event-driven observability framework
+- **[Integration Patterns](kaizen-docs/guides/integration-patterns.md)** - DataFlow, Nexus, MCP integration
+- **[Meta-Controller Guide](kaizen-docs/guides/meta-controller-guide.md)** - Intelligent task delegation
+- **[Planning System Guide](kaizen-docs/guides/planning-system-guide.md)** - Structured workflow orchestration
 
 **Reference Documentation:**
 
+- **[Example Gallery](kaizen-examples/autonomy/EXAMPLE_GALLERY.md)** - 15 production-ready autonomy examples with learning paths
+- **[API Reference](kaizen-docs/reference/api-reference.md)** - Complete API documentation
+- **[Checkpoint API](kaizen-docs/reference/checkpoint-api.md)** - State persistence API
+- **[Coordination API](kaizen-docs/reference/coordination-api.md)** - Multi-agent coordination API
+- **[Interrupts API](kaizen-docs/reference/interrupts-api.md)** - Graceful shutdown API
+- **[Memory API](kaizen-docs/reference/memory-api.md)** - 3-tier memory system API
+- **[Observability API](kaizen-docs/reference/observability-api.md)** - Hooks and monitoring API
+- **[Planning Agents API](kaizen-docs/reference/planning-agents-api.md)** - Planning/PEV/ToT agents API
+- **[Tools API](kaizen-docs/reference/tools-api.md)** - Tool calling and approval API
+- **[Configuration Guide](kaizen-docs/reference/configuration.md)** - All configuration options
+- **[Troubleshooting](kaizen-docs/reference/troubleshooting.md)** - Common issues and solutions
 
 ### Quick Start (Skills)
 
@@ -179,6 +198,7 @@ blackboard = Pipeline.blackboard(
 
 ### v1.0 Developer Guides (NEW)
 
+Located in the Kaizen package:
 
 - **Performance Optimization** (`09-performance-optimization-guide.md`) - Caching (10-100x speedup), parallel execution
 - **Specialist System** (`06-specialist-system-guide.md`) - Claude Code-style specialists and skills
@@ -194,6 +214,7 @@ blackboard = Pipeline.blackboard(
 ### Testing & Quality
 
 - **[kaizen-testing-patterns](kaizen-testing-patterns.md)** - Testing AI agents
+- **[Performance Benchmarks](kaizen-docs/benchmarks/BENCHMARK_GUIDE.md)** - Measure Kaizen performance
 
 ## Key Concepts
 
@@ -345,12 +366,12 @@ workflow.add_node("KaizenAgent", "agent1", {
 - ✅ Extend BaseAgent for production agents
 - ✅ Use type hints in signatures for validation
 - ✅ Track costs in production environments
-- ✅ Test agents with real infrastructure (recommended over mocking)
+- ✅ Test agents with real infrastructure (real infrastructure recommended)
 - ✅ Enable hooks for observability
 - ✅ Use AgentRegistry for distributed coordination
-- ❌ Avoid skipping signature definitions
-- ❌ Avoid ignoring cost tracking in production
-- ❌ Prefer real LLM calls over mocking in integration tests
+- ❌ NEVER skip signature definitions
+- ❌ NEVER ignore cost tracking in production
+- ❌ prefer real infrastructure over mocking LLM calls in integration tests
 
 ## Related Skills
 

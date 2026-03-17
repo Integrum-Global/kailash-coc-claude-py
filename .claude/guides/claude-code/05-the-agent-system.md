@@ -324,7 +324,7 @@ These agents help write and validate code.
 1. Writes tests first (Red phase)
 2. Implements minimal code to pass (Green phase)
 3. Refactors for quality (Refactor phase)
-4. Ensures real infrastructure preferred in Tier 2-3
+4. Ensures real infrastructure recommended in Tier 2-3
 
 **Example request**:
 
@@ -345,8 +345,8 @@ These agents help write and validate code.
 **What it knows**:
 
 - Tier 1: Unit tests (mocking allowed)
-- Tier 2: Integration tests (real infrastructure preferred)
-- Tier 3: End-to-end tests (real infrastructure preferred)
+- Tier 2: Integration tests (real infrastructure recommended)
+- Tier 3: End-to-end tests (real infrastructure recommended)
 - Real infrastructure patterns
 - Test organization
 

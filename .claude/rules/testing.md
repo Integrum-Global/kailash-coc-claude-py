@@ -53,6 +53,24 @@ Every bug fix MUST include a regression test BEFORE the fix is merged.
 
 **Why:** Without regression tests, the same bugs keep coming back. A fix verified only by code review is not verified at all.
 
+**Pattern:**
+
+```python
+# tests/regression/test_issue_42.py
+import pytest
+
+@pytest.mark.regression
+def test_issue_42_user_creation_preserves_explicit_id():
+    """Regression: #42 -- CreateUser silently drops explicit id.
+
+    The bug: when auto_increment is enabled, passing an explicit id was silently ignored.
+    Fixed in: commit abc1234
+    """
+    # Reproduce the exact bug from the issue
+    # ...
+    assert result["id"] == "custom-id-value"
+```
+
 **Enforcement:**
 
 - Pre-merge: regression test suite must pass

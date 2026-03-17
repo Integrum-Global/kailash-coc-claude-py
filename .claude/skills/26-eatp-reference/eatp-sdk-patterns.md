@@ -316,6 +316,7 @@ The SDK is the **Policy Decision Point** (PDP) — it computes verdicts. Your ap
 After extraction, Kaizen trust files are thin shims:
 
 ```python
+# packages/kailash-kaizen/src/kaizen/trust/chain.py
 from eatp.chain import *  # noqa: F401,F403
 ```
 
@@ -428,5 +429,6 @@ python -m pytest tests/integration/ -v             # Integration tests
 python -m pytest tests/unit/test_jwt_interop.py -v # JWT interop
 
 # Run Kaizen trust tests (exercises same code via shims)
+cd packages/kailash-kaizen
 python -m pytest tests/unit/trust/ -v
 ```

@@ -285,6 +285,7 @@ async def create_user():
 
 ### FastAPI Integration
 
+**DataFlow v0.11.0+**: `auto_migrate=True` (default) works correctly in Docker/FastAPI environments via `SyncDDLExecutor`. No special workarounds needed.
 
 ```python
 from fastapi import FastAPI
@@ -294,6 +295,7 @@ from kailash.runtime import AsyncLocalRuntime
 from kailash.workflow.builder import WorkflowBuilder
 import uuid
 
+# auto_migrate=True (default) works in Docker/FastAPI via SyncDDLExecutor
 db = DataFlow("postgresql://localhost:5432/mydb")
 
 @db.model
@@ -323,6 +325,7 @@ async def create_user(name: str, email: str):
     return results["create"]
 ```
 
+**Note**: The previous workaround of `auto_migrate=False` + `create_tables_async()` in lifespan is **OBSOLETE** as of v0.10.15+. `SyncDDLExecutor` handles table creation synchronously without event loop conflicts.
 
 ## DataFlow + Nexus Integration
 
@@ -339,6 +342,7 @@ app = Nexus(auto_discovery=False)  # CRITICAL: Prevents blocking
 # Step 2: Create DataFlow (auto_migrate=True works in Docker/FastAPI as of v0.11.0)
 db = DataFlow(
     "postgresql://user:pass@localhost/db",
+    auto_migrate=True,  # DEFAULT - works in Docker/FastAPI via SyncDDLExecutor
 )
 
 # Step 3: Define models

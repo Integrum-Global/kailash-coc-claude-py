@@ -1,11 +1,11 @@
 ---
 name: gold-mocking-policy
-description: "Testing policy requiring real infrastructure, no mocking for Tier 2-3 tests. Use when asking 'mocking policy', 'real infrastructure preferred', 'real infrastructure', 'test policy', 'mock guidelines', or 'testing standards'."
+description: "Testing policy requiring real infrastructure, no mocking for Tier 2-3 tests. Use when asking 'mocking policy', 'real infrastructure recommended', 'real infrastructure', 'test policy', 'mock guidelines', or 'testing standards'."
 ---
 
-# Gold Standard: real infrastructure preferred Policy
+# Gold Standard: real infrastructure recommended Policy
 
-real infrastructure policy for integration and E2E tests - use real infrastructure with LocalRuntime and AsyncLocalRuntime.
+real infrastructure recommended policy for integration and E2E tests - use real infrastructure with LocalRuntime and AsyncLocalRuntime.
 
 > **Skill Metadata**
 > Category: `gold-standards`
@@ -14,13 +14,13 @@ real infrastructure policy for integration and E2E tests - use real infrastructu
 
 ## Core Policy
 
-### real infrastructure preferred in Tiers 2-3
+### real infrastructure recommended in Tiers 2-3
 
 **Tier 1 (Unit Tests)**: Mocking ALLOWED for external dependencies
-**Tier 2 (Integration Tests)**: Real infrastructure preferred - Use real Docker services
-**Tier 3 (E2E Tests)**: Real infrastructure preferred - Use real infrastructure
+**Tier 2 (Integration Tests)**: real infrastructure recommended - Use real Docker services
+**Tier 3 (E2E Tests)**: real infrastructure recommended - Use real infrastructure
 
-## Why real infrastructure preferred?
+## Why real infrastructure recommended?
 
 1. **Mocks hide real integration issues** - Type mismatches, connection errors, timing issues
 2. **Real infrastructure catches actual bugs** - Validates actual behavior, not assumptions
@@ -44,7 +44,7 @@ def test_node_logic(mock_get):
     # Test node logic without real API
 ```
 
-### Tier 2: Integration Tests (real infrastructure preferred)
+### Tier 2: Integration Tests (real infrastructure recommended)
 ```python
 from kailash.workflow.builder import WorkflowBuilder
 from kailash.runtime import LocalRuntime
@@ -54,7 +54,7 @@ import pytest
 # ✅ CORRECT: Use real Docker PostgreSQL
 @pytest.mark.requires_docker
 def test_database_integration():
-    """Integration test with real PostgreSQL - real infrastructure preferred."""
+    """Integration test with real PostgreSQL - real infrastructure recommended."""
     conn_string = get_postgres_connection_string()
 
     workflow = WorkflowBuilder()
@@ -78,7 +78,7 @@ def test_database_integration():
 #     mock_connect.return_value = Mock(...)
 ```
 
-### Tier 3: E2E Tests (real infrastructure preferred)
+### Tier 3: E2E Tests (real infrastructure recommended)
 ```python
 import pytest
 from kailash.runtime import AsyncLocalRuntime
@@ -87,7 +87,7 @@ from kailash.runtime import AsyncLocalRuntime
 @pytest.mark.e2e
 @pytest.mark.requires_docker
 async def test_complete_pipeline():
-    """E2E test with real infrastructure - real infrastructure preferred."""
+    """E2E test with real infrastructure - real infrastructure recommended."""
     workflow = build_complete_etl_pipeline()
 
     runtime = AsyncLocalRuntime()
@@ -167,7 +167,7 @@ from tests.utils.docker_config import get_postgres_connection_string
 @pytest.mark.parametrize("runtime_class", [LocalRuntime, AsyncLocalRuntime])
 @pytest.mark.requires_docker
 def test_database_with_both_runtimes(runtime_class):
-    """Test database operations with both runtimes - real infrastructure preferred."""
+    """Test database operations with both runtimes - real infrastructure recommended."""
     conn_string = get_postgres_connection_string()
 
     workflow = WorkflowBuilder()
@@ -283,8 +283,8 @@ def test_workflow():
 | Test Tier | Mocking Policy | Infrastructure | Runtime |
 |-----------|---------------|----------------|---------|
 | **Tier 1: Unit** | ✅ ALLOWED | In-memory, mocked | LocalRuntime |
-| **Tier 2: Integration** | ❌ real infrastructure preferred | Real Docker services | LocalRuntime or AsyncLocalRuntime |
-| **Tier 3: E2E** | ❌ real infrastructure preferred | Real infrastructure | AsyncLocalRuntime (typical) |
+| **Tier 2: Integration** | ❌ real infrastructure recommended | Real Docker services | LocalRuntime or AsyncLocalRuntime |
+| **Tier 3: E2E** | ❌ real infrastructure recommended | Real infrastructure | AsyncLocalRuntime (typical) |
 
 ## Documentation References
 
@@ -296,4 +296,4 @@ def test_workflow():
 - **Test organization**: [`test-organization`](../../07-development-guides/test-organization.md)
 - **Gold testing standard**: [`gold-testing`](gold-testing.md)
 
-<!-- Trigger Keywords: mocking policy, real infrastructure preferred, real infrastructure, test policy, mock guidelines, testing standards -->
+<!-- Trigger Keywords: mocking policy, real infrastructure recommended, real infrastructure, test policy, mock guidelines, testing standards -->

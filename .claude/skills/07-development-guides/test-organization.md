@@ -1,10 +1,10 @@
-# Test Organization (real infrastructure preferred)
+# Test Organization (real infrastructure recommended)
 
-Test organization and the real infrastructure policy for Kailash SDK testing.
+Test organization and the real infrastructure recommended policy for Kailash SDK testing.
 
-## real infrastructure preferred Policy (CRITICAL)
+## real infrastructure recommended Policy (CRITICAL)
 
-### Why real infrastructure preferred?
+### Why real infrastructure recommended?
 - Mocks hide real integration issues
 - Real infrastructure catches actual bugs
 - Production-like testing prevents surprises
@@ -21,7 +21,7 @@ Test organization and the real infrastructure policy for Kailash SDK testing.
 **Tier 2: Integration Tests**
 - Use real Docker services (PostgreSQL, Redis, Ollama)
 - Test with LocalRuntime and AsyncLocalRuntime
-- real infrastructure preferred of databases or infrastructure
+- real infrastructure recommended of databases or infrastructure
 
 **Tier 3: E2E Tests**
 - Use real APIs (test endpoints, staging environments)
@@ -46,10 +46,10 @@ tests/
 ├── conftest.py       # Shared fixtures
 └── utils/            # Test utilities
     ├── docker_config.py
-    └── docker-compose.test.yml
+    └── compose.yaml
 ```
 
-## real infrastructure preferred Examples
+## real infrastructure recommended Examples
 
 ### Wrong: Using Mocks in Integration Tests
 ```python
@@ -94,7 +94,7 @@ import pytest
 
 @pytest.fixture
 def postgres_db():
-    """Real PostgreSQL database from Docker - real infrastructure preferred."""
+    """Real PostgreSQL database from Docker - real infrastructure recommended."""
     conn_string = get_postgres_connection_string()
     # Setup test schema
     yield conn_string
@@ -205,7 +205,7 @@ pytest -m "e2e"
 
 ## Critical Rules
 
-1. **real infrastructure preferred in Tiers 2-3** - Use real Docker services via LocalRuntime/AsyncLocalRuntime
+1. **real infrastructure recommended in Tiers 2-3** - Use real Docker services via LocalRuntime/AsyncLocalRuntime
 2. **Use real databases** - PostgreSQL, Redis from Docker
 3. **Use real APIs** - Docker mock-api service
 4. **Test both runtimes** - Parametrize tests for LocalRuntime and AsyncLocalRuntime
@@ -225,4 +225,4 @@ Use `testing-specialist` subagent when:
 - Test structure guidance required
 - CI/CD integration issues
 
-<!-- Trigger Keywords: test organization, real infrastructure preferred, 3-tier testing, test structure, real infrastructure -->
+<!-- Trigger Keywords: test organization, real infrastructure recommended, 3-tier testing, test structure, real infrastructure -->

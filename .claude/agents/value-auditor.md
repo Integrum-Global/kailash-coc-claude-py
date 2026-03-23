@@ -108,6 +108,24 @@ Identify systemic issues that affect multiple pages:
 - Note every time the value chain breaks (empty data, dead ends, contradictions)
 - Track narrative coherence: does each page build on the last?
 
+### Phase 2b: State Persistence Verification (5 min)
+
+For every critical write operation in the demo flow (create account, save settings, submit form):
+
+1. Perform the write action
+2. Navigate away from the page (go to another section)
+3. Navigate back or reload
+4. Verify the state persisted — the data should still be there, modals should not reappear, the flow should continue from where it left off
+
+**Why this phase exists**: A previous audit missed a critical bug where company creation appeared to succeed (API 200, success toast) but wrote zero bytes to the database. DataFlow silently ignores unknown parameters. Every subsequent page load re-triggered the setup flow. This class of bug is invisible to any audit that only checks the immediate response.
+
+**Red flag patterns**:
+
+- Setup modals that reappear after "completing" setup
+- Forms that reset to defaults after navigation
+- Counts that don't increase after "creating" records
+- Data that vanishes on page reload
+
 ### Phase 3: Skeptical Deep Dive (5-10 min)
 
 - Pick the 3 most important pages (the ones carrying the value proposition)

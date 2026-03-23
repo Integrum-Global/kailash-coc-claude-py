@@ -78,8 +78,42 @@ result = {'validated': valid_items, 'count': len(valid_items)}
         # Verify end-to-end results
         assert results["ingest"]["result"]["data"] is not None
         assert results["validate"]["result"]["count"] == 2
+        # STATE PERSISTENCE: Read back from DB to verify writes persisted
+        # DataFlow silently ignores unknown params — never trust only the write response
         assert results["verify"]["data"][0]["count"] >= 2
 ```
+
+### State Persistence Pattern (MANDATORY)
+
+Every E2E test that writes data MUST include a read-back verification:
+
+```python
+    def test_write_actually_persists(self, test_database_url):
+        """Verify writes persist — not just that the API returned success."""
+        workflow = WorkflowBuilder()
+
+        # Write
+        workflow.add_node("UserCreateNode", "create", {
+            "fields": {"name": "Alice", "email": "alice@example.com"}
+        })
+
+        # Read back — MANDATORY for all write tests
+        workflow.add_node("UserReadNode", "verify", {
+            "filter": {"email": "alice@example.com"}
+        })
+
+        workflow.add_connection("create", "result", "verify", "trigger")
+
+        runtime = LocalRuntime()
+        results, run_id = runtime.execute(workflow.build())
+
+        # Assert the write response
+        assert results["create"]["success"]
+        # Assert the read-back — THIS is the real test
+        assert results["verify"]["data"]["name"] == "Alice"
+```
+
+**Why**: DataFlow `UpdateNode` silently ignores unknown parameter names. The write returns success but zero bytes are written. Tests that only check the write response pass with flying colors while the feature is completely broken.
 
 ## Related Patterns
 
@@ -90,6 +124,7 @@ result = {'validated': valid_items, 'count': len(valid_items)}
 ## When to Escalate
 
 Use `testing-specialist` when:
+
 - Complex E2E scenario design
 - Performance testing needed
 - CI/CD integration
@@ -97,6 +132,7 @@ Use `testing-specialist` when:
 ## Documentation References
 
 ### Primary Sources
+
 - **Testing Specialist**: [`.claude/agents/testing-specialist.md` (lines 211-262)](../../../../.claude/agents/testing-specialist.md#L211-L262)
 
 ## Quick Tips

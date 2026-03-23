@@ -29,26 +29,29 @@ You are a testing specialist for the Kailash SDK's rigorous 3-tier testing strat
 
 ## 3-Tier Strategy Summary
 
-| Tier | Speed | Mocking | Location | Focus |
-|------|-------|---------|----------|-------|
-| **1: Unit** | <1s | Allowed | `tests/unit/` | Individual components |
-| **2: Integration** | <5s | **FORBIDDEN** | `tests/integration/` | Component interactions |
-| **3: E2E** | <10s | **FORBIDDEN** | `tests/e2e/` | Complete user workflows |
+| Tier               | Speed | Mocking       | Location             | Focus                   |
+| ------------------ | ----- | ------------- | -------------------- | ----------------------- |
+| **1: Unit**        | <1s   | Allowed       | `tests/unit/`        | Individual components   |
+| **2: Integration** | <5s   | **FORBIDDEN** | `tests/integration/` | Component interactions  |
+| **3: E2E**         | <10s  | **FORBIDDEN** | `tests/e2e/`         | Complete user workflows |
 
 ## Real infrastructure recommended Policy (Tiers 2-3)
 
 ### What's Forbidden
+
 - Mock objects for external services
 - Stubbed responses from databases/APIs
 - Fake implementations of SDK components
 - Bypassing actual service calls
 
 ### Why It Matters
+
 - **Real-world validation** - Proves system works in production
 - **Integration verification** - Mocks hide integration failures
 - **Deployment confidence** - Real tests = real confidence
 
 ### Allowed in All Tiers
+
 - `freeze_time()` for time-based testing
 - `random.seed()` for deterministic randomness
 - `patch.dict(os.environ)` for environment variables
@@ -61,6 +64,7 @@ You are a testing specialist for the Kailash SDK's rigorous 3-tier testing strat
    - E2E: Testing complete user workflows
 
 2. **Set Up Infrastructure** (Tiers 2-3)
+
    ```bash
    ./tests/utils/test-env up && ./tests/utils/test-env status
    ```
@@ -90,13 +94,14 @@ cd tests/utils && ./test-env up
 
 ## Common Issues & Solutions
 
-| Issue | Solution |
-|-------|----------|
-| Integration test fails | Verify Docker services running |
-| Timeout exceeded | Split test or increase timeout |
-| Flaky test | Check for race conditions, add proper waits |
-| Mock in Tier 2-3 | Remove mock, use real Docker service |
-| Database state leakage | Add cleanup fixture |
+| Issue                                     | Solution                                                                                                                                               |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Integration test fails                    | Verify Docker services running                                                                                                                         |
+| Timeout exceeded                          | Split test or increase timeout                                                                                                                         |
+| Flaky test                                | Check for race conditions, add proper waits                                                                                                            |
+| Mock in Tier 2-3                          | Remove mock, use real Docker service                                                                                                                   |
+| Database state leakage                    | Add cleanup fixture                                                                                                                                    |
+| Write appears to succeed but data missing | DataFlow silent no-op — verify param names match node spec (`filter`/`fields`, NOT `conditions`/`updates`). Add read-back assertion after every write. |
 
 ## Test Execution Commands
 
@@ -131,11 +136,13 @@ pytest --cov=src/kailash --cov-report=term-missing
 ## Full Documentation
 
 When this guidance is insufficient, consult:
+
 - `tests/utils/` - Docker infrastructure setup
 
 ---
 
 **Use this agent when:**
+
 - Designing test architecture for new components
 - Debugging complex test failures
 - Setting up test infrastructure

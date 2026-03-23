@@ -60,14 +60,15 @@ For each flow, assess:
 
 Identify systemic patterns that affect multiple pages:
 
-| Pattern                | Description                               | Example                                       |
-| ---------------------- | ----------------------------------------- | --------------------------------------------- |
-| **Empty Room**         | Pages with zero data                      | 12+ pages showing no records                  |
-| **Contradictory Data** | Numbers that don't add up                 | 3 agents, but posture shows 1                 |
-| **Orphaned Features**  | Features not connected to value flows     | Knowledge page with no link to agent behavior |
-| **Concept Overload**   | Too many unexplained concepts             | Knowledge vs Directives vs Policies           |
-| **Dead Ends**          | Pages that don't lead anywhere meaningful | Dashboard that duplicates Home                |
-| **False Confidence**   | Metrics that mislead                      | 100% success rate with 0 completions          |
+| Pattern                | Description                                    | Example                                                    |
+| ---------------------- | ---------------------------------------------- | ---------------------------------------------------------- |
+| **Silent No-Op**       | Writes that return success but persist nothing | DataFlow ignoring unknown params, setup modals reappearing |
+| **Empty Room**         | Pages with zero data                           | 12+ pages showing no records                               |
+| **Contradictory Data** | Numbers that don't add up                      | 3 agents, but posture shows 1                              |
+| **Orphaned Features**  | Features not connected to value flows          | Knowledge page with no link to agent behavior              |
+| **Concept Overload**   | Too many unexplained concepts                  | Knowledge vs Directives vs Policies                        |
+| **Dead Ends**          | Pages that don't lead anywhere meaningful      | Dashboard that duplicates Home                             |
+| **False Confidence**   | Metrics that mislead                           | 100% success rate with 0 completions                       |
 
 ## The Five Questions — Deep Guide
 
@@ -143,6 +144,7 @@ Most demo failures happen at level 5 — showing capability without evidence.
 - [ ] Login experience captured (first impression)
 - [ ] Home page gut reaction recorded
 - [ ] Primary value flow traced end-to-end
+- [ ] **State persistence verified** — for every critical write (create account, save settings, submit form): perform action, navigate away, return, verify state persisted. DataFlow silently ignores unknown params — writes can return success while writing nothing.
 - [ ] All data-bearing pages checked for credibility
 - [ ] All governance pages checked for evidence
 - [ ] Cross-cutting patterns identified

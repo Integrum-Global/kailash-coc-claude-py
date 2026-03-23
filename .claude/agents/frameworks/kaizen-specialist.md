@@ -76,7 +76,17 @@ Expert in Kaizen AI framework - signature-based programming, BaseAgent architect
 - "Budget tracking?" -> [`kaizen-budget-tracking`](../../skills/04-kaizen/kaizen-budget-tracking.md)
 - "Posture-budget integration?" -> [`kaizen-budget-tracking`](../../skills/04-kaizen/kaizen-budget-tracking.md)
 
-**L3 Autonomy Primitives**:
+**Kaizen-Agents Governance** (v0.1.0):
+
+- "GovernedSupervisor?" -> [`kaizen-agents-governance`](../../skills/04-kaizen/kaizen-agents-governance.md)
+- "Governed multi-agent?" -> [`kaizen-agents-governance`](../../skills/04-kaizen/kaizen-agents-governance.md)
+- "Progressive disclosure?" -> [`kaizen-agents-governance`](../../skills/04-kaizen/kaizen-agents-governance.md)
+- "Accountability/budget/cascade?" -> [`kaizen-agents-governance`](../../skills/04-kaizen/kaizen-agents-governance.md)
+- "Clearance/dereliction/bypass/vacancy?" -> [`kaizen-agents-governance`](../../skills/04-kaizen/kaizen-agents-governance.md)
+- "Anti-self-modification?" -> [`kaizen-agents-security`](../../skills/04-kaizen/kaizen-agents-security.md)
+- "Governance security patterns?" -> [`kaizen-agents-security`](../../skills/04-kaizen/kaizen-agents-security.md)
+
+**L3 Autonomy Primitives** (SDK):
 
 - "L3 overview?" -> [`kaizen-l3-overview`](../../skills/04-kaizen/kaizen-l3-overview.md)
 - "Envelope tracking?" -> [`kaizen-l3-envelope`](../../skills/04-kaizen/kaizen-l3-envelope.md)
@@ -104,6 +114,8 @@ Expert in Kaizen AI framework - signature-based programming, BaseAgent architect
 - **MCP Catalog Server**: Standalone MCP server for agent catalog operations
 - **Budget-Posture Integration**: Linking budget thresholds to trust posture transitions
 - **L3 Autonomy**: Agent spawning, envelope enforcement, scoped context, typed messaging, plan DAG execution
+- **Kaizen-Agents Governance** (v0.1.0): GovernedSupervisor with progressive disclosure (Layer 1/2/3), 7 governance modules (accountability, budget, cascade, clearance, dereliction, bypass, vacancy), EATP audit trail, PACT integration
+- **Governed Multi-Agent Orchestration**: LLM-orchestrated, PACT-aware agent systems with security-hardened tooling
 
 ### Use Skills Instead When:
 
@@ -137,6 +149,8 @@ Expert in Kaizen AI framework - signature-based programming, BaseAgent architect
 | Composition validation    | `.claude/skills/04-kaizen/kaizen-composition.md`       |
 | Catalog MCP server        | `.claude/skills/04-kaizen/kaizen-catalog-server.md`    |
 | Budget tracking & posture | `.claude/skills/04-kaizen/kaizen-budget-tracking.md`   |
+| Kaizen-agents governance  | `.claude/skills/04-kaizen/kaizen-agents-governance.md` |
+| Governance security       | `.claude/skills/04-kaizen/kaizen-agents-security.md`   |
 | L3 autonomy overview      | `.claude/skills/04-kaizen/kaizen-l3-overview.md`       |
 | L3 envelope enforcement   | `.claude/skills/04-kaizen/kaizen-l3-envelope.md`       |
 | L3 scoped context         | `.claude/skills/04-kaizen/kaizen-l3-context.md`        |
@@ -326,10 +340,12 @@ result = agent.process("input")
 - MCP Catalog Server for agent discovery (v1.3)
 - Posture-budget integration (v1.3)
 - L3 autonomy primitives (agent spawning, envelope enforcement, scoped context, messaging, plan DAG)
+- Kaizen-agents governance (GovernedSupervisor, progressive disclosure, 7 governance modules) (v0.1.0)
+- Governed multi-agent orchestration with PACT integration (v0.1.0)
 
 ## For Detailed Patterns
 
-See the [Kaizen Skills](../../skills/04-kaizen/) (58 skills) for:
+See the [Kaizen Skills](../../skills/04-kaizen/) for:
 
 - Quick start guide ([`kaizen-quickstart-template`](../../skills/04-kaizen/kaizen-quickstart-template.md))
 - BaseAgent basics ([`kaizen-baseagent-quick`](../../skills/04-kaizen/kaizen-baseagent-quick.md))
@@ -352,6 +368,8 @@ See the [Kaizen Skills](../../skills/04-kaizen/) (58 skills) for:
 - Composition validation ([`kaizen-composition`](../../skills/04-kaizen/kaizen-composition.md))
 - MCP Catalog Server ([`kaizen-catalog-server`](../../skills/04-kaizen/kaizen-catalog-server.md))
 - Budget tracking & posture ([`kaizen-budget-tracking`](../../skills/04-kaizen/kaizen-budget-tracking.md))
+- Kaizen-agents governance ([`kaizen-agents-governance`](../../skills/04-kaizen/kaizen-agents-governance.md))
+- Kaizen-agents security ([`kaizen-agents-security`](../../skills/04-kaizen/kaizen-agents-security.md))
 - L3 overview ([`kaizen-l3-overview`](../../skills/04-kaizen/kaizen-l3-overview.md))
 - L3 envelope ([`kaizen-l3-envelope`](../../skills/04-kaizen/kaizen-l3-envelope.md))
 - L3 context ([`kaizen-l3-context`](../../skills/04-kaizen/kaizen-l3-context.md))
@@ -369,6 +387,7 @@ See the [Kaizen Skills](../../skills/04-kaizen/) (58 skills) for:
 - Agent manifest and deployment lifecycle
 - Composition validation and cost estimation
 - Budget-posture governance integration
+- Kaizen-agents governed multi-agent orchestration
 - L3 autonomy primitives and agent lifecycle management
 
 **Core Principle**: Kaizen is signature-based programming for AI workflows. Use UX improvements, follow patterns from examples/, validate with real models.

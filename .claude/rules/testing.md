@@ -130,6 +130,7 @@ Integration and E2E tests MUST use real infrastructure.
 - Real infrastructure recommended - real everything
 - Test full user journeys
 - Real browser, real database
+- **State persistence verification** — every write operation MUST be verified with a read-back (navigate away, reload, re-query). API 200 is NOT sufficient proof of persistence. See `rules/e2e-god-mode.md` Rule 6.
 
 **Enforced by**: validate-workflow hook
 **Violation**: Test invalid
@@ -216,7 +217,32 @@ def test_user_creation(db):
     # Real infrastructure recommended - real database operations
     result = db.execute(CreateUser(name="test"))
     assert result.id is not None
+
+    # STATE PERSISTENCE: Always read back after write
+    # DataFlow silently ignores unknown params — verify the write actually wrote
+    user = db.execute(ReadUser(filter={"id": result.id}))
+    assert user is not None
+    assert user.name == "test"
 ```
+
+### State Persistence Verification (MANDATORY for Tiers 2-3)
+
+Every test that writes data MUST verify persistence with a read-back:
+
+```python
+# ❌ BAD: Only checks API response
+result = api.create_company(name="Acme")
+assert result.status == 200  # DataFlow may have silently ignored params!
+
+# ✅ GOOD: Verifies state persisted
+result = api.create_company(name="Acme")
+assert result.status == 200
+# Read back to verify
+company = api.get_company(result.id)
+assert company.name == "Acme"
+```
+
+**Why**: DataFlow `UpdateNode` silently ignores unknown parameter names (`conditions`/`updates` instead of `filter`/`fields`). The API returns success but zero bytes are written. This is the #1 source of false-positive tests.
 
 ### Workflow Testing
 

@@ -105,3 +105,12 @@ Deploy these agents as a red team for validation:
 - **ai-ux-designer** — Audit AI interaction patterns (if AI-facing UI)
 
 Run multiple red team rounds. Converge when all agents find no remaining gaps.
+
+### Journal
+
+Create journal entries for validation findings:
+- **RISK** entries for vulnerabilities, weaknesses, or failure modes discovered
+- **GAP** entries for missing tests, documentation, or edge cases
+- **CONNECTION** entries for unexpected dependencies or interactions found
+
+Use sequential naming: check the highest existing `NNNN-` prefix and increment.

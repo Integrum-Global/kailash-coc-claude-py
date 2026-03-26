@@ -60,6 +60,7 @@ Phase commands replace the manual copy-paste workflow. Each loads the correspond
 | `/release`   | —     | SDK release: PyPI publishing, docs deploy, CI (standalone) |
 | `/ws`        | —     | Read-only workspace status dashboard                       |
 | `/wrapup`    | —     | Write session notes before ending                          |
+| `/journal`   | —     | View, create, or search project journal entries            |
 
 **Workspace detection**: Hooks automatically detect the active workspace and inject context. `session-start.js` shows workspace status on session start (human-facing). `user-prompt-rules-reminder.js` injects a 1-line `[WORKSPACE]` summary into Claude's context every turn (survives context compression).
 
@@ -85,6 +86,7 @@ Phase commands replace the manual copy-paste workflow. Each loads the correspond
 | Auto-generated workflow instincts     | `rules/learned-instincts.md`    | Global                                                                |
 | Infrastructure SQL safety             | `rules/infrastructure-sql.md`   | Database and infrastructure files                                     |
 | PACT governance security              | `rules/pact-governance.md`      | PACT governance files                                                 |
+| Journal knowledge trail               | `rules/journal.md`              | Global                                                                |
 
 **Note**: Rules with path scoping are loaded only when editing matching files. Global rules load every session.
 

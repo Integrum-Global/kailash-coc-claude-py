@@ -90,3 +90,12 @@ Deploy these agents as a team for codification:
 **COC template sync (after codification completes):**
 
 - **coc-sync** — Transform and sync all agents, skills, rules, and commands to the COC template repository (`kailash-coc-claude-py`), stripping builder-specific content. Only runs if the repo exists at `kailash-coc-claude-py/`. See `.claude/skills/management/coc-sync-mapping.md` for transform rules.
+
+### Journal
+
+Create journal entries for knowledge captured:
+- **DECISION** entries for what was codified and why
+- **CONNECTION** entries for patterns that connect across the project
+- **TRADE-OFF** entries for trade-offs in knowledge representation choices
+
+Use sequential naming: check the highest existing `NNNN-` prefix and increment.

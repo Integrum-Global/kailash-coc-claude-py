@@ -27,6 +27,8 @@ agent.set_governance(engine)  # Agent can call engine.update_envelope() on itsel
 
 The `envelope` property returns `copy.deepcopy()` — never a reference to the internal dict.
 
+**Source**: `packages/kaizen-agents/src/kaizen_agents/supervisor.py`
+
 ## NaN/Inf Defense (Pervasive)
 
 Every numeric entry point validates with `math.isfinite()`. NaN bypasses ALL numeric comparisons (`NaN > X` is always `False`).
@@ -57,7 +59,7 @@ if amount < 0:
 
 ## Bounded Collections
 
-All long-lived collections MUST have a maximum size. Unbounded collections lead to OOM in production.
+All long-lived collections MUST have a maximum size. Unbounded collections → OOM in production.
 
 ```python
 # CORRECT
@@ -83,7 +85,7 @@ Governance state can only escalate, never relax:
 | -------------------- | ---------------------------------------- | ------------------- |
 | Classification floor | Can only raise, never lower              | ClearanceEnforcer   |
 | Envelope tightening  | Can only tighten, never widen            | CascadeManager      |
-| Gradient escalation  | AUTO_APPROVED -> FLAGGED -> HELD -> BLOCKED | GradientZone        |
+| Gradient escalation  | AUTO_APPROVED → FLAGGED → HELD → BLOCKED | GradientZone        |
 | Dereliction counter  | Separate counter, never decreases        | DerelictionDetector |
 
 ```python
@@ -132,6 +134,8 @@ if stored_hash != computed_hash:  # Leaks information byte-by-byte
     raise IntegrityError("Hash chain broken")
 ```
 
+**Source**: `packages/kaizen-agents/src/kaizen_agents/audit/trail.py`
+
 ## Frozen Value Types
 
 All governance record/event/snapshot types MUST be `frozen=True`:
@@ -179,6 +183,10 @@ File tools accept any path the process can access. Use workspace root restrictio
 ### Session Name Sanitization
 
 Uses allowlist regex: `re.sub(r"[^a-zA-Z0-9_-]", "_", name)` — not blacklist replacement.
+
+## Behavioral Test Vectors
+
+45+ cross-SDK conformance tests define the canonical security behavior across Python and Rust SDKs. See `workspaces/kaizen-agents/01-analysis/01-research/13-behavioral-test-vectors.md`.
 
 ## Related
 

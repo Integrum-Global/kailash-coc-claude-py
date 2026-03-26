@@ -59,3 +59,8 @@ await factory.terminate(root.instance_id, TerminationReason.EXPLICIT_TERMINATION
 6. Tool IDs subset of parent's allowed tools
 7. Required context keys present
 8. No cascade termination in progress (AD-L3-10)
+
+## Reference
+
+- Spec: `workspaces/kaizen-l3/briefs/04-agent-factory.md`
+- Source: `kaizen/l3/factory/`

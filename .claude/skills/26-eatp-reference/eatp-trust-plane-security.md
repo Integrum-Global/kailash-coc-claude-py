@@ -1,8 +1,8 @@
 # Skill: TrustPlane Security Patterns
 
-13 hardened security patterns validated through 16 rounds of red teaming. MANDATORY for the SDK source and the SDK source. Recommended for any security-sensitive Python project.
+13 hardened security patterns validated through 16 rounds of red teaming. MANDATORY for the trust-plane module and the trust module. Recommended for any security-sensitive Python project.
 
-For full code examples with DO/DON'T pairs, see the SDK source.
+For full code examples with DO/DON'T pairs, see the trust-plane module.
 
 ## Quick Checklist
 

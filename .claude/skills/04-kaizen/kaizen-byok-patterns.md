@@ -14,7 +14,7 @@ BaseAgentConfig(api_key="sk-tenant-123")
         → provider.chat(..., api_key="sk-tenant-123")
 ```
 
-Key module: the SDK source
+Key module: `kailash/workflow/credentials.py`
 
 ## Usage: Per-Request API Key
 

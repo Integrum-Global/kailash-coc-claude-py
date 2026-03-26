@@ -317,5 +317,8 @@ The server distinguishes between expected and unexpected errors:
 
 ## References
 
+- **Source**: `kaizen/mcp/catalog_server/server.py`
+- **Source**: `kaizen/mcp/catalog_server/registry.py`
+- **Source**: `kaizen/mcp/catalog_server/__main__.py`
 - **Related**: [`kaizen-agent-manifest`](kaizen-agent-manifest.md) -- Manifest format and deploy API
 - **Related**: [`kaizen-composition`](kaizen-composition.md) -- DAG validation used by `catalog_deps` and `validate_composition`

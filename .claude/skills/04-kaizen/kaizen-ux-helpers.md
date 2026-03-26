@@ -398,4 +398,5 @@ self.write_to_memory(content="data", tags=["test"])  # No-op, no error
 
 ## References
 
+- **Source**: `kaizen/core/base_agent.py`
 - **Specialist**: `.claude/agents/frameworks/kaizen-specialist.md` lines 249-298

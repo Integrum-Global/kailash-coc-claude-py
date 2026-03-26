@@ -2,9 +2,9 @@
 
 Structured reasoning traces capture WHY a decision was made during trust delegation and audit operations. This extension is fully optional and backward compatible.
 
-**Source**: the SDK source
-**Crypto**: the SDK source (hash/sign/verify reasoning functions)
-**Operations**: the SDK source (delegate/audit accept reasoning_trace)
+**Source**: `kailash/trust/reasoning.py`
+**Crypto**: `kailash/trust/crypto.py` (hash/sign/verify reasoning functions)
+**Operations**: `kailash/trust/operations/__init__.py` (delegate/audit accept reasoning_trace)
 
 ## Design Rationale
 

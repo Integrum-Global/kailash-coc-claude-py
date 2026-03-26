@@ -326,7 +326,7 @@ await db.express.create("User", {...})
 
 ### Empty list returned
 
-If using custom `__tablename__`, ensure you're on v0.10.6+:
+If using custom `__tablename__`, ensure you're on Current:
 
 ```python
 @db.model
@@ -334,7 +334,7 @@ class User:
     id: str
     __tablename__ = "custom_users"
 
-# Fixed in v0.10.6 - uses correct table name
+# Fixed in the current version - uses correct table name
 users = await db.express.list("User")
 ```
 
@@ -362,5 +362,5 @@ first_user = (await db.express.list("User", limit=1))[0] if await db.express.cou
 
 ## Version History
 
-- **v0.10.13**: Added `find_one()` method for single-record non-PK lookups
-- **v0.10.6**: Initial ExpressDataFlow release with full CRUD and bulk operations
+- **Current version**: Added `find_one()` method for single-record non-PK lookups
+- **Current version**: Initial ExpressDataFlow release with full CRUD and bulk operations

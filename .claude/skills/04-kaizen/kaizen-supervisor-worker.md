@@ -7,7 +7,7 @@ Task delegation with semantic matching.
 ```python
 # NOTE: kaizen.agents.coordination is DEPRECATED (removal in v0.5.0)
 # Use kaizen.orchestration.patterns instead
-from kaizen.orchestration.patterns import SupervisorWorkerPattern
+from kaizen_agents.patterns.patterns import SupervisorWorkerPattern
 
 pattern = SupervisorWorkerPattern(
     supervisor=supervisor_agent,
@@ -25,5 +25,5 @@ result = pattern.execute_task("Analyze this codebase")
 - ✅ Eliminates 40-50% manual selection logic
 
 ## References
-- **Examples**: `packages/kailash-kaizen/examples/2-multi-agent/supervisor-worker/`
+- **Examples**: `examples/2-multi-agent/supervisor-worker/`
 - **Specialist**: `.claude/agents/frameworks/kaizen-specialist.md` lines 115-165

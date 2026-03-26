@@ -57,7 +57,7 @@ workflow.add_node("OrderListNode", "list", {
 })
 ```
 
-## Auto-Wired Multi-Tenancy (v0.11.0)
+## Auto-Wired Multi-Tenancy 
 
 Multi-tenancy is now auto-wired into the engine via `QueryInterceptor`, which hooks into 8 SQL execution points:
 
@@ -67,9 +67,9 @@ Multi-tenancy is now auto-wired into the engine via `QueryInterceptor`, which ho
 
 ```python
 # Set tenant context once; all queries are automatically filtered
-from dataflow.tenancy import the tenant context manager
+from dataflow.tenancy import TenantContextSwitch
 
-async with the tenant context manager(db, tenant_id="tenant_abc"):
+async with TenantContextSwitch(db, tenant_id="tenant_abc"):
     # All operations inside this block are tenant-scoped
     results = await runtime.execute_workflow_async(workflow.build(), inputs={})
 ```
@@ -80,7 +80,7 @@ async with the tenant context manager(db, tenant_id="tenant_abc"):
 - **Data Partitioning**: Separate data per tenant
 - **Security**: Prevents cross-tenant access
 - **Audit Trails**: Track tenant-specific changes
-- **Auto-Wired Interceptor**: QueryInterceptor at 8 SQL execution points (v0.11.0)
+- **Auto-Wired Interceptor**: QueryInterceptor at 8 SQL execution points 
 
 ## Documentation References
 

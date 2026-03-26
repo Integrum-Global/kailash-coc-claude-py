@@ -57,3 +57,8 @@ merge_result = root.merge_child_results(child)
 - INV-4: Classification filtering independent of projection filtering
 - INV-7: Parent traversal for reads (lazy, not eager copy)
 - INV-8: `remove()` is local only
+
+## Reference
+
+- Spec: `workspaces/kaizen-l3/briefs/02-scoped-context.md`
+- Source: `kaizen/l3/context/`

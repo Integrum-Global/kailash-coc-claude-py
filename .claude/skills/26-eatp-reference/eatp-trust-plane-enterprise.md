@@ -1,6 +1,6 @@
 # Skill: TrustPlane Enterprise Features
 
-Quick reference for TrustPlane enterprise capabilities. For full documentation, see the SDK source.
+Quick reference for TrustPlane enterprise capabilities. For full documentation, see the trust-plane module.
 
 ## Budget Enforcement (`trustplane.project` + `trustplane.models`)
 

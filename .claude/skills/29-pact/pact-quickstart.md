@@ -125,3 +125,5 @@ engine = GovernanceEngine(
 
 - `pact-governance-engine.md` -- full engine API
 - `pact-envelopes.md` -- envelope model
+- Source: `pact/governance/engine.py`
+- Source: `pact/governance/config.py`

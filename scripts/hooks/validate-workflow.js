@@ -108,6 +108,7 @@ function validateFile(data) {
     const pyBlocked = checkPythonPatterns(content, filePath, messages);
     if (pyBlocked) shouldBlock = true;
     checkPoolPatterns(content, filePath, messages);
+    checkRuntimeLeaks(content, filePath, messages);
   }
 
   // -- Hardcoded model detection (code files only -- configs may list models intentionally)
@@ -230,7 +231,7 @@ function checkRustPatterns(content, filePath, messages) {
       for (const [pat, name] of mockPatterns) {
         if (pat.test(content)) {
           messages.push(
-            `WARNING: ${name} detected in integration/e2e test. Real infrastructure recommended for Tier 2-3 tests.`,
+            `WARNING: ${name} detected in integration/e2e test. NO MOCKING in Tier 2-3 tests.`,
           );
         }
       }
@@ -287,7 +288,9 @@ function checkPythonPatterns(content, filePath, messages) {
     }
 
     // BLOCKING: pass as placeholder (pass with stub/placeholder comment)
-    if (/^\s*pass\s*#\s*(placeholder|stub|todo|fixme|not\s*implement)/i.test(line)) {
+    if (
+      /^\s*pass\s*#\s*(placeholder|stub|todo|fixme|not\s*implement)/i.test(line)
+    ) {
       messages.push(
         `BLOCKED: stub pass at ${path.basename(filePath)}:${i + 1}. ` +
           `Implement the logic or remove the function.`,
@@ -358,6 +361,63 @@ function checkPoolPatterns(content, filePath, messages) {
           `This triples the connection footprint. Use max(2, pool_size // 2) instead. ` +
           `See rules/dataflow-pool.md.`,
       );
+    }
+  }
+
+  return false;
+}
+
+// =====================================================================
+// Unmanaged runtime construction detection (Issue #71)
+// =====================================================================
+
+/**
+ * Detect LocalRuntime() or AsyncLocalRuntime() construction without lifecycle
+ * management (close(), release(), context manager, or acquire()).
+ * WARNING only — never blocks. See rules/dataflow-pool.md Rule 6.
+ */
+function checkRuntimeLeaks(content, filePath, messages) {
+  if (isTestFile(filePath)) return false;
+
+  const lines = content.split("\n");
+  const RUNTIME_PATTERN = /(?:Local|AsyncLocal)Runtime\(\)/;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    // Skip comments, strings, docstrings
+    if (trimmed.startsWith("#")) continue;
+    if (trimmed.startsWith('"""') || trimmed.startsWith("'''")) continue;
+    if (trimmed.startsWith(">>>")) continue;
+
+    if (RUNTIME_PATTERN.test(line)) {
+      // Check if line has lifecycle management
+      const hasLifecycle =
+        /\bwith\s+/.test(line) ||
+        /\.close\(\)/.test(line) ||
+        /\.release\(\)/.test(line) ||
+        /\.acquire\(\)/.test(line) ||
+        /self\.runtime\s*=/.test(line) ||
+        /self\._runtime\s*=/.test(line) ||
+        /self\._async_runtime\s*=/.test(line);
+
+      // Check surrounding lines (3 lines after) for close/finally
+      let hasNearbyCleanup = false;
+      for (let j = i + 1; j < Math.min(i + 10, lines.length); j++) {
+        if (/\.close\(\)|\.release\(\)|finally:/.test(lines[j])) {
+          hasNearbyCleanup = true;
+          break;
+        }
+      }
+
+      if (!hasLifecycle && !hasNearbyCleanup) {
+        messages.push(
+          `WARNING: Unmanaged runtime at ${path.basename(filePath)}:${i + 1}. ` +
+            `Use 'with LocalRuntime() as runtime:' or call runtime.close(). ` +
+            `See rules/dataflow-pool.md Rule 6 and issue #71.`,
+        );
+      }
     }
   }
 
@@ -533,12 +593,21 @@ function checkStubsAndSimulations(content, filePath, messages) {
     ? [
         [/\btodo!\s*\(/, "todo!() macro — IMPLEMENT fully"],
         [/\bunimplemented!\s*\(/, "unimplemented!() — IMPLEMENT fully"],
-        [/\bpanic!\s*\(\s*"not\s+(yet\s+)?implement/i, "panic!(not implemented) — IMPLEMENT fully"],
+        [
+          /\bpanic!\s*\(\s*"not\s+(yet\s+)?implement/i,
+          "panic!(not implemented) — IMPLEMENT fully",
+        ],
       ]
     : isPy
       ? [
-          [/\braise\s+NotImplementedError\b/, "raise NotImplementedError — IMPLEMENT fully"],
-          [/^\s*pass\s*#\s*(placeholder|stub|todo|fixme|not\s*implement)/i, "stub pass — IMPLEMENT fully"],
+          [
+            /\braise\s+NotImplementedError\b/,
+            "raise NotImplementedError — IMPLEMENT fully",
+          ],
+          [
+            /^\s*pass\s*#\s*(placeholder|stub|todo|fixme|not\s*implement)/i,
+            "stub pass — IMPLEMENT fully",
+          ],
         ]
       : [];
 
@@ -548,7 +617,10 @@ function checkStubsAndSimulations(content, filePath, messages) {
     [/\bHACK\b/, "HACK marker — implement properly"],
     [/\bSTUB\b/, "STUB marker — implement real logic"],
     [/\bXXX\b/, "XXX marker — resolve immediately"],
-    [/\b(simulated?|fake|dummy|placeholder)\s*(data|response|result|value)/i, "simulated/fake data"],
+    [
+      /\b(simulated?|fake|dummy|placeholder)\s*(data|response|result|value)/i,
+      "simulated/fake data",
+    ],
     [/catch\s*\([^)]*\)\s*\{\s*\}/, "empty catch block — handle the error"],
   ];
 
@@ -561,9 +633,13 @@ function checkStubsAndSimulations(content, filePath, messages) {
 
     if (cfgTestLine > 0 && i + 1 >= cfgTestLine) break;
 
-    const isComment = trimmed.startsWith("//") || trimmed.startsWith("///") ||
-      trimmed.startsWith("//!") || trimmed.startsWith("/*") ||
-      trimmed.startsWith("*") || trimmed.startsWith("#");
+    const isComment =
+      trimmed.startsWith("//") ||
+      trimmed.startsWith("///") ||
+      trimmed.startsWith("//!") ||
+      trimmed.startsWith("/*") ||
+      trimmed.startsWith("*") ||
+      trimmed.startsWith("#");
 
     if (!isComment) {
       for (const [pattern, label] of blockingPatterns) {
@@ -580,9 +656,15 @@ function checkStubsAndSimulations(content, filePath, messages) {
 
     for (const [pattern, label] of warningPatterns) {
       if (pattern.test(line) && !found.has(label)) {
-        if (trimmed.includes("rules/") || trimmed.includes("Detection Patterns")) continue;
+        if (
+          trimmed.includes("rules/") ||
+          trimmed.includes("Detection Patterns")
+        )
+          continue;
         found.add(label);
-        messages.push(`WARNING: ${label} at ${path.basename(filePath)}:${i + 1}.`);
+        messages.push(
+          `WARNING: ${label} at ${path.basename(filePath)}:${i + 1}.`,
+        );
       }
     }
   }

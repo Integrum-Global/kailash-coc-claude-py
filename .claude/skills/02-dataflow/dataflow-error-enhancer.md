@@ -260,7 +260,7 @@ workflow.add_node("UserCreateNode", "create", {
 
 ---
 
-### DF-501: Sync Method in Async Context (v0.10.7+)
+### DF-501: Sync Method in Async Context 
 
 **Error Message:**
 ```
@@ -315,7 +315,7 @@ async def db():
     await db.close_async()
 ```
 
-**Async Methods Available (v0.10.7+):**
+**Async Methods Available :**
 | Sync Method | Async Method | When to Use |
 |-------------|--------------|-------------|
 | `create_tables()` | `create_tables_async()` | Table creation |

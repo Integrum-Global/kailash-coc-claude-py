@@ -62,7 +62,7 @@ def test_workflow_database_integration():
 
     workflow.add_connection("create_user", "user", "find_user", "criteria")
 
-    # Use context manager for proper resource cleanup (required since v0.12.0)
+    # Use context manager for proper resource cleanup (required in the current version)
     with LocalRuntime() as runtime:
         results, run_id = runtime.execute(workflow.build())
 
@@ -93,7 +93,7 @@ def test_complete_data_processing_pipeline():
     workflow.add_connection("validate", "validated", "transform", "raw_data")
     workflow.add_connection("transform", "transformed", "store", "user_data")
 
-    # Use context manager for proper resource cleanup (required since v0.12.0)
+    # Use context manager for proper resource cleanup (required in the current version)
     with LocalRuntime() as runtime:
         results, run_id = runtime.execute(workflow.build())
 
@@ -200,7 +200,7 @@ def test_file_processing(mock_open):  # WRONG
 pytest tests/unit/ --timeout=1 --tb=short
 
 # Integration tests (requires Docker)
-./tests/utils/test-env up && ./tests/utils/test-env status
+# Start test infrastructure (Docker containers)
 pytest tests/integration/ --timeout=5 -v
 
 # E2E tests

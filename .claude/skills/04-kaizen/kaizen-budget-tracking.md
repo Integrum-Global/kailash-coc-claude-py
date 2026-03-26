@@ -311,6 +311,7 @@ for i in range(10):
 
 ## References
 
-- **Source**: the SDK source
+- **Source**: `kailash/trust/constraints/budget_tracker.py`
+- **Source**: `kaizen/governance/posture_budget.py`
 - **Related**: [`kaizen-cost-tracking`](kaizen-cost-tracking.md) -- Basic per-invocation cost tracking via BaseAgent
 - **Related**: [`kaizen-trust-eatp`](kaizen-trust-eatp.md) -- Full EATP trust infrastructure

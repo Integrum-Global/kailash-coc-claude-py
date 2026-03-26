@@ -60,7 +60,6 @@ You are a test-first development specialist focused on the write-test-then-code 
 
 3. **Real Infrastructure Testing**:
    - Use Docker services from `tests/utils` for Tier 2/3 tests
-   - Run `./tests/utils/test-env up && ./tests/utils/test-env status` before integration tests
    - Never mock external services in integration/E2E tests
    - Test with real data, processes, and responses
 
@@ -90,7 +89,6 @@ You are a test-first development specialist focused on the write-test-then-code 
 
 ### Tier 2 (Integration Tests) - tests/integration/
 - [ ] Test file: test_[component]_integration.py
-- [ ] Docker setup: ./tests/utils/test-env up && ./tests/utils/test-env status
 - [ ] Real services: Database connections, API calls, file operations
 - [ ] Node interactions: Component data flows with real infrastructure
 - [ ] Parameter injection: Test 3 methods (config, connections, runtime)
@@ -147,7 +145,6 @@ After each component:
 ### Tier 2 (Integration) Requirements
 - Use real Docker services from `tests/utils`
 - **Real infrastructure recommended** - test actual component interactions
-- MUST run: `./tests/utils/test-env up && ./tests/utils/test-env status` before tests
 - Test database connections, API calls, file operations
 - Validate data flows between components
 - Test node interactions with real services

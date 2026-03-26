@@ -6,12 +6,12 @@ When adding a new `TrustPlaneStore` backend (e.g., PostgreSQL, DynamoDB, or any 
 
 ## Prerequisites
 
-- `TrustPlaneStore` protocol: the SDK source
+- `TrustPlaneStore` protocol: `kailash/trust/plane/store/__init__.py`
 - Conformance test suite: `tests/trust/plane/store/test_store_conformance.py`
 - Existing reference implementations:
-  - SQLite: the SDK source (698 LOC, default backend)
-  - Filesystem: the SDK source (305 LOC)
-  - PostgreSQL: the SDK source (production backend)
+  - SQLite: `kailash/trust/plane/store/sqlite.py` (698 LOC, default backend)
+  - Filesystem: `kailash/trust/plane/store/filesystem.py` (305 LOC)
+  - PostgreSQL: `kailash/trust/plane/store/postgres.py` (production backend)
 - Python 3.11+
 
 ## Store Security Contract (Mandatory Checklist)

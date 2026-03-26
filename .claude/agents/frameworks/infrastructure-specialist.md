@@ -59,7 +59,7 @@ Enterprise infrastructure specialist for the Kailash progressive infrastructure 
 
 ### QueryDialect Strategy Pattern
 
-The `QueryDialect` abstract base class in the SDK source provides dialect-specific SQL generation. Three concrete implementations: `PostgresDialect`, `MySQLDialect`, `SQLiteDialect`.
+The `QueryDialect` abstract base class in the QueryDialect module provides dialect-specific SQL generation. Three concrete implementations: `PostgresDialect`, `MySQLDialect`, `SQLiteDialect`.
 
 ```python
 from kailash.db.dialect import detect_dialect

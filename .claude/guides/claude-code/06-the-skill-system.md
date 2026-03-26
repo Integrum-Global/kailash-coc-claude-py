@@ -343,7 +343,7 @@ Tier 3: E2E Tests
 
 ### 17-gold-standards: Mandatory Practices
 
-**Purpose**: Strongly recommended best practices
+**Purpose**: Recommended best practices
 
 **Key rules**:
 

@@ -135,14 +135,14 @@ Production patterns, enterprise features, tool calling, observability, memory sy
 
 ### Quick References
 - **Specialist Agent**: `.claude/agents/frameworks/kaizen-specialist.md` (comprehensive reference table)
-- **Examples**: `packages/kailash-kaizen/examples/` (35+ working examples)
+- **Examples**: the Kaizen examples (35+ working examples)
 
 ### Key Content Sources
 - **Multi-Modal Pitfalls**: kaizen-specialist.md lines 301-373 (CRITICAL)
 - **A2A Protocol**: kaizen-specialist.md lines 115-165
 - **UX Improvements**: kaizen-specialist.md lines 249-298
 - **Quickstart Template**: kaizen-specialist.md lines 489-520
-- **Test Fixtures**: `packages/kailash-kaizen/tests/conftest.py`
+- **Test Fixtures**: `tests/conftest.py`
 
 ---
 
@@ -190,7 +190,7 @@ analysis = agent2.analyze(findings)
 ### Vision Pattern (Watch for Pitfalls!)
 
 ```python
-from kaizen.agents import VisionAgent, VisionAgentConfig
+from kaizen_agents.agents import VisionAgent, VisionAgentConfig
 
 config = VisionAgentConfig(llm_provider="ollama", model="bakllava")
 agent = VisionAgent(config=config)

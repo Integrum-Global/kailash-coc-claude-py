@@ -121,7 +121,7 @@ The developer's unique contribution is not writing code but defining and maintai
 
 - **Layer 1**: Articulate domain structure
 - **Layer 2**: Document institutional knowledge
-- **Layer 3**: Identify strongly recommended rules
+- **Layer 3**: Identify non-negotiable rules
 - **Layer 4**: Formalize methodology
 - **Layer 5**: Extract patterns from experience
 

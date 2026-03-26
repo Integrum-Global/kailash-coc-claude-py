@@ -215,8 +215,8 @@ def test_agent_execution():
 - ✅ Clean up resources after tests
 - ✅ Cache LLM responses for cost
 - ✅ Run Tier 1 in CI, Tier 2-3 optionally
-- ❌ Avoid mocking database in Tier 2-3
-- ❌ Avoid mocking HTTP calls in Tier 2-3
+- ❌ NEVER mock database in Tier 2-3
+- ❌ NEVER mock HTTP calls in Tier 2-3
 - ❌ NEVER skip resource cleanup
 - ❌ NEVER commit test credentials
 

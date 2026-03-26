@@ -5,7 +5,7 @@ Whisper transcription and audio analysis.
 ## TranscriptionAgent
 
 ```python
-from kaizen.agents import TranscriptionAgent, TranscriptionAgentConfig
+from kaizen_agents.agents import TranscriptionAgent, TranscriptionAgentConfig
 
 config = TranscriptionAgentConfig()  # Uses Whisper
 agent = TranscriptionAgent(config=config)
@@ -23,4 +23,4 @@ print(result['language'])
 - Languages: 90+ supported
 
 ## References
-- **Examples**: `packages/kailash-kaizen/examples/8-multi-modal/audio-transcription/`
+- **Examples**: `examples/8-multi-modal/audio-transcription/`

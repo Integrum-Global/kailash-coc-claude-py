@@ -62,3 +62,8 @@ router.route(completion)
 ## Routing Validation (8 Steps)
 
 1. TTL check → 2. Self-message check → 3. Recipient state → 4. Communication envelope → 5. Directionality → 6. Correlation ID → 7. Channel exists → 8. Deliver
+
+## Reference
+
+- Spec: `workspaces/kaizen-l3/briefs/03-messaging.md`
+- Source: `kaizen/l3/messaging/`

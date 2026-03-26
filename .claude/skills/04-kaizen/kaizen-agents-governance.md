@@ -70,6 +70,8 @@ _BUDGET_QUERY_METHODS = frozenset({"get_snapshot", "is_held", "get_events"})
 
 The `envelope` property returns `copy.deepcopy()` to prevent mutation through dict reference.
 
+**Source**: `packages/kaizen-agents/src/kaizen_agents/supervisor.py`
+
 ## Seven Governance Modules
 
 All modules share cross-cutting patterns:
@@ -97,6 +99,8 @@ address = tracker.get_address("worker-1")
 # "D1-R1-T1-R1"
 ```
 
+**Source**: `packages/kaizen-agents/src/kaizen_agents/governance/accountability.py`
+
 ### 2. BudgetTracker (Reclamation + Predictive Warnings)
 
 Budget exhaustion triggers HELD (not BLOCKED) — siblings may have budget for reallocation.
@@ -117,6 +121,8 @@ budget.reclaim("agent-1")
 # Reallocation: resolve HELD by transferring from sibling
 budget.reallocate(from_agent="agent-2", to_agent="agent-1", amount=2.0)
 ```
+
+**Source**: `packages/kaizen-agents/src/kaizen_agents/governance/budget.py`
 
 ### 3. CascadeManager (Envelope Tightening + Termination)
 
@@ -140,6 +146,8 @@ cascade.terminate("supervisor", reason="budget_exhausted")
 
 `_intersect_dicts()` handles: nested dicts (recurse), numerics (take min), "allowed" lists (intersection), "blocked" lists (union). Recursion bounded to depth 10.
 
+**Source**: `packages/kaizen-agents/src/kaizen_agents/governance/cascade.py`
+
 ### 4. ClearanceEnforcer + ClassificationAssigner
 
 `DataClassification` is an `IntEnum` (C0=0 through C4=4) — direct comparison works.
@@ -162,6 +170,8 @@ enforcer.register_value("api_key", DataClassification.PUBLIC)  # Rejected!
 
 Recursive leaf scanning via `_extract_string_leaves()` (bounded to depth 10) catches secrets in nested structures.
 
+**Source**: `packages/kaizen-agents/src/kaizen_agents/governance/clearance.py`
+
 ### 5. DerelictionDetector
 
 Detects when a parent delegates with near-identical envelope (failing to narrow governance).
@@ -176,6 +186,8 @@ detector.check_delegation("parent", parent_envelope, "child", child_envelope)
 stats = detector.get_stats()
 # DerelictionStats(total_warnings=N, dereliction_count=N, ...)
 ```
+
+**Source**: `packages/kaizen-agents/src/kaizen_agents/governance/dereliction.py`
 
 ### 6. BypassManager (Emergency Override)
 
@@ -194,6 +206,8 @@ mgr.revoke_bypass("agent-1")
 
 Uses `time.monotonic()` for timing. Original envelope preserved for restoration after expiry.
 
+**Source**: `packages/kaizen-agents/src/kaizen_agents/governance/bypass.py`
+
 ### 7. VacancyManager (Orphan Detection)
 
 When parent terminates: children become orphans, grandparent auto-designated as acting parent.
@@ -209,6 +223,8 @@ vacancy.report_termination("parent")
 orphans = vacancy.get_orphans()
 # [OrphanRecord(agent_id="child", ...)]
 ```
+
+**Source**: `packages/kaizen-agents/src/kaizen_agents/governance/vacancy.py`
 
 ## AuditTrail (EATP Hash Chain)
 
@@ -227,6 +243,8 @@ records = trail.to_list()
 # [AuditRecord(record_type="genesis", ...), AuditRecord(record_type="delegation", ...)]
 ```
 
+**Source**: `packages/kaizen-agents/src/kaizen_agents/audit/trail.py`
+
 ## Integration with L3 SDK Primitives
 
 ### Envelope Allocation via SDK EnvelopeSplitter
@@ -244,6 +262,8 @@ subtasks = [
 child_envelopes = allocator.allocate_with_sdk(parent_envelope, subtasks)
 ```
 
+**Source**: `packages/kaizen-agents/src/kaizen_agents/policy/envelope_allocator.py`
+
 ### Context Bridging via SDK ScopedContext
 
 ```python
@@ -260,6 +280,8 @@ context = bridge.inject_context(keys=["project.name"])
 merged = bridge.merge_child_results(child_scope)
 ```
 
+**Source**: `packages/kaizen-agents/src/kaizen_agents/context/_scope_bridge.py`
+
 ## Type Adapter Strategy
 
 31 types mapped across kaizen-agents and kailash-kaizen:
@@ -269,6 +291,8 @@ merged = bridge.merge_child_results(child_scope)
 - 2 orchestration-specific (no SDK equivalent): `ConstraintEnvelope`, `MemoryConfig`
 
 Pattern: internal code uses local types. `_sdk_compat.py` adapters convert at SDK boundaries only.
+
+**Source**: `packages/kaizen-agents/src/kaizen_agents/_sdk_compat.py`
 
 ## Install
 

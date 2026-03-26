@@ -2,7 +2,7 @@
 
 ## Scope
 
-These rules apply when editing PACT governance files.
+These rules apply when working with PACT governance code.
 
 These rules supplement `.claude/rules/security.md` and `.claude/rules/trust-plane-security.md`. All three apply to PACT governance files.
 Violations during code review by intermediate-reviewer are BLOCK-level findings.
@@ -19,11 +19,11 @@ ctx = GovernanceContext(envelope=envelope, engine=engine, frozen=True)
 agent.set_governance(ctx)
 
 # DO NOT:
-agent.set_governance(engine)  # Exposes mutable engine -- self-modification attack vector
-agent._engine = engine        # Private field bypass -- same risk
+agent.set_governance(engine)  # Exposes mutable engine — self-modification attack vector
+agent._engine = engine        # Private field bypass — same risk
 ```
 
-**Why**: `GovernanceContext` is an immutable view. If an agent receives the engine directly, it can modify its own governance constraints at runtime -- defeating the entire trust model.
+**Why**: `GovernanceContext` is an immutable view. If an agent receives the engine directly, it can modify its own governance constraints at runtime — defeating the entire trust model.
 
 ### 2. Monotonic Tightening
 
@@ -33,14 +33,14 @@ Child envelopes MUST be equal to or more restrictive than parent envelopes. `int
 # DO:
 child_envelope = intersect_envelopes(parent_envelope, requested_envelope)
 # child_envelope.max_cost <= parent_envelope.max_cost (always)
-# child_envelope.allowed_tools is a subset of parent_envelope.allowed_tools (always)
+# child_envelope.allowed_tools ⊆ parent_envelope.allowed_tools (always)
 
 # DO NOT:
 child_envelope = requested_envelope  # Bypasses parent constraints entirely
 child_envelope.max_cost = parent_envelope.max_cost + 100  # Widening is forbidden
 ```
 
-**Why**: Governance flows downward through the org hierarchy. A child can never have more permissions than its parent -- this is the monotonic tightening invariant. Violating it allows privilege escalation through delegation.
+**Why**: Governance flows downward through the org hierarchy. A child can never have more permissions than its parent — this is the monotonic tightening invariant. Violating it allows privilege escalation through delegation.
 
 ### 3. D/T/R Grammar
 
@@ -56,7 +56,7 @@ address = Address(org="acme", dept="engineering")          # Missing Role
 address = Address(org="acme", dept="engineering", team="backend")  # Missing Role after Team
 ```
 
-**Why**: The D/T/R grammar ensures every address resolves to a concrete governance envelope. An address without a terminal Role is ambiguous -- it could match multiple envelopes with different constraints.
+**Why**: The D/T/R grammar ensures every address resolves to a concrete governance envelope. An address without a terminal Role is ambiguous — it could match multiple envelopes with different constraints.
 
 ### 4. Fail-Closed Decisions
 
@@ -77,12 +77,12 @@ def verify_action(self, action: Action) -> Decision:
         envelope = self._resolve_envelope(action.agent_address)
         return self._evaluate(action, envelope)
     except EnvelopeNotFoundError:
-        return Decision.ALLOWED  # Fail-open -- missing envelope permits everything!
+        return Decision.ALLOWED  # Fail-open — missing envelope permits everything!
     except Exception:
         raise  # Unhandled exception bypasses governance entirely
 ```
 
-**Why**: Governance is a security boundary. An error in constraint resolution or evaluation MUST NOT result in permissive access. Unknown states are denied -- this is the same principle as trust-plane-security.md's monotonic escalation.
+**Why**: Governance is a security boundary. An error in constraint resolution or evaluation MUST NOT result in permissive access. Unknown states are denied — this is the same principle as trust-plane-security.md's monotonic escalation.
 
 ### 5. Default-Deny Tool Registration
 
@@ -97,10 +97,10 @@ engine.register_tool("code_execute", ToolPolicy(allowed_roles=["developer"]))
 # DO NOT:
 def check_tool(self, tool_name: str) -> bool:
     if tool_name not in self._registered_tools:
-        return True  # Unknown tool -- allow by default (DANGEROUS)
+        return True  # Unknown tool — allow by default (DANGEROUS)
 ```
 
-**Why**: Default-allow for tools means any new or misspelled tool name bypasses governance. The tool registry is the allowlist -- anything not on it is denied.
+**Why**: Default-allow for tools means any new or misspelled tool name bypasses governance. The tool registry is the allowlist — anything not on it is denied.
 
 ### 6. NaN/Inf on Financial Fields
 
@@ -119,7 +119,7 @@ def __post_init__(self):
 # DO NOT:
 def __post_init__(self):
     if self.max_cost is not None and self.max_cost < 0:
-        raise ValueError("negative")  # NaN < 0 is False -- NaN passes silently
+        raise ValueError("negative")  # NaN < 0 is False — NaN passes silently
 ```
 
 **Why**: `NaN` poisons all numeric comparisons (`NaN < X` is always `False`, `NaN > X` is always `False`). If `NaN` enters a governance envelope's financial field, all budget checks pass silently. `Inf` similarly defeats upper-bound checks. Every numeric field in `GovernanceEnvelope` MUST validate with `math.isfinite()`.
@@ -145,8 +145,8 @@ def compile_org(self, root: OrgNode, depth: int = 0) -> CompiledOrg:
 
 # DO NOT:
 def compile_org(self, root: OrgNode) -> CompiledOrg:
-    for child in root.children:  # No depth limit -- stack overflow on cyclic input
-        self.compile_org(child)  # No node count limit -- OOM on large orgs
+    for child in root.children:  # No depth limit — stack overflow on cyclic input
+        self.compile_org(child)  # No node count limit — OOM on large orgs
 ```
 
 **Why**: Org trees can be arbitrarily deep and wide. Without compilation limits, a malicious or malformed org definition can cause stack overflow (unbounded recursion), memory exhaustion (millions of nodes), or CPU exhaustion (exponential traversal). These limits are defense-in-depth against denial-of-service.
@@ -175,38 +175,10 @@ class GovernanceEngine:
 # DO NOT:
 class GovernanceEngine:
     def resolve_envelope(self, address: Address) -> GovernanceEnvelope:
-        return self._envelopes[address.key]  # Race condition -- concurrent reads/writes corrupt state
+        return self._envelopes[address.key]  # Race condition — concurrent reads/writes corrupt state
 ```
 
 **Why**: `GovernanceEngine` is shared across agent threads. Without locking, concurrent envelope updates and reads can produce torn reads (partially updated envelopes) or lost updates. Both lead to incorrect governance decisions.
-
-### 9. NaN/Inf Check on ALL Context Values
-
-`verify_action()` and `evaluate_financial()` must check `math.isfinite()` for BOTH `transaction_amount`/`cost` AND `daily_total` context values. NaN bypasses comparison operators (`NaN < X` is `False`, `NaN > X` is `False`), silently passing budget checks.
-
-```python
-# DO:
-import math
-
-def verify_action(self, address: str, action: str, context: dict) -> GovernanceVerdict:
-    for key in ("transaction_amount", "cost", "daily_total"):
-        val = context.get(key)
-        if val is not None and isinstance(val, (int, float)):
-            if not math.isfinite(float(val)):
-                return GovernanceVerdict(
-                    level="blocked",
-                    reason=f"Non-finite value in context['{key}']: {val}",
-                )
-    # ... proceed with evaluation
-
-# DO NOT:
-def verify_action(self, address: str, action: str, context: dict) -> GovernanceVerdict:
-    amount = context.get("transaction_amount", 0)
-    if amount > self._limit:  # NaN > limit is False -- NaN passes!
-        return GovernanceVerdict(level="blocked", reason="Over limit")
-```
-
-**Why**: The kailash-rs red team found that `float('nan')` injected into context dicts bypasses ALL numeric comparisons. Checking only `transaction_amount` is insufficient -- `daily_total` is equally vulnerable and poisons cumulative budget checks (`daily_total + amount <= limit` evaluates to `False` when `daily_total` is `NaN`).
 
 ## MUST NOT Rules
 
@@ -226,7 +198,7 @@ class Agent:
         self._engine = engine  # Agent can call engine.update_envelope() on itself!
 ```
 
-**Why**: If an agent holds a reference to the engine, it can modify its own governance envelope -- removing tool restrictions, raising budget limits, or escalating privileges. The `GovernanceContext` wrapper provides read-only access to the agent's resolved envelope without exposing mutation methods.
+**Why**: If an agent holds a reference to the engine, it can modify its own governance envelope — removing tool restrictions, raising budget limits, or escalating privileges. The `GovernanceContext` wrapper provides read-only access to the agent's resolved envelope without exposing mutation methods.
 
 ### 2. MUST NOT Bypass Monotonic Tightening
 
@@ -243,7 +215,7 @@ child = GovernanceEnvelope(max_cost=parent.max_cost * 2)  # Widening!
 child.allowed_tools = parent.allowed_tools | {"dangerous_tool"}  # Superset!
 ```
 
-**Why**: Monotonic tightening is the foundational invariant of hierarchical governance. If any code path can widen a child envelope, the entire governance hierarchy is compromised -- a leaf agent could accumulate permissions exceeding the root.
+**Why**: Monotonic tightening is the foundational invariant of hierarchical governance. If any code path can widen a child envelope, the entire governance hierarchy is compromised — a leaf agent could accumulate permissions exceeding the root.
 
 ### 3. MUST NOT Use Bare Exception for Governance Errors
 
@@ -260,29 +232,12 @@ raise GovernanceViolationError(
 
 # DO NOT:
 raise ValueError("Budget exceeded")  # No structured details, wrong hierarchy
-raise Exception("something went wrong")  # Bare exception -- uncatchable by governance handlers
+raise Exception("something went wrong")  # Bare exception — uncatchable by governance handlers
 ```
 
 **Why**: Governance errors carry structured context (`details` dict) that audit systems, dashboards, and parent agents consume. Bare exceptions lose this context and cannot be distinguished from unrelated errors in `except` handlers.
 
-### 4. MUST NOT Allow GovernanceContext From External Data
-
-`GovernanceContext` must NOT be constructable from external data (dict, JSON, pickle). The only valid construction path is `GovernanceEngine.get_context()`.
-
-```python
-# DO:
-ctx = engine.get_context(address)  # Engine constructs frozen context internally
-agent = PactGovernedAgent(ctx=ctx)
-
-# DO NOT:
-ctx = GovernanceContext(**request.json())       # Forged from HTTP request
-ctx = GovernanceContext.from_dict(untrusted)    # Forged from dict
-ctx = pickle.loads(payload)                     # Forged via deserialization
-```
-
-**Why**: The kailash-rs red team found that if `GovernanceContext` is deserializable, an agent (or attacker) can forge governance state -- crafting a context with elevated clearance, widened envelopes, or additional tool permissions. The Rust SDK removed `Deserialize` from `GovernanceContext` entirely. In Python, `GovernanceContext(frozen=True)` must not support `__reduce__`, `from_dict()`, `from_json()`, or any other reconstruction path from untrusted data.
-
 ## Cross-References
 
-- `.claude/rules/trust-plane-security.md` -- Trust-plane security patterns (NaN/Inf, bounded collections, fail-closed)
-- `.claude/rules/eatp.md` -- EATP SDK conventions (dataclasses, error hierarchy, cryptography)
+- `.claude/rules/trust-plane-security.md` — Trust-plane security patterns (NaN/Inf, bounded collections, fail-closed)
+- `.claude/rules/eatp.md` — EATP SDK conventions (dataclasses, error hierarchy, cryptography)

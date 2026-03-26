@@ -106,7 +106,7 @@ result = {'valid': valid, 'data': data}
 
 ```bash
 # MUST run before integration tests
-./tests/utils/test-env up && ./tests/utils/test-env status
+# Start test infrastructure (Docker containers)
 ```
 
 ## Fixtures for Real Services

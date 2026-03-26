@@ -172,3 +172,7 @@ elif verdict.level == "flagged":
 - `pact-governance-engine.md` -- engine.get_context(), engine.verify_action()
 - `pact-envelopes.md` -- effective envelope in context
 - `pact-kaizen-integration.md` -- wrapping Kaizen agents
+- Source: `pact/governance/agent.py`
+- Source: `pact/governance/decorators.py`
+- Source: `pact/governance/middleware.py`
+- Source: `pact/governance/context.py`

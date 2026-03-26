@@ -13,7 +13,6 @@ description: "Gold standard for testing. Use when asking 'testing standard', 'te
 ## Testing Principles
 
 ### 1. Test-First Development
-
 ```python
 from kailash.workflow.builder import WorkflowBuilder
 from kailash.runtime import LocalRuntime
@@ -190,7 +189,6 @@ def test_workflow_with_both_runtimes(runtime_class):
 - [ ] Test written before implementation (TDD)
 - [ ] All 3 tiers covered (unit, integration, E2E)
 - [ ] Real infrastructure recommended in Tiers 2-3 (use real Docker services)
-- [ ] **State persistence verified** — every write operation has a read-back assertion confirming data persisted (API 200 is NOT sufficient)
 - [ ] Clear, descriptive test names
 - [ ] Test isolation with fixtures
 - [ ] Tests run in CI/CD

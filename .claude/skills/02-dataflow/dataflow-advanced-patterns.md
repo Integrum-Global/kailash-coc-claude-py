@@ -51,9 +51,9 @@ Each workflow execution gets its own transaction context. Concurrent workflows a
 
 ---
 
-## DataFlow + Nexus Integration (v0.11.0+)
+## DataFlow + Nexus Integration 
 
-As of v0.11.0, `auto_migrate=True` (default) works correctly everywhere including Docker and FastAPI via the synchronous DDL executor. No startup tradeoffs.
+`auto_migrate=True` (default) works correctly everywhere including Docker and FastAPI . No startup tradeoffs.
 
 ```python
 import os
@@ -86,11 +86,11 @@ workflow.add_node("UserCreateNode", "create", {"email": "{{email}}", "full_name"
 app.register("create_user", workflow.build())
 ```
 
-### Startup Times (v0.11.0+)
+### Startup Times 
 
 | Models | Time | Notes                       |
 | ------ | ---- | --------------------------- |
-| 1-3    | <2s  | the synchronous DDL executor handles DDL |
+| 1-3    | <2s  | Synchronous DDL handling |
 | 5      | <3s  | Scales well                 |
 | 10     | <5s  | Still fast                  |
 

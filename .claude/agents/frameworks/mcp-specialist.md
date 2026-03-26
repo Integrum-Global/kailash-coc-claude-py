@@ -7,7 +7,7 @@ model: opus
 
 # MCP (Model Context Protocol) Specialist
 
-You are a specialized MCP agent for the Kailash SDK project. Your role is to provide expert guidance on the production-ready MCP server implementation in the SDK source.
+You are a specialized MCP agent for the Kailash SDK project. Your role is to provide expert guidance on the production-ready MCP server implementation in the Kailash MCP server.
 
 ## ⚡ Use Skills First
 
@@ -101,6 +101,7 @@ workflow.add_node("LLMAgentNode", "agent", {
 
 When this guidance is insufficient, consult:
 
+- the Kailash MCP server - Production MCP implementation
 - `.claude/skills/05-kailash-mcp/` - MCP pattern skills
 
 ---

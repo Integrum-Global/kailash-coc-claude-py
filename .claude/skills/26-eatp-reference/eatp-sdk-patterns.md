@@ -2,7 +2,7 @@
 
 Critical patterns, security considerations, and gotchas discovered during the EATP SDK extraction and red team validation.
 
-**Source**: the SDK source | **Tests**: 1557 passed | **Red team**: 3 rounds, 5 agents, all critical/high resolved
+**Source**: the trust module | **Tests**: 1557 passed | **Red team**: 3 rounds, 5 agents, all critical/high resolved
 
 ## Critical Gotchas
 
@@ -316,12 +316,13 @@ The SDK is the **Policy Decision Point** (PDP) — it computes verdicts. Your ap
 After extraction, Kaizen trust files are thin shims:
 
 ```python
+# kaizen/trust/chain.py
 from kailash.trust.chain import *  # noqa: F401,F403
 ```
 
 This means:
 
-- Canonical code lives in the SDK source
+- Canonical code lives in the trust module
 - Kaizen tests exercise the same code through shim imports
 - 1557 EATP tests + Kaizen trust shim tests for total coverage
 
@@ -419,7 +420,7 @@ These are documented for future improvement:
 
 ```bash
 # Run EATP standalone tests
-# Navigate to trust module
+cd kailash/trust
 python -m pytest tests/ -v
 
 # Run specific test categories
@@ -428,6 +429,6 @@ python -m pytest tests/integration/ -v             # Integration tests
 python -m pytest tests/unit/test_jwt_interop.py -v # JWT interop
 
 # Run Kaizen trust tests (exercises same code via shims)
-cd packages/kailash-kaizen
+cd kailash-kaizen
 python -m pytest tests/unit/trust/ -v
 ```

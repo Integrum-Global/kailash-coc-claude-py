@@ -4,6 +4,7 @@
 
 These rules apply when editing:
 
+# Applies to trust-plane code
 
 These rules supplement `.claude/rules/security.md`. Both apply to trust-plane files.
 Violations during code review by intermediate-reviewer are BLOCK-level findings.

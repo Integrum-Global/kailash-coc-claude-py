@@ -83,3 +83,9 @@ if verdict.zone in ("auto_approved", "flagged"):
 - INV-3: Non-bypassable enforcement
 - INV-7: Finite arithmetic only (math.isfinite on all inputs)
 - INV-9: Atomic cost recording (asyncio.Lock)
+
+## Reference
+
+- Spec: `workspaces/kaizen-l3/briefs/01-envelope-extensions.md`
+- Source: `kaizen/l3/envelope/`
+- Tests: `tests/unit/l3/envelope/`

@@ -202,48 +202,11 @@ decision = can_access(
 )
 ```
 
-## Security: Fail-Closed Invariants
-
-The kailash-rs red team verified 7 fail-closed invariants that apply equally to Python. Every one of these must hold. Violations are BLOCK-level findings.
-
-### Invariant 1: NULL Dimension = BLOCKED
-
-If any dimension in the governance context resolves to `None` (e.g., missing envelope, missing clearance field), the decision is `BLOCKED`. Never treat `None` as permissive.
-
-### Invariant 2: Missing Ancestor = DENY
-
-If the role address references a parent department or team that does not exist in the compiled org, access is `DENY`. Missing ancestors indicate an orphaned or forged address.
-
-### Invariant 3: Unknown Classification = DENY
-
-If a `KnowledgeItem` has a `classification` value that is not in the `ConfidentialityLevel` enum, access is `DENY`. Never default-allow unknown classification levels.
-
-### Invariant 4: Vacant Role = DENY
-
-If the role address resolves to a position that exists in the org but has no assigned agent or clearance, access is `DENY`. Vacant positions have no governance authority.
-
-### Invariant 5: Unknown Action = HELD
-
-If `verify_action()` receives an action string that is not in the registered action set, the verdict is `HELD` (not `BLOCKED`, not `auto_approved`). Unknown actions require human review.
-
-### Invariant 6: NEVER_DELEGATED Actions = HELD
-
-Seven actions must NEVER be auto-approved regardless of envelope permissions. They always require human review:
-
-1. `posture_upgrade` -- Changing an agent's trust posture level
-2. `envelope_modify` -- Widening or altering governance envelopes
-3. `clearance_change` -- Granting, revoking, or modifying knowledge clearance
-4. `bridge_create` -- Creating cross-organizational PactBridge connections
-5. `ksp_create` -- Creating KnowledgeSharePolicy grants
-6. `emergency_bypass` -- Bypassing governance for emergency operations
-7. `agent_decommission` -- Removing an agent from the organization
-
-### Invariant 7: Default = DENY (Step 5)
-
-If no explicit rule grants access, the decision is `DENY`. This is step 5 of the 5-step algorithm and the ultimate backstop. No code path may reach the end of `check_access()` or `can_access()` without returning a decision.
-
 ## Cross-References
 
 - `pact-governance-engine.md` -- engine.check_access() wraps can_access()
 - `pact-envelopes.md` -- confidentiality_clearance in envelope config
 - `pact-dtr-addressing.md` -- containment checks use address prefix matching
+- Source: `pact/governance/access.py`
+- Source: `pact/governance/clearance.py`
+- Source: `pact/governance/knowledge.py`

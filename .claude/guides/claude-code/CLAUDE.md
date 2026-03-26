@@ -43,7 +43,7 @@ This means:
 
 **Practical Impact**: When you ask Claude to work with DataFlow, it doesn't try to figure out database operations from first principles. It uses the `dataflow-specialist` agent and the `02-dataflow` skill which contain proven patterns.
 
-### Philosophy 2: Quality is Non-Negotiable
+### Philosophy 2: Quality is Important
 
 The setup enforces quality at multiple levels:
 
@@ -119,7 +119,7 @@ Think of Claude Code as a **highly capable junior developer** with access to a *
 │  │  1. Use DataFlow (skill 02-dataflow)            │       │
 │  │  2. Consult dataflow-specialist (agent)         │       │
 │  │  3. Generate CRUD nodes                         │       │
-│  │  4. Write tests (Real infrastructure recommended - rule)             │       │
+│  │  4. Write tests (real infrastructure recommended)             │       │
 │  │  5. Deploy via Nexus (skill 03-nexus)           │       │
 │  └─────────────────────────────────────────────────┘       │
 │                                                              │
@@ -196,7 +196,7 @@ Think of Claude Code as a **highly capable junior developer** with access to a *
 │   ├── no-stubs.md     # No stubs/TODOs/placeholders
 │   ├── patterns.md     # Kailash pattern rules
 │   ├── security.md     # Security rules
-│   └── testing.md      # Testing policies (Real infrastructure recommended)
+│   └── testing.md      # Testing policies (real infrastructure recommended)
 │
 ├── skills/              # 28 knowledge directories
 │   ├── 01-core-sdk/    # Core SDK patterns
@@ -271,7 +271,7 @@ User: "Create a User model with DataFlow"
 
 6. CLAUDE OFFERS TO COMMIT
    └── RULE APPLIED: agents.md
-   └── Security review recommended (security-reviewer)
+   └── security review recommended
    └── MUST pass security audit before commit
 ```
 

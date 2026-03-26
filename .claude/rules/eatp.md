@@ -2,7 +2,7 @@
 
 ## Scope
 
-These rules apply when editing the SDK source files (excluding `plane/`)
+These rules apply when working with EATP trust code
 
 ## SDK Conventions
 

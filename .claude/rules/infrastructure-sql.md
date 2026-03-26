@@ -4,6 +4,8 @@
 
 These rules apply when editing files in:
 
+# Applies to database infrastructure code
+
 
 ## MUST Rules
 

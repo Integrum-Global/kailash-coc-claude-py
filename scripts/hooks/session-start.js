@@ -196,7 +196,11 @@ function initializeSession(data) {
 function checkPythonPackageFreshness(cwd) {
   // Check all packages for version consistency
   const packageDirs = [
-    { name: "kailash", pyproject: "pyproject.toml", init: "src/kailash/__init__.py" },
+    {
+      name: "kailash",
+      pyproject: "pyproject.toml",
+      init: "src/kailash/__init__.py",
+    },
   ];
 
   // Also check packages/ subdirectories
@@ -277,7 +281,9 @@ function checkPythonPackageFreshness(cwd) {
     try {
       const marker = JSON.parse(fs.readFileSync(markerPath, "utf8").trim());
       if (marker.synced_at) {
-        const daysSince = (Date.now() - new Date(marker.synced_at).getTime()) / (1000 * 60 * 60 * 24);
+        const daysSince =
+          (Date.now() - new Date(marker.synced_at).getTime()) /
+          (1000 * 60 * 60 * 24);
         if (daysSince > 7) {
           console.error(
             `[COC-SYNC] WARNING: COC sync is ${Math.floor(daysSince)} days old. ` +

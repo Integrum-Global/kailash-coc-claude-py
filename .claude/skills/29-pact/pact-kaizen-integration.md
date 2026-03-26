@@ -265,3 +265,7 @@ org:
 - `pact-governance-engine.md` -- GovernanceEngine API
 - `pact-governed-agents.md` -- PactGovernedAgent wrapping pattern
 - `pact-envelopes.md` -- envelope model consumed by adapter
+- Source: `pact/governance/envelope_adapter.py`
+- Source: `pact/governance/audit.py`
+- Source: `pact/governance/gradient.py`
+- Source: `pact/governance/yaml_loader.py`

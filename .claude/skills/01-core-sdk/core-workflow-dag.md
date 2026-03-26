@@ -39,6 +39,6 @@ All mutations (`add_node`, `add_edge`, `remove_node`, `remove_edge`) automatical
 
 ## Reference
 
-- Source: `kailash.workflow.dag` (~890 lines)
-- Tests: `tests/` (70 tests)
+- Source: `kailash/workflow/dag.py` (~890 lines)
+- Tests: `tests/unit/workflow/test_workflow_dag.py` (70 tests)
 - Replaces: networkx (now optional, viz only)

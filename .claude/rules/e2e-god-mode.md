@@ -84,27 +84,6 @@ During multi-persona testing, assume the role needed for each operation.
 3. Need to test RBAC -> try each role and verify access/denial
 ```
 
-### 6. Verify State Persistence — Not Just API Success
-
-When a write operation (create, update, delete) succeeds:
-
-**MUST**: Verify the state actually persisted by reading it back after the operation.
-**MUST NOT**: Treat API 200 or a success toast as sufficient proof that data was written.
-
-**Pattern:**
-
-```
-1. Perform the write operation (create record, update field, etc.)
-2. Navigate away from the page OR reload the page
-3. Navigate back / query the record
-4. Verify the state persisted (record exists, field is updated, modal doesn't reappear)
-5. If state did NOT persist, investigate — DataFlow silently ignores unknown parameters
-```
-
-**Why this rule exists:** DataFlow `UpdateNode` silently ignores unknown parameter names (e.g., `conditions`/`updates` instead of `filter`/`fields`). The API returns success, the UI shows a toast, but zero bytes were written to the database. This class of bug is invisible to any test that only checks the API response.
-
-**Known failure pattern:** Any test that asserts `response.status == 200` or `toast.isVisible()` without a read-back verification is testing the API contract, not the business outcome.
-
 ## Pre-E2E Checklist
 
 Before starting ANY E2E test run:

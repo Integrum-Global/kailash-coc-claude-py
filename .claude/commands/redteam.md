@@ -32,18 +32,6 @@ Review implementation with red team agents using playwright mcp (web) and marion
   - Using frontend API endpoints only
   - Using browser via Playwright MCP only
 
-### 1b. State persistence verification
-
-For every critical write operation (create, update, delete) in the application:
-
-- Perform the write via API or browser
-- Navigate away or reload
-- Verify the state persisted (read-back check)
-- DataFlow silently ignores unknown parameters — a write can return 200 while writing zero bytes
-- Any test that only checks `response.status == 200` or `toast.isVisible()` is testing the API contract, NOT the business outcome
-
-This check catches the #1 source of false-positive tests: silent DataFlow no-ops from wrong parameter names.
-
 ### 2. User flow validation
 
 Ensure red team agents peruse `workspaces/<project>/03-user-flows/` and fully understand the detailed storyboard for each user.

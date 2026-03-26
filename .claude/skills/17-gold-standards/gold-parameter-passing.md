@@ -130,7 +130,7 @@ class CustomNode(Node):
 - **Testing**: Testable parameter contracts
 - **Isolation**: Automatic scoping prevents data leakage
 
-## Parameter Naming (v0.10.3+)
+## Parameter Naming 
 
 ### Using "metadata" as a Parameter Name
 
@@ -145,7 +145,7 @@ class CustomNode(Node):
                 type=dict,
                 required=False,
                 default=None,
-                description="User metadata (v0.10.3+)"
+                description="User metadata "
             )
         }
 

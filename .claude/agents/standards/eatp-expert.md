@@ -156,7 +156,7 @@ Invoke these skills when needed:
 
 ## TrustPlane Reference Implementation
 
-TrustPlane (the SDK source) is the EATP reference implementation — a production-grade Python library implementing the full trust chain.
+TrustPlane for the Kailash Python SDK is the EATP reference implementation — a production-grade Python library implementing the full trust chain.
 
 ### Trust Chain Coverage
 

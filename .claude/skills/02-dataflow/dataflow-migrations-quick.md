@@ -13,14 +13,14 @@ Automatic schema migrations with safety controls for development and production.
 > Related Skills: [`dataflow-models`](#), [`dataflow-existing-database`](#)
 > Related Subagents: `dataflow-specialist` (complex migrations, production safety)
 
-> **DataFlow v0.11.0 Update**: `auto_migrate=True` now works correctly in Docker/FastAPI environments using the synchronous DDL executor (psycopg2/sqlite3 for synchronous DDL). The previous workaround of using `auto_migrate=False` + `create_tables_async()` is **OBSOLETE**.
+> **DataFlow Update**: `auto_migrate=True` now works correctly in Docker/FastAPI environments (psycopg2/sqlite3 for synchronous DDL). The previous workaround of using `auto_migrate=False` + `create_tables_async()` is **OBSOLETE**.
 >
 > The deprecated parameters (`existing_schema_mode`, `enable_model_persistence`, `skip_registry`, `skip_migration`) have been removed. Use `auto_migrate=True` (default) for automatic schema management, or `auto_migrate=False` to skip schema modifications.
 
 ## Quick Reference
 
 - **Development**: `auto_migrate=True` (default) - safe, preserves data
-- **Docker/FastAPI**: `auto_migrate=True` - works correctly as of v0.10.15+
+- **Docker/FastAPI**: `auto_migrate=True` - works correctly as of the current version
 - **Production**: `auto_migrate=True` - same pattern for all environments
 - **Enterprise**: Full migration system with risk assessment for complex operations
 - **Safety**: auto_migrate ALWAYS preserves existing data, adds new columns safely
@@ -71,7 +71,7 @@ class Product:
 
 **Safety**: Verified - no data loss on repeat runs
 
-### Production Mode (v0.10.15+)
+### Production Mode (current version)
 
 ```python
 # Same configuration works for all environments
@@ -162,7 +162,7 @@ class User:
 ### Mistake 2: Using Obsolete Workaround Pattern
 
 ```python
-# OBSOLETE - This workaround was needed before v0.10.15
+# OBSOLETE - This workaround was needed in older versions
 # Now auto_migrate=True works in Docker/FastAPI!
 db_prod = DataFlow(
     database_url="postgresql://prod/db",
@@ -171,7 +171,7 @@ db_prod = DataFlow(
 # ... then manually calling create_tables_async() in FastAPI lifespan
 ```
 
-**Fix: Use Simple Configuration (v0.10.15)**
+**Fix: Use Simple Configuration (current)**
 
 ```python
 # CORRECT - auto_migrate=True now works in Docker/FastAPI
@@ -179,7 +179,7 @@ db_prod = DataFlow(
     database_url="postgresql://prod/db",
     auto_migrate=True  # Default - safe: preserves data, adds new columns only
 )
-# the synchronous DDL executor handles table creation synchronously (no event loop issues)
+# Table creation is handled synchronously (no event loop issues)
 ```
 
 ## Related Patterns
@@ -197,8 +197,8 @@ db_prod = DataFlow(
 
 ## Quick Tips
 
-- `auto_migrate=True` is safe for ALL environments (v0.10.15+)
-- Works correctly in Docker/FastAPI via the synchronous DDL executor
+- `auto_migrate=True` is safe for ALL environments (current version)
+- Works correctly in Docker/FastAPI 
 - Always provide defaults for NOT NULL columns
 - Enterprise migration system for complex operations (type changes, renames)
 - Test migrations on staging before production

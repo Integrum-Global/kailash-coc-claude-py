@@ -42,6 +42,10 @@ Pre-existing failures MUST be fixed, not reported. Stubs are BLOCKED. Naive fall
 - **Security review** (security-reviewer) before commits — strongly recommended — see `rules/agents.md` Rule 2
 - **Real infrastructure recommended** in Tier 2/3 tests — see `rules/testing.md`
 
+### 6. LLM-First Agent Reasoning
+
+When building AI agents: **the LLM does ALL reasoning. Tools are dumb data endpoints.** No if-else routing, no keyword matching, no regex classification in agent decision paths. The LLM IS the router, classifier, extractor, and evaluator. Deterministic logic is BLOCKED unless the user explicitly opts in. See `rules/agent-reasoning.md` for the full rule and detection patterns.
+
 ## Workspace Commands
 
 Phase commands replace the manual copy-paste workflow. Each loads the corresponding instruction template and checks workspace state.
@@ -63,22 +67,24 @@ Phase commands replace the manual copy-paste workflow. Each loads the correspond
 
 ## Rules Index
 
-| Concern                               | Rule File                     | Scope                                                                 |
-| ------------------------------------- | ----------------------------- | --------------------------------------------------------------------- |
-| **Foundation independence**           | `rules/independence.md`       | **Global — overrides all**                                            |
-| Agent orchestration & review recommendations | `rules/agents.md`             | Global                                                                |
-| SDK release & PyPI publishing         | `rules/deployment.md`         | `deploy/**`, `.github/workflows/**`, `pyproject.toml`, `CHANGELOG.md` |
-| E2E god-mode testing                  | `rules/e2e-god-mode.md`       | `tests/e2e/**`, `**/*e2e*`, `**/*playwright*`                         |
-| API keys & model names                | `rules/env-models.md`         | `**/*.py`, `**/*.ts`, `**/*.js`, `.env*`                              |
-| Git commits, branches, PRs            | `rules/git.md`                | Global                                                                |
-| Branch protection & PR workflow       | `rules/branch-protection.md`  | Global                                                                |
-| Avoid stubs, TODOs, or placeholders in production      | `rules/no-stubs.md`           | Global                                                                |
-| Kailash SDK execution patterns        | `rules/patterns.md`           | `**/*.py`, `**/*.ts`, `**/*.js`                                       |
-| Security (secrets, injection)         | `rules/security.md`           | Global                                                                |
-| 3-tier testing, real infrastructure recommended  | `rules/testing.md`            | `tests/**`, `**/*test*`, `**/*spec*`, `conftest.py`                   |
-| Autonomous execution model            | `rules/autonomous-execution.md` | Global                                                              |
-| PACT governance security              | `rules/pact-governance.md`      | PACT governance files                                               |
-| Auto-generated workflow instincts     | `rules/learned-instincts.md`  | Global                                                                |
+| Concern                               | Rule File                       | Scope                                                                 |
+| ------------------------------------- | ------------------------------- | --------------------------------------------------------------------- |
+| **Foundation independence**           | `rules/independence.md`         | **Global — overrides all**                                            |
+| **Autonomous execution model**        | `rules/autonomous-execution.md` | **Global — 10x multiplier, structural vs execution gates**            |
+| **LLM-first agent reasoning**         | `rules/agent-reasoning.md`      | **Global — all agent code, Kaizen, AI patterns**                      |
+| Agent orchestration & review recommendations | `rules/agents.md`          | Global                                                                |
+| SDK release & PyPI publishing         | `rules/deployment.md`           | `deploy/**`, `.github/workflows/**`, `pyproject.toml`, `CHANGELOG.md` |
+| E2E god-mode testing                  | `rules/e2e-god-mode.md`         | `tests/e2e/**`, `**/*e2e*`, `**/*playwright*`                         |
+| API keys & model names                | `rules/env-models.md`           | `**/*.py`, `**/*.ts`, `**/*.js`, `.env*`                              |
+| Git commits, branches, PRs            | `rules/git.md`                  | Global                                                                |
+| Branch protection & PR workflow       | `rules/branch-protection.md`    | Global                                                                |
+| Avoid stubs, TODOs, or placeholders in production | `rules/no-stubs.md`    | Global                                                                |
+| Kailash SDK execution patterns        | `rules/patterns.md`             | `**/*.py`, `**/*.ts`, `**/*.js`                                       |
+| Security (secrets, injection)         | `rules/security.md`             | Global                                                                |
+| 3-tier testing, real infrastructure recommended | `rules/testing.md`      | `tests/**`, `**/*test*`, `**/*spec*`, `conftest.py`                   |
+| Auto-generated workflow instincts     | `rules/learned-instincts.md`    | Global                                                                |
+| Infrastructure SQL safety             | `rules/infrastructure-sql.md`   | Database and infrastructure files                                     |
+| PACT governance security              | `rules/pact-governance.md`      | PACT governance files                                                 |
 
 **Note**: Rules with path scoping are loaded only when editing matching files. Global rules load every session.
 
@@ -104,10 +110,10 @@ Phase commands replace the manual copy-paste workflow. Each loads the correspond
 
 - **pattern-expert** — Workflow patterns, nodes, parameters
 - **tdd-implementer** — Test-first development
-- **intermediate-reviewer** — Code review after changes (MANDATORY)
+- **intermediate-reviewer** — Code review after changes (RECOMMENDED)
 - **gold-standards-validator** — Compliance checking
 - **build-fix** — Fix build/type errors with minimal changes
-- **security-reviewer** — Security audit before commits (MANDATORY)
+- **security-reviewer** — Security audit before commits (RECOMMENDED)
 
 ### Frontend & Design (`agents/frontend/`)
 

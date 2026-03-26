@@ -61,3 +61,8 @@ events = executor.execute(plan, node_callback=execute_node)
 AddNode, RemoveNode, ReplaceNode, AddEdge, RemoveEdge, UpdateSpec, SkipNode
 
 Batch atomic: `apply_modifications(plan, [mod1, mod2])` — all or nothing.
+
+## Reference
+
+- Spec: `workspaces/kaizen-l3/briefs/05-plan-dag.md`
+- Source: `kaizen/l3/plan/`

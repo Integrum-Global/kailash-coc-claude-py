@@ -8,10 +8,10 @@ Pull the latest CO/COC artifacts from the upstream template and merge them into 
 
 ## Context
 
-This repo inherits its `.claude/` directory from a USE template (`kailash-coc-claude-py`). The template is updated when the kailash/ source runs `/sync`. This command pulls those updates into your repo.
+This repo inherits its `.claude/` directory from a USE template (`kailash-coc-claude-py`). The template is updated when the loom/ source runs `/sync`. This command pulls those updates into your repo.
 
 ```
-kailash/ (source) → kailash-coc-claude-py/ (USE template) → THIS REPO
+loom/ (source) → kailash-coc-claude-py/ (USE template) → THIS REPO
                                                               ↑ you are here
 ```
 
@@ -41,12 +41,12 @@ Check `.claude/.coc-sync-marker` for the template. If missing, auto-detect:
 Search paths (in order):
 
 1. `../{template}/` (sibling directory)
-2. `../../kailash/{template}/` (kailash parent)
+2. `../../loom/{template}/` (loom parent)
 3. Ask user for path
 
 ### 3. Check SDK version compatibility
 
-Read this project's SDK version from `pyproject.toml` (look for `kailash` or `kailash-enterprise` in `[project.dependencies]` or `[tool.poetry.dependencies]`). Read the template's VERSION file for the `build_version` (the kailash/ source version the template was synced from).
+Read this project's SDK version from `pyproject.toml` (look for `kailash` or `kailash-enterprise` in `[project.dependencies]` or `[tool.poetry.dependencies]`). Read the template's VERSION file for the `build_version` (the loom/ source version the template was synced from).
 
 Report both in the sync header:
 ```
@@ -125,12 +125,12 @@ Your artifacts are current with the template.
 If you created knowledge worth sharing (via `/codify`):
 
 1. `/codify` creates `.claude/.proposals/latest.yaml`
-2. Open kailash/ and run `/sync py`
+2. Open loom/ and run `/sync py`
 3. Human classifies each change (global vs variant)
 4. `/sync` distributes to USE templates
 5. Other projects pull via their `/sync`
 
-**Never** edit the template directly. All changes flow through kailash/.
+**Never** edit the template directly. All changes flow through loom/.
 
 ## When to Run
 

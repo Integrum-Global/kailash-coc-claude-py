@@ -41,10 +41,10 @@ function readLocalVersion(cwd) {
 function fetchUpstreamVersion(url) {
   if (!url) return null;
   try {
-    const result = execSync(
-      `curl -sf --max-time 3 "${url}" 2>/dev/null`,
-      { encoding: "utf8", timeout: 5000 }
-    );
+    const result = execSync(`curl -sf --max-time 3 "${url}" 2>/dev/null`, {
+      encoding: "utf8",
+      timeout: 5000,
+    });
     return JSON.parse(result);
   } catch {
     return null;
@@ -122,12 +122,47 @@ function isNewer(a, b) {
  * @returns {object} { status, messages[] } for stderr output
  */
 function checkVersion(cwd) {
-  const local = readLocalVersion(cwd);
+  let local = readLocalVersion(cwd);
   if (!local) {
+    // Auto-create VERSION if .claude/ exists but VERSION doesn't (per 08-versioning.md)
+    const claudeDir = path.join(cwd, ".claude");
+    if (fs.existsSync(claudeDir)) {
+      const bootstrapped = {
+        version: "0.0.0",
+        type: "coc-project",
+        updated: new Date().toISOString().split("T")[0],
+        description:
+          "Auto-created — run /sync to pull latest template artifacts",
+        upstream: {
+          template: "unknown",
+          template_version: "0.0.0",
+          synced_at: null,
+        },
+      };
+      const versionPath = path.join(claudeDir, "VERSION");
+      try {
+        fs.writeFileSync(
+          versionPath,
+          JSON.stringify(bootstrapped, null, 2) + "\n",
+        );
+        local = bootstrapped;
+        return {
+          status: "bootstrapped",
+          messages: [
+            "[VERSION] Created initial VERSION file (v0.0.0)",
+            "[VERSION] Run /sync to pull latest template artifacts",
+          ],
+        };
+      } catch {
+        return { status: "no-version", messages: [] };
+      }
+    }
     return { status: "no-version", messages: [] };
   }
 
-  const messages = [`[VERSION] ${local.description || local.type} v${local.version}`];
+  const messages = [
+    `[VERSION] ${local.description || local.type} v${local.version}`,
+  ];
 
   if (!local.upstream) {
     messages.push("[VERSION] Source repo — no upstream to check");

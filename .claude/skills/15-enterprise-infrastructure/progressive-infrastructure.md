@@ -185,7 +185,7 @@ All tables are created idempotently via `CREATE TABLE IF NOT EXISTS`:
 
 ### Level 0 to Level 1
 
-1. Install database driver: `pip install kailash[postgres]` (or `kailash[mysql]`)
+1. Install Kailash: `pip install kailash` (includes PostgreSQL and MySQL drivers)
 2. Set environment variable: `KAILASH_DATABASE_URL=postgresql://user:pass@localhost/kailash`
 3. No code changes required. StoreFactory auto-detects and uses DB backends.
 

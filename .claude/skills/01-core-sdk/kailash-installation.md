@@ -16,7 +16,7 @@ Complete guide for installing the Kailash SDK using pip, poetry, virtual environ
 
 - **Basic Install**: `pip install kailash`
 - **Poetry**: `poetry add kailash`
-- **With All Dependencies**: `pip install kailash[all]`
+- **With All Dependencies**: `pip install kailash`
 - **Python Requirement**: 3.8+
 - **Verify**: Import `WorkflowBuilder` and `LocalRuntime`
 
@@ -41,6 +41,7 @@ python -c "from kailash.workflow.builder import WorkflowBuilder; print('✅ Kail
 ## Step-by-Step Guide
 
 ### Option 1: Pip Installation (Simplest)
+
 ```bash
 # Install latest version
 pip install kailash
@@ -48,11 +49,12 @@ pip install kailash
 # Install specific version
 pip install kailash==0.9.25
 
-# Install with all optional dependencies
-pip install kailash[all]
+# All standard dependencies are included in the base install
+pip install kailash
 ```
 
 ### Option 2: Poetry Installation (Recommended)
+
 ```bash
 # Add to existing project
 poetry add kailash
@@ -65,6 +67,7 @@ poetry shell
 ```
 
 ### Option 3: Virtual Environment
+
 ```bash
 # Create virtual environment
 python -m venv kailash-env
@@ -76,6 +79,7 @@ pip install kailash
 ```
 
 ### Option 4: Requirements.txt
+
 ```bash
 # Add to requirements.txt
 echo "kailash>=0.9.25" >> requirements.txt
@@ -86,17 +90,18 @@ pip install -r requirements.txt
 
 ## Key Parameters / Options
 
-| Installation Method | Use Case | Command |
-|---------------------|----------|---------|
-| **Basic pip** | Quick start, simple projects | `pip install kailash` |
-| **Poetry** | Team projects, dependency management | `poetry add kailash` |
-| **Virtual env** | Isolated development | `python -m venv env && pip install kailash` |
-| **Docker** | Production, infrastructure | `docker-compose up -d` |
-| **With extras** | Full feature set | `pip install kailash[all]` |
+| Installation Method | Use Case                             | Command                                     |
+| ------------------- | ------------------------------------ | ------------------------------------------- |
+| **Basic pip**       | Quick start, simple projects         | `pip install kailash`                       |
+| **Poetry**          | Team projects, dependency management | `poetry add kailash`                        |
+| **Virtual env**     | Isolated development                 | `python -m venv env && pip install kailash` |
+| **Docker**          | Production, infrastructure           | `docker-compose up -d`                      |
+| **Full install**    | All standard dependencies            | `pip install kailash`                       |
 
 ## Common Mistakes
 
 ### ❌ Mistake 1: Missing Python Version
+
 ```bash
 # Wrong - Python 3.7 or earlier
 python --version  # Python 3.7.x (unsupported)
@@ -104,6 +109,7 @@ pip install kailash  # May fail
 ```
 
 ### ✅ Fix: Use Python 3.8+
+
 ```bash
 # Correct - Python 3.8 or later
 python3.8 --version  # Python 3.8.x or higher
@@ -111,6 +117,7 @@ python3.8 -m pip install kailash
 ```
 
 ### ❌ Mistake 2: ImportError After Installation
+
 ```bash
 # Wrong - Installing in one environment, running in another
 pip install kailash  # System Python
@@ -118,6 +125,7 @@ python my_script.py  # Different Python interpreter
 ```
 
 ### ✅ Fix: Verify Correct Environment
+
 ```bash
 # Correct - Same environment for install and run
 which python  # Check current Python
@@ -126,15 +134,17 @@ python my_script.py  # Now works
 ```
 
 ### ❌ Mistake 3: Missing Dependencies
+
 ```python
 # Wrong - Missing optional dependencies
 from kailash.nodes.ai import LLMAgentNode  # ImportError: No module named 'openai'
 ```
 
 ### ✅ Fix: Install With Dependencies
+
 ```bash
-# Correct - Install all optional dependencies
-pip install kailash[all]
+# Correct - Reinstall (all standard dependencies included)
+pip install kailash
 ```
 
 ## Verification Test
@@ -167,6 +177,7 @@ print(f"Run ID: {run_id}")
 ## When to Escalate to Subagent
 
 Use `sdk-navigator` subagent when:
+
 - Installation fails with complex errors
 - Need custom installation for enterprise environments
 - Integrating with existing infrastructure
@@ -174,6 +185,7 @@ Use `sdk-navigator` subagent when:
 - Configuring advanced deployment scenarios
 
 Use `deployment-specialist` subagent when:
+
 - Deploying to production environments
 - Setting up Docker/Kubernetes infrastructure
 - Configuring multi-environment deployments
@@ -186,18 +198,18 @@ Use `deployment-specialist` subagent when:
 
 ## Troubleshooting
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| `ImportError: No module named 'kailash'` | Wrong Python environment | Verify: `pip list \| grep kailash`, reinstall if needed |
-| `ModuleNotFoundError: pydantic` | Missing dependencies | Install with extras: `pip install kailash[all]` |
-| `Python version incompatible` | Python < 3.8 | Upgrade to Python 3.8+ |
-| Docker services not starting | Port conflicts or Docker issues | Run: `docker-compose down -v && docker-compose up -d` |
+| Issue                                    | Cause                           | Solution                                                |
+| ---------------------------------------- | ------------------------------- | ------------------------------------------------------- |
+| `ImportError: No module named 'kailash'` | Wrong Python environment        | Verify: `pip list \| grep kailash`, reinstall if needed |
+| `ModuleNotFoundError: pydantic`          | Missing dependencies            | Reinstall: `pip install kailash`                        |
+| `Python version incompatible`            | Python < 3.8                    | Upgrade to Python 3.8+                                  |
+| Docker services not starting             | Port conflicts or Docker issues | Run: `docker-compose down -v && docker-compose up -d`   |
 
 ## Quick Tips
 
 - 💡 **Use virtual environments**: Isolate project dependencies to avoid conflicts
 - 💡 **Check Python version first**: Ensure Python 3.8+ before installation
-- 💡 **Install with [all] for development**: Get all optional dependencies upfront
+- 💡 **All standard deps included**: `pip install kailash` includes trust, database, monitoring, and more
 - 💡 **Verify installation immediately**: Run test workflow to confirm setup
 - 💡 **Use poetry for teams**: Better dependency management and reproducibility
 

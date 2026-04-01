@@ -101,6 +101,71 @@ Per `.claude/rules/pact-governance.md`:
 5. **NaN/Inf validation** -- `math.isfinite()` on all numeric constraints
 6. **Thread safety** -- All engine methods acquire `self._lock`
 
+## New Features (v2.0)
+
+### GovernanceEngine Pure Python Implementation
+
+The `GovernanceEngine` is now a pure Python implementation (no external dependencies beyond the core SDK). Key methods:
+
+- `compile_org(org_definition)` -- Compiles YAML org definitions into navigable `CompiledOrg` with `MAX_COMPILATION_DEPTH=50`, `MAX_CHILDREN_PER_NODE=500`, `MAX_TOTAL_NODES=100_000`
+- `verify_action(role_address, action, context)` -- Primary decision method combining envelope evaluation, multi-level verification, and access checks
+- `check_access(role_address, knowledge_item, posture)` -- 5-step access enforcement
+- `get_context(role_address, posture)` -- Returns frozen `GovernanceContext` (anti-self-modification defense)
+- SQLite or memory backend via `store_backend="sqlite"|"memory"`
+- EATP record emission via `eatp_emitter` parameter
+- Bilateral consent for bridges via `require_bilateral_consent=True`
+
+### ShadowEnforcer Persistent Storage
+
+`ShadowStore` protocol with two implementations for enforcement record persistence:
+
+- `MemoryShadowStore` -- In-memory bounded deque (default, zero dependencies)
+- `SqliteShadowStore` -- SQLite persistence with time-windowed metrics, 0o600 file permissions, parameterized SQL
+
+```python
+from kailash.trust.enforce.shadow import ShadowEnforcer
+from kailash.trust.enforce.shadow_store import SqliteShadowStore
+
+store = SqliteShadowStore("shadow.db")
+shadow = ShadowEnforcer(store=store)
+# Records persist across restarts; metrics queryable by time window
+```
+
+### ConstraintEnvelope Ed25519 Signing
+
+`SignedEnvelope` wraps a `ConstraintEnvelopeConfig` with Ed25519 cryptographic signature and 90-day expiry:
+
+```python
+from kailash.trust.pact.envelopes import SignedEnvelope
+
+signed = sign_envelope(envelope, private_key, signed_by="D1-R1")
+valid = signed.verify(public_key)  # Checks signature + expiry, fail-closed
+```
+
+- `frozen=True` immutability (security invariant)
+- Uses `kailash.trust.signing.crypto` for Ed25519 operations
+- Fail-closed: any error during verification returns `False`
+- 90-day default expiry (`_SIGNED_ENVELOPE_EXPIRY_DAYS`)
+
+## API Hardening (R2 Red Team — 0.6.0)
+
+### Error Sanitization (P-H6)
+
+All mutation endpoints (`grant_clearance`, `create_bridge`, `create_ksp`, `set_envelope`) wrap engine calls in try/except with `_sanitize_error()`. PactError messages pass through; generic exceptions log internally and return sanitized message. Query endpoints (`verify_action`, `check_access`) rely on engine-internal fail-closed handling.
+
+### NaN/Inf on Operational Rate Limits (P-H8/P-H9)
+
+`_validate_finite_fields()` and `SetEnvelopeRequest.validate_constraints()` now check `operational.max_actions_per_day` and `operational.max_actions_per_hour` in addition to financial fields. Any NaN/Inf in rate limits is rejected before reaching the engine.
+
+### AuditChain Integrity on Deserialization (P-H10)
+
+`AuditChain.from_dict()` now calls `verify_integrity()` after reconstruction. Corrupted chains are logged as warnings (not silently accepted).
+
+### D/T/R Address Resolution in API (#215/#216)
+
+- `grant_clearance` endpoint resolves D/T/R addresses via `engine.get_node()` before granting
+- `get_node` endpoint supports suffix-based resolution (e.g., "R2" finds "D1-T1-R2")
+
 ## When NOT to Use This Agent
 
 - For EATP protocol questions (trust chains, delegation, signing) -> use **eatp-expert**

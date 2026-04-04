@@ -25,7 +25,19 @@ jobs:
           test -f CLAUDE.md && echo "✓ CLAUDE.md"
 
           # Check for contamination (builder paths should not be in template)
-          if grep -r "src/kailash/" .claude/ 2>/dev/null; then
+          # Exclude py-variant skill files that legitimately reference SDK source
+          # paths (these guide developers working WITH the kailash-py source tree)
+          contamination=$(grep -r "src/kailash/" .claude/ 2>/dev/null \
+            --exclude="production-readiness-patterns.md" \
+            --exclude="async-resource-safety.md" \
+            --exclude="runtime-lifecycle.md" \
+            --exclude="otel-tracing.md" \
+            --exclude="release-checklist.md" \
+            --exclude="07-sync-flow.md" \
+            --exclude="release.md" \
+            || true)
+          if [ -n "$contamination" ]; then
+            echo "$contamination"
             echo "ERROR: Found builder paths (src/kailash/) in template"
             exit 1
           fi

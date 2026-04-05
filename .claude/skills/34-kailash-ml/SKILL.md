@@ -37,7 +37,7 @@ pip install kailash-ml[full]      # Everything
 ```python
 from kailash.db.connection import ConnectionManager
 from kailash_ml import FeatureStore
-from kailash_ml_protocols import FeatureSchema, FeatureField
+from kailash_ml.types import FeatureSchema, FeatureField
 import polars as pl
 
 conn = ConnectionManager("sqlite:///ml.db")

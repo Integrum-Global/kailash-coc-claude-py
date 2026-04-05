@@ -7,7 +7,7 @@ TrainingPipeline orchestrates schema-driven model training with FeatureStore int
 ```python
 from kailash_ml import TrainingPipeline, ModelRegistry, ModelSpec, EvalSpec
 from kailash_ml.engines import LocalFileArtifactStore
-from kailash_ml_protocols import FeatureSchema, FeatureField
+from kailash_ml.types import FeatureSchema, FeatureField
 from kailash.db.connection import ConnectionManager
 
 conn = ConnectionManager("sqlite:///ml.db")

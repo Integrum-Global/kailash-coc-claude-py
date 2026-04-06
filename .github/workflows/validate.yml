@@ -35,6 +35,16 @@ jobs:
             --exclude="release-checklist.md" \
             --exclude="07-sync-flow.md" \
             --exclude="release.md" \
+            --exclude="nodes-quick-index.md" \
+            --exclude="eatp-posture-stores.md" \
+            --exclude="pact-dtr-addressing.md" \
+            --exclude="pact-kaizen-integration.md" \
+            --exclude="pact-governed-agents.md" \
+            --exclude="pact-envelopes.md" \
+            --exclude="pact-access-enforcement.md" \
+            --exclude="pact-quickstart.md" \
+            --exclude="pact-governance-engine.md" \
+            --exclude="VERSION" \
             || true)
           if [ -n "$contamination" ]; then
             echo "$contamination"

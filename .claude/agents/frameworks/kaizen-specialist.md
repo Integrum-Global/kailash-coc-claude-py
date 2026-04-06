@@ -147,16 +147,39 @@ result = agent.process("input")
 
 **Interactive (21)**: All others -- AsyncSingleShotStrategy, tool calling optional
 
+### Multi-Agent Patterns (Top-Level Exports)
+
+All pattern classes are importable directly from `kaizen_agents`:
+
+```python
+from kaizen_agents import (
+    SupervisorWorkerPattern,
+    ConsensusPattern,
+    DebatePattern,
+    HandoffPattern,
+    SequentialPipelinePattern,
+    BaseMultiAgentPattern,
+    create_supervisor_worker_pattern,  # factory functions
+    create_consensus_pattern,
+    create_debate_pattern,
+    create_handoff_pattern,
+    create_sequential_pipeline,
+)
+```
+
+Also available via `kaizen_agents.patterns`. The deprecated `kaizen_agents.agents.coordination` module was removed in v0.6.0 — all imports must use the paths above.
+
 ### Deprecation Notes
 
-| Feature                                   | Status      | Migration                                                  |
-| ----------------------------------------- | ----------- | ---------------------------------------------------------- |
-| `ToolRegistry`, `ToolExecutor`            | **REMOVED** | Use MCP or `KaizenToolRegistry`                            |
-| `AgentTeam`                               | Deprecated  | Use `OrchestrationRuntime`                                 |
-| `max_tokens` (OpenAI)                     | Deprecated  | Use `max_completion_tokens`                                |
-| `provider_config` for structured output   | Deprecated  | Use `response_format` field                                |
-| `structured_output_mode="auto"`           | Deprecated  | Use `"explicit"` (default changes in v2.6.0)               |
-| `AZURE_OPENAI_*` / `AZURE_AI_INFERENCE_*` | Deprecated  | Use `AZURE_ENDPOINT`, `AZURE_API_KEY`, `AZURE_API_VERSION` |
+| Feature                                   | Status      | Migration                                                   |
+| ----------------------------------------- | ----------- | ----------------------------------------------------------- |
+| `ToolRegistry`, `ToolExecutor`            | **REMOVED** | Use MCP or `KaizenToolRegistry`                             |
+| `AgentTeam`                               | Deprecated  | Use `OrchestrationRuntime`                                  |
+| `max_tokens` (OpenAI)                     | Deprecated  | Use `max_completion_tokens`                                 |
+| `provider_config` for structured output   | Deprecated  | Use `response_format` field                                 |
+| `structured_output_mode="auto"`           | Deprecated  | Use `"explicit"` (default changes in v2.6.0)                |
+| `AZURE_OPENAI_*` / `AZURE_AI_INFERENCE_*` | Deprecated  | Use `AZURE_ENDPOINT`, `AZURE_API_KEY`, `AZURE_API_VERSION`  |
+| `kaizen_agents.agents.coordination`       | **REMOVED** | Use `from kaizen_agents import SupervisorWorkerPattern` etc |
 
 ## Related Agents
 

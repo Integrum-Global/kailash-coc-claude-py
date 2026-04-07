@@ -1,11 +1,3 @@
----
-paths:
-  - "tests/**"
-  - "**/*test*"
-  - "**/*spec*"
-  - "conftest.py"
----
-
 # Testing Rules
 
 ## Test-Once Protocol

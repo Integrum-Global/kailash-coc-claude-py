@@ -1,10 +1,3 @@
----
-paths:
-  - "**/kaizen/**"
-  - "**/*agent*"
-  - "**/agents/**"
----
-
 # Agent Reasoning Architecture — LLM-First Rule
 
 ## Scope

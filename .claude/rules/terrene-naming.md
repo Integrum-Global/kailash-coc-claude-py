@@ -1,11 +1,3 @@
----
-paths:
-  - "**/*.md"
-  - "**/README*"
-  - "**/LICENSE*"
-  - "**/CLAUDE.md"
----
-
 # Terrene Foundation Naming
 
 ## Rules

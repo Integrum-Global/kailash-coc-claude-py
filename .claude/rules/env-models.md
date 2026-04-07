@@ -1,11 +1,3 @@
----
-paths:
-  - "**/*.py"
-  - "**/*.ts"
-  - "**/*.js"
-  - ".env*"
----
-
 # Environment Variables & Model Rules
 
 ## .env Is The Single Source of Truth

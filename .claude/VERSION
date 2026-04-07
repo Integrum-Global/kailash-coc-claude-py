@@ -1,16 +1,27 @@
 {
-  "version": "3.1.0",
+  "version": "3.1.1",
   "type": "coc-use-template",
   "description": "COC USE template for Python SDK projects",
-  "released": "2026-04-07",
+  "released": "2026-04-08",
   "upstream": {
     "name": "kailash",
     "type": "coc-source",
-    "version": "2.6.0",
+    "version": "2.5.1",
     "build_version": "2.6.0",
-    "synced_at": "2026-04-07T16:30:00Z"
+    "synced_at": "2026-04-08T00:00:00Z"
   },
   "changelog": [
+    {
+      "version": "3.1.1",
+      "date": "2026-04-08",
+      "summary": "fix(rules): strip broad path matchers causing per-read context bloat — rules now load once in system prompt instead of re-injecting on every matching tool call",
+      "changes": [
+        "UPDATED: rules/patterns.md, env-models.md, framework-first.md, python-environment.md, terrene-naming.md, artifact-flow.md, agent-reasoning.md, testing.md — removed broad `paths:` frontmatter",
+        "UPDATED: scripts/hooks/session-start.js — session notes inject as pointer lines only (was dumping ~12KB per session)",
+        "UPDATED: scripts/hooks/user-prompt-rules-reminder.js — removed redundant zero-tolerance block and keyword-triggered reminders (already covered by always-on rules)",
+        "IMPACT: eliminates per-tool-call rule re-injection that was pushing sessions to 200-300K tokens within dozens of file reads"
+      ]
+    },
     {
       "version": "3.1.0",
       "date": "2026-04-07",

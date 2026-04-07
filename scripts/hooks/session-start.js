@@ -205,19 +205,20 @@ function initializeSession(data) {
         );
       }
 
-      // Build context for Claude — include all non-stale notes, or latest if all stale
-      const contextParts = [];
+      // Build pointer-only context for Claude (full notes loaded on demand).
+      // Prior behavior injected full note content, ballooning to 10KB+ per session.
+      const pointerParts = [];
       for (const note of allNotes) {
         const label = note.workspace ? `[${note.workspace}]` : "[root]";
-        const staleMark = note.stale ? " (STALE — may be outdated)" : "";
-        contextParts.push(
-          `## Session Notes ${label}${staleMark} — updated ${note.age}\n\n${note.content}`,
+        const staleMark = note.stale ? " STALE" : "";
+        pointerParts.push(
+          `- ${label} ${note.relativePath} (updated ${note.age}${staleMark})`,
         );
       }
-      if (contextParts.length > 0) {
+      if (pointerParts.length > 0) {
         result.sessionNotesContext =
-          "# Previous Session Notes\n\nRead these to understand where the last session left off.\n\n" +
-          contextParts.join("\n\n---\n\n");
+          "# Previous Session Notes\n\nRead these files if continuing prior work:\n\n" +
+          pointerParts.join("\n");
       }
     }
   } catch {}

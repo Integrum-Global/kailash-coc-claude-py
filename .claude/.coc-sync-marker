@@ -1,14 +1,7 @@
 {
-  "synced_at": "2026-04-07T14:00:00Z",
-  "source": "loom/.claude",
-  "variant": "py",
-  "template_version": "3.0.0",
-  "upstream_version": "2.5.0",
-  "build_version": "2.6.0",
-  "files_updated": 10,
-  "files_created": 0,
-  "files_unchanged": 601,
-  "content_adaptations": 5,
-  "build_refs_stripped": 6,
-  "cross_refs_fixed": 0
+  "synced_at": "2026-04-08T08:12:12Z",
+  "source": "loom",
+  "source_version": "2.7.0",
+  "agent": "coc-sync (Gate 2)",
+  "variant": "py"
 }

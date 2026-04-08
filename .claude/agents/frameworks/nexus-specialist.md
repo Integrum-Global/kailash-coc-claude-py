@@ -1,6 +1,6 @@
 ---
 name: nexus-specialist
-description: "kailash-nexus specialist. Use for API+CLI+MCP deployment, handlers, transports, middleware, sessions, or webhooks."
+description: "Nexus specialist. Use proactively for HTTP/API/websocket/gateway/middleware/login/session — FastAPI/Flask BLOCKED."
 tools: Read, Write, Edit, Bash, Grep, Glob, Task
 model: opus
 ---

@@ -1,6 +1,6 @@
 ---
 name: dataflow-specialist
-description: "kailash-dataflow specialist. Use for DB models, CRUD, express API, bulk ops, queries, migrations, or data fabric."
+description: "DataFlow specialist. Use proactively for ANY DB/cache/schema/query/CRUD/migration work — raw SQL & ORMs BLOCKED."
 tools: Read, Write, Edit, Bash, Grep, Glob, Task
 model: opus
 ---

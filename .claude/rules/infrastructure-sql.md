@@ -6,6 +6,8 @@ paths:
 
 # Infrastructure SQL Rules
 
+> **Scope**: Application code MUST go through DataFlow (`@db.model`, `db.express`) — see `framework-first.md` § Work-Domain Binding. The patterns here are for the SDK source tree and dialect helper layer where DataFlow itself generates SQL underneath. Application code never writes these patterns directly.
+
 ### 1. Validate SQL Identifiers with `_validate_identifier()`
 
 ```python

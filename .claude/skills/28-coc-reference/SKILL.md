@@ -19,7 +19,7 @@ How the COC five-layer architecture is implemented in the Kailash COC template r
 | L2 Context      | Skills + CLAUDE.md | 28+ dirs, 400+ files                 | Institutional knowledge library |
 | L3 Guardrails   | Rules + Hooks      | 9 rules, 9 hooks                     | Deterministic enforcement       |
 | L4 Instructions | Commands           | 20 commands                          | Phase-gated workflow            |
-| L5 Learning     | Learning pipeline  | observations + instincts + evolution | Knowledge compounding           |
+| L5 Learning     | Learning pipeline  | observations + digest + codification | Knowledge compounding           |
 
 ## Layer 3: Defense in Depth
 
@@ -38,14 +38,14 @@ The anti-amnesia hook (`user-prompt-rules-reminder.js`) is the single most impor
 
 ## Layer 4: Seven-Phase Workflow
 
-| Phase          | Command      | Quality Gate                              |
-| -------------- | ------------ | ----------------------------------------- |
+| Phase          | Command      | Quality Gate                 |
+| -------------- | ------------ | ---------------------------- |
 | Analysis       | `/analyze`   | reviewer                     |
-| Planning       | `/todos`     | **Human approval**                        |
+| Planning       | `/todos`     | **Human approval**           |
 | Implementation | `/implement` | reviewer + security-reviewer |
 | Validation     | `/redteam`   | reviewer                     |
-| Knowledge      | `/codify`    | gold-standards-validator                  |
-| Release        | `/release`   | **Human approval**                        |
+| Knowledge      | `/codify`    | gold-standards-validator     |
+| Release        | `/release`   | **Human approval**           |
 
 Evidence-based completion: AI cannot claim "done" without file-and-line proof.
 

@@ -90,6 +90,19 @@ Before moving ANY todo from `active/` to `completed/`, MUST:
 
 A todo is complete when the plan says X and the code does X. Not when the code does something and happens to compile.
 
+### 8. Integration hygiene checklist (end of each cycle)
+
+Before reporting the cycle complete, print this 4-line check and tick each box:
+
+```
+[ ] Every new endpoint has entry + exit + error logs (observability.md § Mandatory Log Points)
+[ ] Every integration point (DB, HTTP, MQ) logged with correlation ID
+[ ] Zero raw SQL / direct HTTP / mock data introduced (framework-first.md § Work-Domain Binding)
+[ ] Log triage clean or each WARN explicitly acknowledged (observability.md MUST Rule 5)
+```
+
+If any box cannot be ticked, fix before closing the cycle. The `integration-hygiene.js` PostToolUse hook catches most violations as they land; this checklist is the final pass.
+
 At the end of each implementation cycle, update documentation at the **project root** (not workspace):
 
 - `docs/` — complete codebase docs; `docs/00-authority/` — authoritative `README.md` + `CLAUDE.md`

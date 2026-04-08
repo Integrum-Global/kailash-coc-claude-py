@@ -8,6 +8,8 @@ paths:
 
 # Connection Pool Safety Rules
 
+> **Scope**: Application code MUST go through DataFlow (`@db.model`, `db.express`) which manages pools for you — see `framework-first.md` § Work-Domain Binding. These rules are for SDK-level pool tuning and for advanced consumers who own the pool lifecycle.
+
 ### 1. Never Use Default Pool Size in Production
 
 Set `DATAFLOW_MAX_CONNECTIONS` env var. Default (25/worker) exhausts PostgreSQL on small instances.

@@ -1,6 +1,6 @@
 ---
 name: pact-specialist
-description: "kailash-pact specialist. Use for governance, D/T/R addressing, envelopes, access enforcement, or knowledge clearance."
+description: "PACT specialist. Use for governance, RBAC, policy, access control, envelopes, audit — custom authz BLOCKED."
 tools: Read, Write, Edit, Bash, Grep, Glob, Task
 model: opus
 ---

@@ -5,6 +5,8 @@ paths:
 
 # DataFlow Pool Configuration Rules
 
+> **Scope**: Application code MUST go through DataFlow's high-level API (`@db.model`, `db.express`) — see `framework-first.md` § Work-Domain Binding. The patterns here are for tuning the DataFlow connection pool itself, not for bypassing it.
+
 ### 1. Single Source of Truth for Pool Size
 
 Pool size MUST be resolved through `DatabaseConfig.get_pool_size()`. No hardcoded defaults elsewhere.
@@ -20,11 +22,20 @@ pool_size = int(os.environ.get("DATAFLOW_POOL_SIZE", "10"))
 
 **Why:** Five competing defaults (10, 20, 25, 30, `cpu_count * 4`) caused the pool exhaustion crisis.
 
-### 2. Validate Pool Config at Startup
+### 2. Validate Pool Config AND Reachability at Startup
 
-When connecting to PostgreSQL, `validate_pool_config()` logs whether pool will exhaust `max_connections`. Runs in `DataFlow.__init__` automatically.
+When connecting to PostgreSQL, `validate_pool_config()` logs whether the pool will exhaust `max_connections`, AND a lightweight `SELECT 1` health check verifies the connection actually reaches the database. Both run in `DataFlow.__init__` automatically. A failed health check MUST log ERROR and prevent application startup, NOT silently degrade.
 
-**Why:** Without startup validation, pool exhaustion surfaces hours later under production load — too late for a config fix, early enough for an outage.
+```python
+# DO — fail-fast startup
+df = DataFlow(os.environ["DATABASE_URL"])  # raises on unreachable DB, logs ERROR
+
+# DO NOT — defer the check until first request
+df = DataFlow(os.environ["DATABASE_URL"], lazy_connect=True)  # silent until first query
+# ↑ first user request becomes the health check; production breaks for users, not for ops
+```
+
+**Why:** Without startup validation, pool exhaustion surfaces hours later under production load — too late for a config fix, early enough for an outage. Without reachability validation, a wrong connection string or expired credentials lets the application "start" successfully and then fail on the first real request, turning a config error into a user-facing outage. Pool math AND connection reachability MUST both be checked before the application accepts traffic.
 
 ### 3. No Deceptive Configuration
 

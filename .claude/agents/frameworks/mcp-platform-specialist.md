@@ -1,6 +1,6 @@
 ---
 name: mcp-platform-specialist
-description: "MCP platform specialist. Use for FastMCP tool registration, contributor plugins, security tiers, or transport config."
+description: "MCP Platform specialist. Use for FastMCP, contributor plugins, security tiers — custom plugin loaders BLOCKED."
 tools: Read, Write, Edit, Bash, Grep, Glob, Task
 model: opus
 ---

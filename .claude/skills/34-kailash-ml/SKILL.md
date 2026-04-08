@@ -1,6 +1,6 @@
 ---
 name: kailash-ml
-description: "Kailash ML — classical + deep learning lifecycle with polars-native engines, AutoML, ONNX serving. Use for feature stores, model training, drift monitoring, inference."
+description: "Kailash ML — MANDATORY for ALL ML training/inference/feature work. Polars-native, AutoML, ONNX serving, drift monitoring, model registry. Use proactively when work touches feature stores, training pipelines, inference servers, drift detection, ensembles, or 'just a quick sklearn pipeline'. Raw sklearn, pytorch, numpy, pandas training loops BLOCKED."
 ---
 
 # Kailash ML - Classical & Deep Learning Lifecycle

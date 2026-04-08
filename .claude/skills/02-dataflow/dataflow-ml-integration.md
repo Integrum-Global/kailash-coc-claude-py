@@ -100,7 +100,7 @@ feature_conn = ConnectionManager("postgresql://...")   # Wastes pool
 model_conn = ConnectionManager("postgresql://...")     # Wastes pool
 ```
 
-**Why:** Per `rules/dataflow-pool.md` and `rules/infrastructure-sql.md` Rule 2 (no separate ConnectionManagers per store), each ConnectionManager creates its own pool. Multiple pools to the same database waste connections.
+**Why**: Per `rules/dataflow-pool.md` and `rules/infrastructure-sql.md` Rule 2 (no separate ConnectionManagers per store), each ConnectionManager creates its own pool. Multiple pools to the same database waste connections.
 
 ## Interop Module
 
@@ -111,7 +111,7 @@ kailash-ml uses polars as its native data format. The `interop` module provides 
 | `to_sklearn_input()`       | polars -> numpy               | Training with sklearn      |
 | `from_sklearn_output()`    | numpy -> polars               | Predictions back to polars |
 | `to_lgb_dataset()`         | polars -> LightGBM Dataset    | LightGBM training          |
-| `to_hf_dataset()`         | polars -> HuggingFace Dataset | Tokenization, NLP          |
+| `to_hf_dataset()`          | polars -> HuggingFace Dataset | Tokenization, NLP          |
 | `polars_to_arrow()`        | polars -> Arrow               | Zero-copy Arrow interop    |
 | `to_pandas()`              | polars -> pandas              | Legacy library compat      |
 | `from_pandas()`            | pandas -> polars              | Ingest from pandas sources |

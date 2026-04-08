@@ -1,6 +1,6 @@
 ---
 name: kaizen-specialist
-description: "kailash-kaizen specialist. Use for AI agents, signatures, Delegate, multi-agent orchestration, A2A, or planning."
+description: "Kaizen specialist. Use proactively for LLM/prompt/agent/RAG/provider-abstraction work — custom LLM services BLOCKED."
 tools: Read, Write, Edit, Bash, Grep, Glob, Task
 model: opus
 ---

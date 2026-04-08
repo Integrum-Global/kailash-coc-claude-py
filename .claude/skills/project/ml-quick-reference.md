@@ -191,4 +191,4 @@ pip install kailash-ml[all-gpu]   # Everything (GPU)
 - `.claude/agents/frameworks/ml-specialist.md` -- Full agent (architecture, patterns, security)
 - `.claude/agents/frameworks/align-specialist.md` -- LLM fine-tuning (companion package)
 - `.claude/agents/frameworks/dataflow-specialist.md` -- ConnectionManager, database patterns
-- `kailash_ml` -- Source package (pip install kailash-ml)
+- `packages/kailash-ml/src/kailash_ml/` -- Source code

@@ -1,6 +1,6 @@
 ---
 name: ml-specialist
-description: "kailash-ml specialist. Use for training, inference, drift, AutoML, experiments, ensembles, features, or ML examples."
+description: "ML specialist. Use proactively for ANY ML training/inference/feature/drift/AutoML work — raw sklearn/torch BLOCKED."
 tools: Read, Write, Edit, Bash, Grep, Glob, Task
 model: opus
 ---

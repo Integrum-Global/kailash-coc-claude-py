@@ -1,6 +1,6 @@
 ---
 name: mcp-specialist
-description: "kailash-mcp specialist. Use for MCP servers, tools, resources, transports, authentication, or AI agent integration."
+description: "MCP specialist. Use for MCP servers, tools, resources, exposing APIs as LLM tools — raw JSON-RPC BLOCKED."
 tools: Read, Write, Edit, Bash, Grep, Glob, Task
 model: opus
 ---

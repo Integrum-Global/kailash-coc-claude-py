@@ -144,12 +144,11 @@ ALL must be true:
 
 Criteria 1-3 are necessary but NOT sufficient. Without 4-6, convergence certifies code quality on incomplete software.
 
-### Journal
+### Journal (MUST — phase-complete gate)
 
-Create journal entries for findings:
+Before reporting `/redteam` complete, create journal entries for journal-worthy findings surfaced during validation:
 
-- **RISK** entries for vulnerabilities, weaknesses, failure modes
-- **GAP** entries for missing tests, docs, edge cases
-- **CONNECTION** entries for unexpected dependencies
+- **RISK** — vulnerabilities, weaknesses, or failure modes discovered
+- **GAP** — missing tests, docs, edge cases, or spec-compliance holes
 
-Use sequential `NNNN-` naming.
+Use `/journal new <TYPE> <slug>` (or write directly to `workspaces/<project>/journal/NNNN-TYPE-slug.md`). Skip only when validation genuinely produced nothing journal-worthy — use judgment, not formulas. Do not batch: create each entry as you recognize it.

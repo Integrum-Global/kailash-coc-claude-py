@@ -143,12 +143,12 @@ Deploy these agents as a team for each implementation cycle:
 - **value-auditor** — Evaluate from user/buyer perspective, not just technical assertions
 - **security-reviewer** — Security audit before any commit (MANDATORY)
 
-### Journal
+### Journal (MUST — phase-complete gate)
 
-After completing each task, create journal entries for insights produced:
+Before reporting each cycle complete, create journal entries for journal-worthy findings produced this cycle:
 
-- **DECISION** entries for implementation choices (architecture, library selection, design patterns)
-- **DISCOVERY** entries for technical findings during development
-- **RISK** entries for potential issues discovered during implementation
+- **DECISION** — implementation choices made (architecture, library selection, design patterns)
+- **DISCOVERY** — technical findings that surprised you or contradict prior assumptions
+- **RISK** — potential issues discovered but not yet resolved
 
-Use sequential naming: check the highest existing `NNNN-` prefix and increment.
+Use `/journal new <TYPE> <slug>` (or write directly to `workspaces/<project>/journal/NNNN-TYPE-slug.md`). Skip only when the cycle genuinely produced nothing journal-worthy — use judgment, not formulas. Do not batch: create each entry as you recognize it.

@@ -1,16 +1,26 @@
 {
-  "version": "3.2.1",
+  "version": "3.2.2",
   "type": "coc-use-template",
   "description": "COC USE template for Python SDK projects",
-  "released": "2026-04-09",
+  "released": "2026-04-11",
   "upstream": {
     "name": "kailash",
     "type": "coc-source",
     "version": "2.8.0",
-    "build_version": "2.8.0",
-    "synced_at": "2026-04-09T08:00:00+08:00"
+    "build_version": "2.8.1",
+    "synced_at": "2026-04-11T00:00:00+08:00"
   },
   "changelog": [
+    {
+      "version": "3.2.2",
+      "date": "2026-04-11",
+      "summary": "Sync loom \u2014 Arbor session rule updates: python-environment (explicit venv interpreter + monorepo editable installs) and infrastructure-sql (lazy driver imports upgraded from soft to MUST with regression test requirement). Both global-coc, from 2026-04-11 arbor-upstream-fixes session.",
+      "changes": [
+        "MODIFIED: rules/python-environment.md \u2014 MUST Rule 1: bare python/python3/pytest BLOCKED, must use .venv/bin/python or uv run (pyenv shim trap). MUST Rule 2: monorepo packages/*/pyproject.toml must be editable-installed, PYTHONPATH workaround BLOCKED.",
+        "MODIFIED: rules/infrastructure-sql.md \u2014 \u00a78 rewritten as MUST: adapter classes wrapping optional drivers (motor, pymongo, asyncpg, aiomysql, aiosqlite, aiokafka, redis.asyncio) MUST import driver inside connect(), top-level import BLOCKED. Added \u00a78a: regression test for lazy-import required (grep-only defense insufficient).",
+        "SDK PINS: still deferred (pending PyPI release of 2.8.1 chain)"
+      ]
+    },
     {
       "version": "3.2.1",
       "date": "2026-04-09",

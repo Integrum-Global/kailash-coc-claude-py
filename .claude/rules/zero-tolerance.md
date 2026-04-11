@@ -72,6 +72,7 @@ Production code MUST NOT contain:
 **Extended examples (DataFlow 2.0 Phase 5 audit):** these patterns passed prior audits but were caught by the Phase 5 wiring sweep. They are equally BLOCKED.
 
 - **Fake encryption** — a class that takes an `encryption_key` parameter, stores it, and does nothing with it:
+
   ```python
   # BLOCKED — "encrypted" store that writes plaintext
   class EncryptedStore:
@@ -80,27 +81,33 @@ Production code MUST NOT contain:
       def set(self, k, v):
           self._backend.set(k, v)  # no encryption applied
   ```
+
   **Why:** Operators pass a real key and assume data is encrypted at rest. The audit trail shows "encrypted store used"; the disk shows plaintext.
 
 - **Fake transaction** — a context manager that looks like a transaction but commits after every statement:
+
   ```python
   # BLOCKED — misnamed context manager
   @contextmanager
   def transaction(self):
       yield  # no BEGIN, no COMMIT, no rollback on exception
   ```
+
   **Why:** Callers write `with db.transaction(): ...` expecting atomicity; partial failure leaves half-committed state.
 
 - **Fake health** — a health endpoint that returns 200 without checking anything:
+
   ```python
   # BLOCKED — always-green health endpoint
   @router.get("/health")
   async def health():
       return {"status": "healthy"}  # no DB probe, no Redis ping, no nothing
   ```
+
   **Why:** Load balancers and orchestrators use the health endpoint to decide routing and restart decisions. A fake-healthy endpoint masks real outages.
 
 - **Fake classification / redaction** — a `@classify("email", REDACT)` decorator that stores the classification but never enforces it on read:
+
   ```python
   # BLOCKED — classify promises redaction but read path ignores it
   @db.model
@@ -110,15 +117,18 @@ Production code MUST NOT contain:
   # user = db.express.read("User", uid)
   # user.email  ← still returns the raw PII
   ```
+
   **Why:** Documented as a security control; ships as a no-op. The Phase 5.10 audit found this had been non-functional for an unknown period.
 
 - **Fake tenant isolation** — a `multi_tenant=True` flag that silently uses a shared cache key:
+
   ```python
   # BLOCKED — multi_tenant flag with no tenant dimension in key
   @db.model(multi_tenant=True)
   class Document: ...
   # cache_key = f"dataflow:v1:Document:{id}"  ← tenant_id missing
   ```
+
   **Why:** See `rules/tenant-isolation.md`. This is the Phase 5.7 orphan pattern surfaced at the cache key layer.
 
 - **Fake metrics** — a metrics class where every counter is a no-op because `prometheus_client` isn't installed but there's no warning:
@@ -144,7 +154,7 @@ Production code MUST NOT contain:
 
 ## Rule 4: No Workarounds for Core SDK Issues
 
-When you encounter a bug in the Kailash SDK, file a GitHub issue on the SDK repository (`terrene-foundation/kailash-py`) with a minimal reproduction. Use a supported alternative pattern if one exists.
+When you encounter a bug in the Kailash SDK, file a GitHub issue on the SDK repository with a minimal reproduction. Use a supported alternative pattern if one exists.
 
 **Why:** Workarounds create a parallel implementation that diverges from the SDK, doubling maintenance cost and masking the root bug from being fixed.
 

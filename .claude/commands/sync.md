@@ -15,15 +15,22 @@ loom/ (source) → kailash-coc-claude-py/ (USE template) → THIS REPO
                                                               ↑ you are here
 ```
 
+## BUILD vs USE Repo Distinction
+
+- **BUILD repos** (kailash-py, kailash-rs, kailash-prism): artifacts live in canonical locations (`agents/frameworks/`, `skills/01-core-sdk/`, `rules/*.md`). `/codify` writes to canonical locations AND creates `.claude/.proposals/latest.yaml` for upstream flow to loom/. No `agents/project/` or `skills/project/`.
+- **Downstream USE repos** (consumer projects): `/codify` writes project-specific artifacts to `.claude/agents/project/` and `.claude/skills/project/`; stays local.
+
+The "Project-specific" preservation rule below applies only to downstream USE repos. In a BUILD repo every artifact is canonical and subject to merge-review.
+
 ## Merge Semantics
 
 This is a **merge**, not an overwrite. Three categories of files:
 
-| Category             | Examples                                        | Behavior                      |
-| -------------------- | ----------------------------------------------- | ----------------------------- |
-| **Shared artifacts** | agents/analyst.md, rules/security.md            | **Updated** from template     |
-| **Project-specific** | agents/project/_, skills/project/_, workspaces/ | **Preserved** — never touched |
-| **Per-repo data**    | learning/\*, .proposals/                        | **Preserved** — never touched |
+| Category                              | Examples                                          | Behavior                      |
+| ------------------------------------- | ------------------------------------------------- | ----------------------------- |
+| **Shared artifacts**                  | agents/analyst.md, rules/security.md              | **Updated** from template     |
+| **Project-specific** (USE repos only) | agents/project/\*, skills/project/\*, workspaces/ | **Preserved** — never touched |
+| **Per-repo data**                     | learning/\*, .proposals/                          | **Preserved** — never touched |
 
 **Rule**: If a file exists in BOTH the template and this repo, the template version wins (it's the upstream source). If a file exists ONLY in this repo, it's preserved. If a file exists ONLY in the template, it's added.
 
@@ -89,8 +96,7 @@ Compare `.coc-sync-marker` timestamps. If already fresh: "Already up to date."
 
 **Preserved** (never modified by sync):
 
-- `agents/project/**` — project-specific agents
-- `skills/project/**` — project-specific skills
+- `agents/project/**` and `skills/project/**` — project-specific (USE repos only; BUILD repos do not have these directories)
 - `learning/**` — per-repo learning data
 - `.proposals/**` — review artifacts
 - `settings.local.json` — per-repo settings
@@ -128,15 +134,12 @@ Your artifacts are current with the template.
 
 ## Pushing Changes Upstream
 
-If you created knowledge worth sharing (via `/codify`):
+BUILD repos and downstream USE repos behave differently when `/codify` runs:
 
-1. `/codify` creates `.claude/.proposals/latest.yaml`
-2. Open loom/ and run `/sync py`
-3. Human classifies each change (global vs variant)
-4. `/sync` distributes to USE templates
-5. Other projects pull via their `/sync`
+- **BUILD repos** (kailash-py, kailash-rs, kailash-prism): `/codify` writes to canonical locations (`agents/frameworks/`, `skills/NN-name/`, `rules/*.md`) AND appends entries to `.claude/.proposals/latest.yaml` for upstream flow to loom/. Then open loom/ and run `/sync py` — Gate 1 classifies each change (global vs variant), Gate 2 distributes to USE templates.
+- **Downstream USE repos** (consumer projects): `/codify` writes to `.claude/agents/project/` and `.claude/skills/project/` and stays LOCAL. No `.proposals/latest.yaml` is created; no upstream flow. These artifacts are preserved across `/sync` runs by the "Project-specific" rule above.
 
-**Never** edit the template directly. All changes flow through loom/.
+**Never** edit the template directly. All shared artifact changes flow through loom/.
 
 ## When to Run
 

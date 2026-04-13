@@ -3,7 +3,7 @@ name: wrapup
 description: "Write .session-notes so the next session resumes without re-discovering context."
 ---
 
-The only deliverable is a `.session-notes` file that lets a fresh session start producing work within 2-3 minutes of reading it, without having to re-explore the codebase.
+The only deliverable is a `.session-notes` file that lets a fresh session start producing work within 2–3 minutes of reading it, without having to re-explore the codebase.
 
 **Before running:** if significant decisions, discoveries, or risks from this session are not yet in `journal/`, run `/journal new DECISION|DISCOVERY|RISK <topic>` first. `.session-notes` is not a decision log.
 
@@ -50,7 +50,7 @@ change. Just enough for the next session to orient — not a history.
 
 1. `path/to/file` — why it matters (one line)
 2. `path/to/file` — why it matters
-   (3-6 files, priority-ordered)
+   (3–6 files, priority-ordered)
 
 ## In-flight state
 

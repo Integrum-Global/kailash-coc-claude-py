@@ -16,6 +16,12 @@ description: "Load phase 05 (codify) for the current workspace. Update existing 
 - Read `docs/` and `docs/00-authority/` for knowledge base
 - Output: update existing agents and skills in their canonical locations (e.g., `agents/frameworks/`, `skills/01-core-sdk/`, `skills/02-dataflow/`, etc.)
 
+## Where /codify Writes
+
+Project-specific artifacts go to `.claude/agents/project/<name>.md` and `.claude/skills/project/<name>/SKILL.md`. These stay **local** — no upstream proposal is created. The `project/` directories are preserved across `/sync` (shared artifacts may be updated by the template; `project/` is never touched).
+
+See `rules/artifact-flow.md` for the authority chain and `guides/co-setup/03-creating-components.md` for component placement.
+
 ## Execution Model
 
 This phase executes under the **autonomous execution model** (see `rules/autonomous-execution.md`). Knowledge extraction and codification are autonomous — agents extract, structure, and validate knowledge without human intervention. The human reviews the codified output at the end (structural gate on what becomes institutional knowledge), but the extraction and synthesis process is fully autonomous.

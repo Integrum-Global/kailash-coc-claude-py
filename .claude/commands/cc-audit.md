@@ -5,7 +5,14 @@ description: "Audit project artifacts for quality, completeness, effectiveness, 
 
 # CC Artifact Audit (Project)
 
-Reviews your project's artifacts for quality and template alignment. Checks that project-specific artifacts (agents/project/, skills/project/) are well-formed, and that shared artifacts are current with your upstream template.
+Reviews your repo's artifacts for quality and template alignment. Scope depends on repo type.
+
+## BUILD vs USE Repo Distinction
+
+- **BUILD repos** (kailash-py, kailash-rs, kailash-prism): no `agents/project/` or `skills/project/` directories. Every artifact lives in a canonical location (`agents/frameworks/`, `skills/01-core-sdk/`, etc.) and is subject to the same fidelity checks as loom/. The Phase 1 inventory in a BUILD repo walks ALL artifact directories, not just `project/`.
+- **Downstream USE repos** (consumer projects): project-specific artifacts live in `agents/project/` and `skills/project/`. The Phase 1 inventory focuses on these, since shared artifacts are owned by the upstream template and audited at loom/.
+
+If this repo is a BUILD repo, skip the `project/`-only inventory below and audit all canonical artifact directories.
 
 ## Your Role
 
@@ -13,7 +20,9 @@ Specify scope: `all`, `fidelity` (quality only), `sync` (template alignment only
 
 ## Phase 1: Fidelity Audit
 
-1. **Inventory**: List project-specific artifacts (agents/project/, skills/project/) with line counts.
+1. **Inventory**:
+   - **USE repos**: list project-specific artifacts (`agents/project/`, `skills/project/`) with line counts.
+   - **BUILD repos**: list all canonical artifacts (`agents/**/*.md`, `skills/**/*`, `rules/*.md`, `commands/*.md`) with line counts; `agents/project/` and `skills/project/` should not exist.
 
 2. **Four-dimension audit** per artifact:
    - **Competency**: Precise instructions? Knows its domain?

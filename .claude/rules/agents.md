@@ -44,22 +44,24 @@ Reviews happen at COC phase boundaries, not per-edit. Skip only when explicitly 
 
 **Why:** Skipping gate reviews lets analysis gaps, security holes, and naming violations propagate to downstream repos where they are far more expensive to fix. Evidence: 0052-DISCOVERY §3.3 — six commits shipped without a single review because gates were phrased as "recommended." Upgrading to MUST + background agents makes reviews nearly free.
 
-| Gate                | After Phase  | Enforcement | Review                                                                        |
-| ------------------- | ------------ | ----------- | ----------------------------------------------------------------------------- |
-| Analysis complete   | `/analyze`   | RECOMMENDED | **reviewer**: Are findings complete? Gaps?                                    |
-| Plan approved       | `/todos`     | RECOMMENDED | **reviewer**: Does plan cover requirements?                                   |
-| Implementation done | `/implement` | **MUST**    | **reviewer** + **security-reviewer**: Run as parallel background agents.      |
-| Validation passed   | `/redteam`   | RECOMMENDED | **reviewer**: Are red team findings addressed?                                |
-| Knowledge captured  | `/codify`    | RECOMMENDED | **gold-standards-validator**: Naming, licensing compliance.                   |
+| Gate                | After Phase  | Enforcement | Review                                                                         |
+| ------------------- | ------------ | ----------- | ------------------------------------------------------------------------------ |
+| Analysis complete   | `/analyze`   | RECOMMENDED | **reviewer**: Are findings complete? Gaps?                                     |
+| Plan approved       | `/todos`     | RECOMMENDED | **reviewer**: Does plan cover requirements?                                    |
+| Implementation done | `/implement` | **MUST**    | **reviewer** + **security-reviewer**: Run as parallel background agents.       |
+| Validation passed   | `/redteam`   | RECOMMENDED | **reviewer**: Are red team findings addressed?                                 |
+| Knowledge captured  | `/codify`    | RECOMMENDED | **gold-standards-validator**: Naming, licensing compliance.                    |
 | Before release      | `/release`   | **MUST**    | **reviewer** + **security-reviewer** + **gold-standards-validator**: Blocking. |
 
 **BLOCKED responses when skipping MUST gates:**
+
 - "Skipping review to save time"
 - "Reviews will happen in a follow-up session"
 - "The changes are straightforward, no review needed"
 - "Already reviewed informally during implementation"
 
 **Background agent pattern for MUST gates** — the review costs nearly zero parent context:
+
 ```
 # At end of /implement, spawn reviews in background:
 Agent({subagent_type: "reviewer", run_in_background: true, prompt: "Review all changes since last gate..."})

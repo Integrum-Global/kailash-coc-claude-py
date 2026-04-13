@@ -16,7 +16,7 @@ Each worktree branches from the committed HEAD and applies ONE feature. Filter w
 
 ```bash
 for wt in .claude/worktrees/agent-*/; do
-    f="${wt}src/myapp/core/engine.py"
+    f="${wt}src/kailash/trust/pact/engine.py"
     [ -f "$f" ] || continue
     n1=$(grep -c "KnowledgeFilter" "$f")
     n2=$(grep -c "_envelope_cache" "$f")
@@ -31,8 +31,8 @@ done
 Each diff isolates one feature's additions without entanglement:
 
 ```bash
-git show HEAD:src/myapp/core/engine.py > /tmp/engine_head.py
-diff -u /tmp/engine_head.py .claude/worktrees/agent-XXX/src/myapp/core/engine.py > /tmp/n1.patch
+git show HEAD:src/kailash/trust/pact/engine.py > /tmp/engine_head.py
+diff -u /tmp/engine_head.py .claude/worktrees/agent-XXX/src/kailash/trust/pact/engine.py > /tmp/n1.patch
 ```
 
 ### 3. Delegate the merge to a specialist
@@ -69,7 +69,7 @@ Before merging a worktree branch, check if its merge-base is older than the targ
 
 ```bash
 # For each worktree about to merge, compare LOC of shared files
-TARGET_FILE="src/myapp/agents/base_agent.py"
+TARGET_FILE="packages/kailash-kaizen/src/kaizen/core/base_agent.py"
 for wt in .claude/worktrees/agent-*/; do
     wt_file="${wt}${TARGET_FILE}"
     [ -f "$wt_file" ] || continue

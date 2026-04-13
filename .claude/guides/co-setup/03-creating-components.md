@@ -4,7 +4,7 @@ How to create each component type for any domain.
 
 ## Agents
 
-**Location**: `.claude/agents/` (shared) or `.claude/agents/project/` (project-specific)
+**Location**: `.claude/agents/` (shared) or `.claude/agents/project/` (project-specific). Project-specific agents in `project/` are preserved across `/sync`.
 
 **Purpose**: Specialized sub-processes with deep domain knowledge and procedural directives.
 
@@ -56,7 +56,7 @@ When to hand off to other agents.
 
 ## Skills
 
-**Location**: `.claude/skills/<number>-<name>/` with `SKILL.md` entry point
+**Location**: `.claude/skills/<number>-<name>/` with `SKILL.md` entry point (shared, updated by `/sync`), or `.claude/skills/project/<name>/` for project-specific skills (preserved across `/sync`).
 
 **Purpose**: Distilled domain knowledge that agents reference. The institutional handbook.
 

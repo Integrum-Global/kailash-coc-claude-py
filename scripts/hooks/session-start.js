@@ -230,6 +230,13 @@ function initializeSession(data) {
     console.error(`[FRESHNESS] Check failed: ${e.message}`);
   }
 
+  // ── Release drift check (unreleased packages) ────────────────────────
+  try {
+    checkReleaseDrift(cwd);
+  } catch (e) {
+    console.error(`[RELEASE-DRIFT] Check failed: ${e.message}`);
+  }
+
   // ── Output model/key summary ──────────────────────────────────────────
   if (envExists) {
     const summary = buildCompactSummary(env, discovery);
@@ -530,6 +537,29 @@ function isOlderThan(a, b) {
     if ((pa[i] || 0) > (pb[i] || 0)) return false;
   }
   return false;
+}
+
+/**
+ * Check for packages with commits since their last release tag.
+ * Silent when no packages / no matching tags / all released.
+ * See scripts/hooks/lib/release-drift.js for detection logic.
+ */
+function checkReleaseDrift(cwd) {
+  const { detectUnreleasedPackages } = require("./lib/release-drift");
+  const unreleased = detectUnreleasedPackages(cwd);
+  if (unreleased.length === 0) return;
+
+  console.error(
+    `[RELEASE-DRIFT] ⚠ ${unreleased.length} package(s) have commits since last release:`,
+  );
+  for (const pkg of unreleased) {
+    console.error(
+      `[RELEASE-DRIFT]   ${pkg.name} (${pkg.path}): ${pkg.commits_since_tag} commit(s) since ${pkg.last_tag} — pyproject at v${pkg.current_version}`,
+    );
+  }
+  console.error(
+    `[RELEASE-DRIFT]   Run /release when ready to publish.`,
+  );
 }
 
 function detectFramework(cwd) {

@@ -118,6 +118,10 @@ Follow the proposal protocol in `guides/co-setup/09-proposal-protocol.md`. Key r
 - **loom/**: Propose CC/CO-tier artifacts upstream to atelier/ using the same append-not-overwrite protocol.
 - **Downstream project repos**: SKIP. Changes stay local.
 
+### 9. Release drift check (BUILD repos only)
+
+After codify, check `[RELEASE-DRIFT]` output from session-start OR run `node -e "const d=require('./scripts/hooks/lib/release-drift');console.log(d.detectUnreleasedPackages(process.cwd()))"`. If any packages have commits since their last release tag, recommend the user run `/release` before ending the session — codify commits add to the unreleased backlog and silent drift accumulates across sessions. Silent on downstream repos / non-package repos.
+
 ## Agent Teams
 
 Deploy these agents as a team for codification:

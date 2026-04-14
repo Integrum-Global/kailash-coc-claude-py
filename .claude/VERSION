@@ -1,5 +1,5 @@
 {
-  "version": "3.4.8",
+  "version": "3.4.9",
   "type": "coc-use-template",
   "description": "COC USE template for Python SDK projects",
   "released": "2026-04-14",
@@ -23,6 +23,17 @@
     }
   },
   "changelog": [
+    {
+      "version": "3.4.9",
+      "date": "2026-04-14",
+      "summary": "Release drift detection during session-start / /wrapup / /codify (loom#9)",
+      "changes": [
+        "NEW HOOK LIB: scripts/hooks/lib/release-drift.js \u2014 detects Python packages with commits since last release tag. Silent on non-package repos.",
+        "UPDATED: scripts/hooks/session-start.js \u2014 new [RELEASE-DRIFT] warning for packages with drift.",
+        "UPDATED: commands/wrapup.md \u2014 pre-wrapup drift check, record unreleased packages in .session-notes.",
+        "UPDATED: commands/codify.md \u2014 new step 9 recommends /release when drift detected after codify."
+      ]
+    },
     {
       "version": "3.4.8",
       "date": "2026-04-14",

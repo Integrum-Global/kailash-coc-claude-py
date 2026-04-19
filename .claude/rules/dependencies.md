@@ -287,3 +287,33 @@ cargo check --quiet
 ```
 
 Any unmet, missing, or conflicting dependency BLOCKS the gate.
+
+## Phantom Transitive Deps — Resolve Via Lockfile Upgrade, Not Local Caps
+
+When `pip check` / `cargo tree -d` / `npm ls` reports a conflict whose root is an unused transitive dependency, the fix MUST be to let the solver drop the orphan (`uv lock --upgrade-package X` + `uv sync`, `cargo update -p X`, `npm update X`). Adding a local cap / pin on a package this project does not directly import is BLOCKED.
+
+```bash
+# DO — Python: let uv drop the orphan transitive
+uv lock --upgrade-package google-generativeai   # solver re-resolves; orphan drops
+uv sync                                         # lockfile + venv converge
+pip check                                       # clean
+
+# DO — Rust: cargo update drops the orphan
+cargo update -p some-transitive-crate
+
+# DO NOT — pin the orphan in the manifest
+# pyproject.toml:
+# dependencies = [..., "protobuf>=4.0,<5.0"]  # we don't import protobuf; this is speculative
+```
+
+**BLOCKED rationalizations:**
+
+- "The lockfile solver might not find a clean resolution"
+- "A local cap is faster than re-resolving the lockfile"
+- "We'll remove the cap later"
+- "The transitive is 'required-recommended' even though we don't import it"
+- "Capping is safer than trusting the upstream compat range"
+
+**Why:** A phantom transitive dep — one installed by the lockfile but zero-imports in the project — that holds a secondary package at an old cap is a solver trap: every upgrade of the actually-imported deps is blocked by the phantom's constraint. Pinning at the manifest level locks the trap in permanently; the only fix that keeps the solver free is `uv lock --upgrade-package` / `cargo update -p` / `npm update` which lets the resolver drop the phantom when it's no longer required by any imported package. Manifest-level caps on unimported packages also silently violate `§ No Caps on Transitive Dependencies` above.
+
+Origin: kailash-py PR #530 (2026-04-19) — `google-generativeai 0.8.6` was installed by the lockfile with zero imports in the project, holding `protobuf` at an old cap that blocked the `kailash-align 0.3.2` release. Fix: `uv lock --upgrade-package google-generativeai` dropped it cleanly, protobuf upgraded, release unblocked.

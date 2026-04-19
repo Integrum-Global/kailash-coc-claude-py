@@ -149,6 +149,47 @@ Any PR that removes a public symbol (module, class, function, attribute) MUST de
 
 **Why:** Collection failures are invisible in "unit-only CI" setups yet become merge-blocking the moment someone runs the full suite locally. The only way to keep the full suite runnable is to gate every PR on collect-only-green.
 
+### 6. Module-Scope Public Imports Appear In `__all__`
+
+When a symbol is imported at module-scope into a package's `__init__.py` (not behind `_` / not lazy via `__getattr__`), it MUST appear in that module's `__all__` list unless the symbol itself is private (leading underscore). New `__all__` entries MUST land in the same PR as the import. Eagerly-imported-but-absent-from-`__all__` is BLOCKED.
+
+```python
+# DO — every public module-scope import appears in __all__
+# pkg/__init__.py
+from pkg._device_report import (
+    DeviceReport,
+    device_report_from_backend_info,
+)
+
+__all__ = [
+    "__version__",
+    "DeviceReport",
+    "device_report_from_backend_info",
+    ...
+]
+
+# DO NOT — public symbol imported but missing from __all__
+from pkg._device_report import DeviceReport, device_report_from_backend_info
+
+__all__ = [
+    "__version__",
+    # DeviceReport, device_report_from_backend_info → absent
+    # Result: `from pkg import *` drops the advertised public API
+]
+```
+
+**BLOCKED rationalizations:**
+
+- "The symbol is reachable via `pkg.DeviceReport`, that's enough"
+- "Nobody uses `from pkg import *`"
+- "`__all__` is a convention, not a contract"
+- "We'll clean up `__all__` in a follow-up"
+- "The symbol is eagerly imported; the package re-exports it implicitly"
+
+**Why:** `__all__` is the package's public-API contract: documentation generators (Sphinx autodoc), linters, typing tools (`mypy --strict`), and `from pkg import *` consumers all read it as the canonical export list. A symbol that is "eagerly imported" but never listed is both advertised (via the import) AND hidden (via `__all__`) — that inconsistency is the exact failure shape the orphan pattern produces on the consumer side. The fix is a one-line addition in the same PR; deferring it means the advertised feature ships broken for every tool that respects `__all__`.
+
+Origin: kailash-py PR #523 / PR #529 (2026-04-19) — kailash-ml 0.11.0 eagerly imported `DeviceReport` / `device_report_from_backend_info` / `device` / `use_device` but omitted all four from `__all__`; caught by post-release reviewer; patched in 0.11.1.
+
 ## MUST NOT
 
 - Land a `db.X` / `app.X` facade without the production call site in the same PR
@@ -169,8 +210,9 @@ When auditing for orphans, run this protocol against every class exposed on the 
 
 1. **Surface scan** — list every property, method, and attribute on the framework's top-level class that returns a `*Manager` / `*Executor` / `*Store` / `*Registry` / `*Engine` / `*Service`.
 2. **Hot-path grep** — for each candidate, grep the framework's source (NOT tests, NOT downstream consumers) for calls into the class's methods. Zero matches in the hot path = orphan.
-3. **Tier 2 grep** — for each non-orphan, grep `tests/integration/` and `tests/e2e/` for the class name. Zero matches = unverified wiring.
-4. **Collect-only sweep** — run `.venv/bin/python -m pytest --collect-only tests/ packages/*/tests/`. Every `ERROR <path>` / `ModuleNotFoundError` / `ImportError` at collection is a test-orphan. Disposition: delete the orphan test file (if the API is gone) or port its imports (if the API moved).
-5. **Disposition** — every orphan and every unverified wiring MUST be either fixed (wire + test) or deleted (remove from public surface).
+3. **Bridge-shim verification** — for every match from step 2, verify the call site is NOT an isolating shim (`LegacyHandlerAdapter`, `CompatBridge`, `FacadeAdapter`). If every hot-path call site routes through a shim whose job is to translate back to the OLD pre-refactor surface, the new surface is still an orphan — it has zero un-bridged consumers. **Why:** Shims are the most common way an orphan "looks wired" but isn't. A new trait can have dozens of Tier 1 test matches and a production call site whose only job is to translate inputs back to the old API; until the shim is removed, the new surface is never actually used. Evidence: kailash-rs#404 S4a (commit 90858bab) — hot-path grep alone found 6 call sites; bridge-shim verification reduced that to zero non-shim call sites, surfacing the orphan.
+4. **Tier 2 grep** — for each non-orphan, grep `tests/integration/` and `tests/e2e/` for the class name. Zero matches = unverified wiring.
+5. **Collect-only sweep** — run `.venv/bin/python -m pytest --collect-only tests/ packages/*/tests/`. Every `ERROR <path>` / `ModuleNotFoundError` / `ImportError` at collection is a test-orphan. Disposition: delete the orphan test file (if the API is gone) or port its imports (if the API moved).
+6. **Disposition** — every orphan and every unverified wiring MUST be either fixed (wire + test) or deleted (remove from public surface).
 
 This protocol runs as part of `/redteam` and `/codify`.

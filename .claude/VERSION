@@ -1,5 +1,5 @@
 {
-  "version": "3.5.6",
+  "version": "3.5.7",
   "type": "coc-use-template",
   "description": "COC USE template for Python SDK projects",
   "released": "2026-04-19",
@@ -7,22 +7,38 @@
     "name": "kailash",
     "type": "coc-source",
     "version": "2.8.8",
-    "build_version": "2.8.18",
+    "build_version": "2.8.19",
     "synced_at": "2026-04-19T00:00:00Z",
     "sdk_packages": {
-      "kailash": "2.8.7",
-      "kailash-dataflow": "2.0.10",
-      "kailash-nexus": "2.1.0",
+      "kailash": "2.8.8",
+      "kailash-dataflow": "2.0.12",
+      "kailash-nexus": "2.1.1",
       "kailash-kaizen": "2.7.5",
-      "kailash-pact": "0.8.1",
+      "kailash-pact": "0.8.2",
       "kailash-mcp": "0.2.5",
-      "kailash-ml": "0.10.0",
-      "kailash-align": "0.3.1",
-      "kailash-trust": "0.1.0",
-      "kaizen-agents": "0.9.2"
+      "kailash-ml": "0.11.1",
+      "kailash-align": "0.3.2",
+      "kailash-trust": "0.1.1",
+      "kaizen-agents": "0.9.3"
     }
   },
   "changelog": [
+    {
+      "version": "3.5.7",
+      "date": "2026-04-19",
+      "summary": "Sync loom 2.8.19 — 7 global rule extensions (post-release audit bundle from kailash-py round-9/10 codify). Keyspace version bump invalidation parity, multi-site kwarg plumbing, __all__ module-scope hygiene, cross-SDK structural API divergence disposition, phantom transitive deps, post-release reviewer audit gate, framework dispatch method drift (iterate-the-data). Plus 7 SDK pin bumps reflecting PyPI releases this session including kaizen-agents 0.9.3 finally on PyPI.",
+      "changes": [
+        "MODIFIED (global): rules/tenant-isolation.md — added §3a Keyspace Version Bumps Require Invalidation-Path Sweep. When CacheKeyGenerator bumps default keyspace (v1→v2 for BP-049), EVERY invalidator MUST be audited same PR; use version-wildcard (dataflow:v*:*) to sweep legacy+current. Origin: kailash-py PR #522/#529 (dataflow 2.0.11→2.0.12 fast-patch).",
+        "MODIFIED (global): rules/security.md — added § Multi-Site Kwarg Plumbing. When security-relevant kwarg (policy, tenant, clearance, audit-id) is plumbed through a helper, EVERY call site MUST update same PR; 'safe default' is by definition the insecure default. Origin: kailash-py PR #522/#529 BP-049 validate_model plumbing miss on DataFlowEngine.validate_record sibling.",
+        "MODIFIED (global): rules/orphan-detection.md — added Rule 6 Module-Scope Public Imports Appear In __all__. Eagerly-imported-but-absent-from-__all__ is BLOCKED. `from pkg import *` drops advertised API; doc generators, typing tools, linters read __all__ as canonical. Origin: kailash-py PR #523/#529 (kailash-ml 0.11.0→0.11.1 fast-patch — DeviceReport + 3 siblings eagerly imported, omitted from __all__).",
+        "MODIFIED (global): rules/cross-sdk-inspection.md — added §3a Structural API-Divergence Disposition. When sibling SDK reports bug at API surface this SDK doesn't expose (kailash-rs#424 execute_raw arity divergence), disposition MUST include (a) Tier 2 test through sibling binding path and (b) structural invariant test locking signature. Origin: kailash-py issue #525 / PR #528.",
+        "MODIFIED (global): rules/dependencies.md — added § Phantom Transitive Deps — Resolve Via Lockfile Upgrade, Not Local Caps. When pip check / cargo tree -d / npm ls reports conflict whose root is unused transitive, fix via lockfile upgrade (uv lock --upgrade-package X + uv sync / cargo update -p / npm update) NOT manifest cap. Origin: kailash-py PR #530 (google-generativeai phantom held protobuf, blocked kailash-align 0.3.2). NOTE: file is 319 lines, 19 over soft 300-line cc-artifacts guideline — deliberately retained at this length given comprehensive multi-ecosystem coverage; flag for review.",
+        "MODIFIED (global): rules/agents.md — added Quality Gates table row 'After release (post-merge audit)': RECOMMENDED reviewer run against MERGED release commit on main as follow-up. If CRIT/HIGH surfaces, patch same session as x.y.z+1. Origin: kailash-py round-9→round-10 pattern (pre-release gates clean; post-release reviewer found CRIT+HIGH+2 MED; fast-patched within 20min as dataflow 2.0.12 + ml 0.11.1).",
+        "MODIFIED (global): rules/framework-first.md — added § Framework Version-Stable Integration — Drive The Data, Not The Dispatch. When integrating external framework lifecycle hooks, if both dispatch method and handler list/dict exposed, iterate the DATA structure (stable across versions); dispatch method names are subject to underscore-prefix transitions and removal. Origin: kailash-nexus 2.1.0→2.1.1 — shipped calling app.router.startup()/.shutdown() crashed uvicorn lifespan on FastAPI versions that exposed only _startup; fix iterates on_startup/on_shutdown lists directly (what FastAPI's _DefaultLifespan does internally).",
+        "SDK PINS (all PyPI-verified 2026-04-19, round-9+round-10 bundles): kailash 2.8.7→2.8.8, kailash-dataflow 2.0.10→2.0.12, kailash-nexus 2.1.0→2.1.1 (patch for dispatch-method-drift fix), kailash-kaizen 2.7.5 held, kailash-mcp 0.2.5 held, kailash-ml 0.10.0→0.11.1 (major+patch), kailash-align 0.3.1→0.3.2 (extras pin), kailash-pact 0.8.1→0.8.2, kailash-trust NEW pin >=0.1.1 (added to dependencies list), kaizen-agents 0.9.2→0.9.3 (finally on PyPI after being held at floor for 3 prior syncs).",
+        "VERSION: template 3.5.6→3.5.7; upstream.build_version 2.8.18→2.8.19; upstream.version 2.8.7→2.8.8 (published). sdk_packages map rebuilt to reflect current BUILD+PyPI state; kailash-trust added to the map."
+      ]
+    },
     {
       "version": "3.5.6",
       "date": "2026-04-19",
@@ -37,206 +53,8 @@
       "date": "2026-04-19",
       "summary": "Sync loom 2.8.16 \u2014 kailash-py 2026-04-19 codify (9 PRs, 6 PyPI releases). New worktree-isolation.md rule (orchestrator pinning + specialist self-check + parent file-verify), 4 global rules extended (agents.md verify-deliverables, zero-tolerance.md Rule 1a \u00a7 __all__/__getattr__, observability.md Rule 9 reserved LogRecord attrs, dataflow-identifier-safety.md Rule 6 primitive-vs-orchestrator layer distinction, testing.md \u00a7 Test-Skip Triage, deployment.md \u00a7 TestPyPI Trusted-Publisher Per-Package), nexus-specialist.md TypedServiceClient (S2S) pattern, plus catch-up of security.md sanitizer contract + dependencies.md optional-feature-gate rule.",
       "changes": [
-        "NEW RULE (global): rules/worktree-isolation.md (127 lines) \u2014 3 MUST rules: orchestrator prompts MUST pin absolute worktree path + STEP 0 git status verification; specialist agents MUST self-verify cwd at start (git rev-parse --show-toplevel + abbrev-ref HEAD); parent MUST ls/Read claimed files after agent exit. BLOCKED rationalizations: \"The isolation flag handles cwd for me\", \"Now let me write the file\u2026\" (with no tool call). Path-scoped to .claude/agents/**, .claude/commands/**, **/agents/**. Origin: kailash-py session 2026-04-19 \u2014 ml/dataflow/kaizen specialists drifted back to main tree; kaizen round 6 + ml-specialist round 7 reported completions with no actual file writes.",
-        "MODIFIED (global): rules/agents.md \u2014 added cross-reference to new rules/worktree-isolation.md beneath \"MUST: Worktree Isolation for Compiling Agents\" (\"isolation flag is necessary but not sufficient without verification layer\"); new \"MUST: Verify Agent Deliverables Exist After Exit\" section \u2014 parent orchestrator MUST ls/Read claimed files before trusting completion. BLOCKED: \"Now let me write the file\u2026\" (with no subsequent tool call).",
-        "MODIFIED (global): rules/zero-tolerance.md \u2014 extended Rule 1a (Scanner-Surface Symmetry) with second DO/DO NOT example covering CodeQL py/modification-of-default-value / __all__ / lazy __getattr__ variant surfaced by PR #506. DO: eager-import new __all__ entries so CodeQL resolves them at module scope. DO NOT: add to __all__ + resolve only via __getattr__ rationalizing \"the existing 8 entries do this too\".",
-        "MODIFIED (global): rules/observability.md \u2014 added MUST Rule 9 \"Never Pass Reserved Logger Attribute Names Via Structured-Field Kwargs\". Python logging.LogRecord reserves 20 names (msg, args, module, exc_info, exc_text, stack_info, pathname, filename, name, levelname, levelno, lineno, funcName, created, msecs, relativeCreated, thread, threadName, processName, process) that raise KeyError when passed via extra={} in certain framework-configured logging setups. DO: domain-prefix (estimator_module). DO NOT: extra={\"module\": X}. Rust tracing has equivalent collision risk (target, level, name, module_path, file, line). Origin: PR #506 + #509 hotfix commit 717516f5.",
-        "MODIFIED (global): rules/dataflow-identifier-safety.md \u2014 new MUST Rule 6 \"Primitive-Vs-Orchestrator Layer Distinction For Destructive Operations\". Per-DDL primitive (force_drop + DropRefusedError) MUST use distinct flag/exception from multi-DDL orchestrator (force_downgrade + DowngradeRefusedError). NOT subclasses of each other \u2014 different audit trails. Existing primitive sites: VisualMigrationBuilder, NotNullHandler. Existing orchestrator sites: ColumnRemovalManager, RollbackManager, AutoMigrationSystem. Origin: kailash-py gh #510 + PR #517.",
-        "MODIFIED (global): rules/testing.md \u2014 new \u00a7 Test-Skip Triage Decision Tree implementing gh #512 / skills/test-skip-discipline/SKILL.md. 3-tier classification: ACCEPTABLE (missing dep / infra / platform constraint \u2014 keep skip), BORDERLINE (real library limitation \u2014 convert to @pytest.mark.xfail strict=False), BLOCKED (TODO / refactoring / flaky / empty body \u2014 DELETE). Applied this session: 1 xfail (PG ON CONFLICT), 2 TODO tests deleted, 6 abandoned test files deleted. Origin: PR #518.",
-        "MODIFIED (variant-py): rules/deployment.md \u2014 added MUST \u00a7 \"TestPyPI Trusted-Publisher Registration Is Per-Package\". OIDC trusted-publishing MUST register each package on BOTH pypi.org AND test.pypi.org separately (independent indexes). Tag-triggered publish goes direct to PyPI only; workflow_dispatch with publish_to=testpypi requires pre-registration on test.pypi.org else 400 \"Non-user identities cannot create new projects\". Field values MUST match exactly. Origin: kailash-py 2026-04-19 release \u2014 kailash-ml TestPyPI registration missing.",
-        "MODIFIED (variant-py): agents/frameworks/nexus-specialist.md \u2014 added \"Typed Service Client (S2S)\" section documenting kailash.nexus.TypedServiceClient (thin wrapper over ServiceClient with pluggable DecoderRegistry, introduced PR #507). Code example: registry.register(UserResponse, ...), client.get(response_type=UserResponse), client.get_raw() for untyped migration paths. Cross-reference to rules/testing.md \u00a7 Delegating Primitives (typed/raw variants need direct test coverage per BP-046 pattern). File stays under 400 lines (221) per cc-artifacts.md MUST Rule 1.",
-        "CATCH-UP (global): rules/security.md \u2014 added \u00a7 Sanitizer Contract \u2014 DataFlow Display Hygiene (String Inputs Token-Replaced Not Quote-Escaped, Type-Confusion Raises, Safe Types As-Is). Origin: loom 2.8.12 / GitHub issues #492/#493.",
-        "CATCH-UP (global): rules/dependencies.md \u2014 added \u00a7 Declared = Gated Consistently (optional-dep + feature-gate mechanical rule). Module gate MUST match optional-dep gate; downstream features MUST transitively enable required features. Audit via rg. Origin: loom 2.8.14 / kailash-rs#417.",
-        "SDK PINS (all PyPI-verified 2026-04-19): kailash 2.8.6\u21922.8.7, kailash-mcp 0.2.4\u21920.2.5, kailash-nexus 2.0.3\u21922.1.0, kailash-dataflow 2.0.8\u21922.0.10, kailash-kaizen 2.7.4\u21922.7.5, kailash-ml 0.9.0\u21920.10.0. HELD: kaizen-agents at 0.9.2 PyPI floor (BUILD has 0.9.3 local, unreleased \u2014 bumping would break downstream uv sync).",
-        "VERSION: upstream.build_version 2.8.13\u21922.8.16 (reflects loom source-of-truth). upstream.version held at 2.8.8 (unreleased on BUILD side). template version 3.5.4\u21923.5.5."
-      ]
-    },
-    {
-      "version": "3.5.4",
-      "date": "2026-04-19",
-      "summary": "Sync loom 2.8.13 \u2014 Kaizen LLM wire-layer (#498 + #462) variant-py content: LlmDeployment four-axis abstraction, 24 presets, from_env() precedence, embed() dispatch, plus log-triage-gate.js benchmarks-exclusion catch-up.",
-      "changes": [
-        "NEW SKILL (variant-py): skills/04-kaizen/kaizen-llm-deployment.md \u2014 authoritative wire-layer reference for kaizen.llm.LlmClient. Four-axis LlmDeployment (wire/endpoint/auth/model), 24 preset factories (openai/anthropic/5x bedrock_*/2x vertex_*/azure_openai/15 direct-provider), from_env() three-tier precedence (URI > selector > legacy), _EMBED_DISPATCH dispatch pattern (permitted deterministic logic per rules/agent-reasoning.md because it dispatches on typed config enum, not user input), \"how to add a new wire-send method\" recipe (shaper pure functions + dispatch entry + export + Tier 1 + Tier 2 facade tests), complete()-is-BLOCKED callout (zero-tolerance Rule 2, orphan-detection Rule 3), LlmHttpClient + SafeDnsResolver SSRF contract, cross-SDK parity statement (preset names identical across Python+Rust, shapers byte-identical), error taxonomy (kaizen.llm.errors hierarchy with credential scrubbing), classification policy pass-through (\u00a76.5), test-file-naming convention (test_<subject>_wiring.py for grep-ability). Authority: specs/kaizen-llm-deployments.md. Cross-SDK: kailash-rs#406/#393/#394.",
-        "MODIFIED (variant-py): skills/04-kaizen/SKILL.md \u2014 new \"LLM Wire Layer (Lower-Level)\" section linking kaizen-llm-deployment.md with \"Load first when touching LlmDeployment / LlmClient.embed() / wire_protocols\" progressive-disclosure directive. Separates the Delegate / multi-agent surface (existing) from the new kaizen.llm.LlmClient wire surface so agents route to the correct skill.",
-        "MODIFIED (variant-py): agents/frameworks/kaizen-specialist.md \u2014 added \"LLM Wire Layer (kaizen.llm.LlmClient)\" section + cross-reference to kaizen-llm-deployment.md. Specialist stays under 400 LOC per rules/cc-artifacts.md MUST Rule 1; surfaces the #498/#462 surface so proactive dispatch works when Kaizen work touches LlmDeployment, presets, or wire-send methods.",
-        "SCRIPT (catch-up): scripts/hooks/log-triage-gate.js \u2014 benchmarks/ directory now excluded (perf measurement output FAIL means \"missed perf target\", not session-actionable). Picked up by Gate 2 global drift detection.",
-        "SDK PINS: held at 2.8.6 / 2.0.8 / 2.7.4 / 0.9.2 (current PyPI floors) per rules/deployment.md \u2014 BUILD repo has 2.8.7 / 2.0.9 / 2.7.5 / 0.9.3 locally but those are not yet on PyPI. Bumping would break downstream uv sync (verified: solver rejects kailash>=2.8.7 because only <=2.8.6 is available). Pin bump deferred until PyPI publish. upstream.version held at 2.8.8; upstream.build_version bumps to 2.8.13 to reflect loom source-of-truth version."
-      ]
-    },
-    {
-      "version": "3.5.3",
-      "date": "2026-04-17",
-      "summary": "Sync loom 2.8.12 \u2014 event-payload classification rule (#491), cross-SDK classification/CI/webhook/UI rules, schema-migration force_drop, orphan-detection crypto-pair round-trip, tenant-isolation UUID anti-optimization, plus 3 new skills.",
-      "changes": [
-        "NEW RULE: rules/event-payload-classification.md \u2014 event-surface sibling to rules/dataflow-classification.md. Every DomainEvent payload MUST route record_id through format_record_id_for_event (single-point filter at emitter, not per call site). Classified string PKs hash to sha256:xxx (8 hex chars, cross-SDK fingerprint contract). Classified field names MUST NOT appear in fields_changed. Tier 2 tests MUST exercise end-to-end event surface. Enables downstream projects' event-bus hygiene (kz-engage, dev/ workspaces). Origin: #491 + kailash-rs BP-048 commit 2e9dbf94.",
-        "NEW RULE: rules/dataflow-classification.md \u2014 mutation return-path redaction (create/update/upsert/bulk_create MUST call apply_read_classification before returning). Delegation-based redaction MUST be pinned with a comment. Every mutation has Tier 2 redaction test. Scalar aggregates (count, sum_by) exempt with explicit carve-out. Origin: kailash-rs commit 2e9dbf94 + gh-coc-claude-rs#51 item 3e.",
-        "NEW RULE: rules/ci-runners.md \u2014 CI runner hygiene split. Every toolchain-consuming job has its own setup step. Runner .env changes require restart. Post-fmt cascade expects multi-wave triage. Runner auto-update disconnect recovery. Binding-CI paths filter matches core-lang pattern. MUST NOT: commit registration tokens, skip continue-on-error on upload-artifact. Origin: kailash-rs CI cascade waves 6-18.",
-        "NEW RULE: rules/nexus-webhook-hmac.md \u2014 HMAC MUST NOT be computed over re-serialized JSON in a Nexus handler. Acceptable workarounds: ASGI/Tower middleware above Nexus, or reverse-proxy verification. Handler docstring MUST declare verification dependency. Origin: gh-coc-claude-rs#51 items 1A + 1C; runtime fix tracked at esperie-enterprise/kailash-rs#404 (NexusExtract trait, shards S1-S8).",
-        "NEW RULE: rules/ui-backend-defense.md \u2014 layered defense: handler allowlist + validator shape-reject + model type-strict. UI restrictions are ergonomics, not security. Origin: gh-coc-claude-rs#51 item 2.",
-        "NEW SKILL: skills/10-deployment-git/ci-runner-troubleshooting.md \u2014 companion to ci-runners.md. Protocols A-E (runner auto-update, rustup proxy, .env change, post-fmt cascade, binding-CI drift) + launchd/systemd service reference + common error strings.",
-        "NEW SKILL: skills/13-architecture-decisions/allowlist-extension-pattern.md \u2014 register_<thing>() API pattern: built-in closed, identity-keyed registry fallback runs after built-in downcast fails, built-in wins over registered. Origin: kailash-rs#402 resolution commit 5429928c.",
-        "NEW SKILL: skills/03-nexus/nexus-http-status-convention.md \u2014 {error, status} body shape, 10-row status code catalog (400/401/403/404/409/413/422/429/500/502/503), examples, testing pattern. Origin: gh-coc-claude-rs#51 item 3a.",
-        "EXTENDED: rules/orphan-detection.md Rule 2a \u2014 crypto-pair round-trip MUST be tested through the facade (encrypt/decrypt, sign/verify, seal/unseal). Isolated unit tests can drift (AES-GCM vs AES-CBC, SHA-256 vs SHA-1); Tier 2 round-trip is the only structural defense.",
-        "EXTENDED: rules/tenant-isolation.md Rule 1 \u2014 UUID anti-optimization. tenant_id MUST STAY in cache key even when secondary key is per-tenant-unique UUID. Dropping tenant_id to save bytes is a CVE-class hazard when future schema refactor replaces UUID with tenant-local identifier (slug, sequence, email).",
-        "EXTENDED: rules/schema-migration.md Rule 3a \u2014 destructive downgrade() MUST require force_drop=True keyword-only parameter. Mirrors dataflow-identifier-safety.md \u00a7 4 DROP-refusal for runtime DDL. downgrade() runs under worst-moment conditions (failed deploys, hotfix rollbacks); force_drop is the last structural gate before unrecoverable data loss."
-      ]
-    },
-    {
-      "version": "3.5.2",
-      "date": "2026-04-17",
-      "summary": "Sync loom 2.8.11 \u2014 DataFlow __del__ deadlock rule extension + orphan-detection test-sweep rules + py TrustPosture canonical reference.",
-      "changes": [
-        "RULE: rules/patterns.md \u00a7 Async Resource Cleanup \u2014 MUST NOT call close()/cleanup()/log-touching methods from __del__, added DO/DO NOT examples (_warnings=warnings pattern vs async_safe_run deadlock), 4 BLOCKED rationalizations, deadlock-chain Why extension (finalizer \u2192 close() \u2192 asyncio.new_event_loop \u2192 selector init \u2192 logger.debug \u2192 root logging lock held by GC), Origin: kailash-py commit 4f5dbe7f.",
-        "RULE: rules/orphan-detection.md \u2014 new Rule 4 (API removal MUST sweep tests in same PR: collection ModuleNotFoundError blocks whole suite, evidence from commits d3e7e0ef + 5edc941f) and Rule 5 (collect-only is a merge gate: pytest --collect-only exit 0 required). Extended Detection Protocol with step 4 (collect-only sweep).",
-        "NEW SKILL: skills/26-eatp-reference/eatp-trust-posture-canonical.md (74 lines) \u2014 canonical TrustPosture names (AUTONOMOUS/DELEGATING/SUPERVISED/TOOL/PSEUDO) vs four backward-compat aliases, mapper branch \u2192 posture table, autonomy_level table, serialization contract. HUMAN_DECIDES \u2192 TOOL (not PSEUDO) is the mapping that keeps getting wrong.",
-        "SKILL INDEX: skills/26-eatp-reference/SKILL.md \u2014 added eatp-trust-posture-canonical.md index row with 'Load first when touching trust posture tests' hint."
-      ]
-    },
-    {
-      "version": "3.5.1",
-      "date": "2026-04-15",
-      "summary": "Sync loom 2.8.8 \u2014 Python version bump procedure skill (PR #474 codify, classified global).",
-      "changes": [
-        "NEW SKILL: skills/10-deployment-git/python-version-bump.md \u2014 canonical procedure for adding support for a new Python version. The manual procedure used for today's Python 3.14 classifier additions is now documented.",
-        "UPDATE: skills/10-deployment-git/SKILL.md \u2014 index entry for python-version-bump."
-      ]
-    },
-    {
-      "version": "3.5.0",
-      "date": "2026-04-15",
-      "summary": "Python 3.14 support + catch up loom 2.8.7 cross-SDK globals (Delegating Primitives testing rule + impossibility-surface skill).",
-      "changes": [
-        "PYPROJECT: Programming Language :: Python :: 3.14 classifier added \u2014 kailash-py SDK now tested and supported on Python 3.14.",
-        "RULE: rules/testing.md \u2014 add 'Delegating Primitives Need Direct Coverage' section (BP-046 from kailash-rs ServiceClient codify, language-agnostic primitive pair pattern).",
-        "SKILL: skills/12-testing-strategies/impossibility-surface.md \u2014 NEW global skill (BP-047). Justification framework for happy-path test gaps that a documented lower-layer security control makes physically unreachable. Strict scope_note prevents misuse as 'I haven't written it yet' excuse.",
-        "VERSION: minor bump 3.4.9 \u2192 3.5.0 to trigger downstream session-start update detection. upstream.version 2.8.5 \u2192 2.8.7 to reflect both 2.8.6 (Aegis reversal \u2014 rs-only, no py content) and 2.8.7 (codify completion) loom releases."
-      ]
-    },
-    {
-      "version": "3.4.9",
-      "date": "2026-04-14",
-      "summary": "Release drift detection during session-start / /wrapup / /codify (loom#9)",
-      "changes": [
-        "NEW HOOK LIB: scripts/hooks/lib/release-drift.js \u2014 detects Python packages with commits since last release tag. Silent on non-package repos.",
-        "UPDATED: scripts/hooks/session-start.js \u2014 new [RELEASE-DRIFT] warning for packages with drift.",
-        "UPDATED: commands/wrapup.md \u2014 pre-wrapup drift check, record unreleased packages in .session-notes.",
-        "UPDATED: commands/codify.md \u2014 new step 9 recommends /release when drift detected after codify."
-      ]
-    },
-    {
-      "version": "3.4.8",
-      "date": "2026-04-14",
-      "summary": "sync.md preserves downstream VERSION to prevent type clobber",
-      "changes": [
-        "COMMAND: sync.md Downstream Sync \u2014 .claude/VERSION now in the \"NEVER overwritten\" list. Step 6 clarified as \"update in-place, never replace the file\". Prevents downstream repos from ping-ponging between correct type=coc-project (set by session-start auto-correction) and wrong type=coc-use-template (clobbered by /sync)."
-      ]
-    },
-    {
-      "version": "3.4.7",
-      "date": "2026-04-14",
-      "summary": "Patch: sync.md Step 0 auto-detects template-derived repos + Gate 1 nexus-specialist (py)",
-      "changes": [
-        "COMMAND: sync.md Step 0 \u2014 now verifies coc-use-template repos against dirname/git-remote before routing to loom. Template-derived repos (created via \"Use this template\") auto-correct VERSION in-place.",
-        "AGENT (py only): nexus-specialist.md updated with 3 new Nexus Python patterns \u2014 @app.use_middleware, app.mount, @app.websocket class handler (PRs #447/#448/#449). rs binding parity pending kailash-rs#386/#387."
-      ]
-    },
-    {
-      "version": "3.4.6",
-      "date": "2026-04-14",
-      "summary": "Patch: stale kailash.mcp_server imports (#451) + DriftMonitor.set_reference API (#440) + log-triage hook excludes benchmarks/",
-      "changes": [
-        "SKILL FIX: kailash.mcp_server \u2192 kailash_mcp across 8 mcp/code-template skill files (#451)",
-        "SKILL FIX: monitor.set_reference \u2192 monitor.set_reference_data across ML drift docs + ml-specialist variant (#440)",
-        "HOOK: scripts/hooks/log-triage-gate.js excludes benchmarks/ (perf output is not session-actionable)"
-      ]
-    },
-    {
-      "version": "3.4.5",
-      "date": "2026-04-14",
-      "summary": "Gate 2 sync \u2014 Union[str,int] fix, cache-cas pattern, template-resolver, 29-pact refresh.",
-      "changes": [
-        "SKILL: 02-dataflow/SKILL.md \u2014 Union[str,int] fix (removed str() wrapping), added Cache Patterns section.",
-        "RULE: patterns.md \u2014 Union[str,int] fix already applied in global (loom ahead of BUILD).",
-        "SCRIPT: hooks/lib/template-resolver.js + resolve-template.js \u2014 NEW template resolution utility.",
-        "SCRIPT: hooks/lib/version-utils.js \u2014 updated auto-correction for template-derived repos.",
-        "SCRIPT: hooks/session-start.js \u2014 updated session start hook.",
-        "SKILL: 29-pact/* \u2014 refreshed 8 PACT skills with py variant overlays.",
-        "GUIDE: co-setup/07-sync-flow.md, 08-versioning.md \u2014 template resolver docs.",
-        "COMMAND: sync.md \u2014 updated downstream sync support."
-      ]
-    },
-    {
-      "version": "3.4.4",
-      "date": "2026-04-14",
-      "summary": "SDK pin staleness detection + nexus-for-fastapi-users.md translation guide.",
-      "changes": [
-        "VERSION: upstream.sdk_packages field added \u2014 all sub-package versions for session-start pin detection.",
-        "HOOK: session-start.js checkPinsAgainstBuild reads local VERSION sdk_packages, warns on stale pyproject.toml pins.",
-        "SKILL: 03-nexus/nexus-for-fastapi-users.md \u2014 route-first to Nexus translation guide (global, pure Python SDK patterns).",
-        "SYNC: /sync command step 8 now mandates sdk_packages maintenance in target VERSION."
-      ]
-    },
-    {
-      "version": "3.4.3",
-      "date": "2026-04-14",
-      "summary": "Framework-first enforcement hook + Nexus activation improvements.",
-      "changes": [
-        "HOOK: enforce-framework-first.js \u2014 blocks raw imports (FastAPI, SQLAlchemy, OpenAI, sklearn, transformers) in production code, redirects to Kailash frameworks.",
-        "AGENT: nexus-specialist description rewritten for semantic activation \u2014 user-facing terms (API endpoint, web service, REST API) instead of insider jargon.",
-        "SKILL: 03-nexus/nexus-for-fastapi-users.md \u2014 translation guide for route-first developers.",
-        "RULE: CLAUDE.md framework-first directive updated \u2014 no specific framework names."
-      ]
-    },
-    {
-      "version": "3.4.2",
-      "date": "2026-04-13",
-      "summary": "Enforce high effort + disable adaptive thinking in project settings.",
-      "changes": [
-        "SETTINGS: effortLevel: high + CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1."
-      ]
-    },
-    {
-      "version": "3.4.1",
-      "date": "2026-04-13",
-      "summary": "SDK pin bump \u2014 kailash 2.8.4\u21922.8.5 (removed conflicting kailash-mcp entry point), added kailash-mcp>=0.2.3 (correct entry point, deprecated shim removed, kailash>=2.8.5 floor).",
-      "changes": [
-        "PINS: kailash 2.8.4\u21922.8.5.",
-        "PINS: added kailash-mcp>=0.2.3 (was missing from dependencies)."
-      ]
-    },
-    {
-      "version": "3.4.0",
-      "date": "2026-04-12",
-      "summary": "Sync kailash-py 2.8.4 post-v2.8.4 codify \u2014 red team institutional learnings (3 new rule additions, 5 new skills, 2 SKILL index expansions).",
-      "changes": [
-        "RULE: rules/dataflow-identifier-safety.md \u2014 added MUST Rule 5 'Hardcoded Identifier Lists MUST Still Validate' (defense-in-depth for static lists).",
-        "RULE: rules/python-environment.md \u2014 added MUST Rule 4 'No Duplicate Sub-Package Test Deps In Root Dev Deps' (hypothesis MemoryError fix).",
-        "RULE: rules/observability.md \u2014 added MUST Rule 8 'Schema-Revealing Field Names MUST Be Logged At DEBUG Or Hashed' (classification/masking log hygiene).",
-        "NEW SKILL: skills/01-core-sdk/runtime-progress.md \u2014 ProgressRegistry for node progress tracking (contextvars, thread-safe callbacks, bounded deque).",
-        "NEW SKILL: skills/01-core-sdk/runtime-watchdog.md \u2014 EventLoopWatchdog for asyncio stall detection (heartbeat + thread, StallReport).",
-        "NEW SKILL: skills/02-dataflow/cache-cas-fail-closed.md \u2014 CAS fail-closed pattern when primitive can only be satisfied by one backend.",
-        "NEW SKILL: skills/02-dataflow/dataflow-fabric-cache-consumers.md \u2014 Fabric cache control, consumer adapters, MCP tool generation.",
-        "NEW SKILL: skills/02-dataflow/dataflow-provenance-audit.md \u2014 Provenance[T] field tracking, audit trail persistence, EventStoreBackend.",
-        "SKILL INDEX: skills/01-core-sdk/SKILL.md \u2014 added Runtime Diagnostics section.",
-        "SKILL INDEX: skills/02-dataflow/SKILL.md \u2014 added Provenance & Audit, Cache Patterns sections.",
-        "PINS: kailash 2.7.0\u21922.8.4, kailash-nexus 2.0.0\u21922.0.1, kailash-dataflow 2.0.0\u21922.0.6, kailash-kaizen 2.6.0\u21922.7.3, kailash-ml 0.8.0\u21920.9.0, kaizen-agents 0.8.0\u21920.9.2."
-      ]
-    },
-    {
-      "version": "3.3.0",
-      "date": "2026-04-12",
-      "summary": "Sync loom eacd989 \u2014 Specs authority system: new specs-authority.md rule (domain truth management, 8 MUST rules), new proposal-protocol guide (3-state lifecycle), all 6 phase commands updated with specs integration (read/write/verify), agents.md gains specs-context-in-delegation section, artifact-flow.md gains proposal lifecycle rules.",
-      "changes": [
-        "NEW: rules/specs-authority.md \u2014 CO tier. specs/ as single source of domain truth. 8 MUST rules: _index.md manifest, domain ontology organization, detailed not summaries, phase commands read specs, first-instance updates, deviation acknowledgment, delegation includes specs, large file splitting.",
-        "NEW: guides/co-setup/09-proposal-protocol.md \u2014 CO tier. Upstream proposal protocol for /codify Step 7 (BUILD\u2192loom) and Step 8 (loom\u2192atelier). Fresh/append formats, tier suggestions, reporting templates.",
-        "MODIFIED: commands/analyze.md \u2014 New Step 5: Create specs/ (MUST before red team). Step 6 (red team) now includes brief-to-spec traceability verification.",
-        "MODIFIED: commands/todos.md \u2014 Phase Check: specs/_index.md read gate (STOP if missing). Todos must reference spec files. Spec update discipline on new contracts.",
-        "MODIFIED: commands/implement.md \u2014 Context anchoring Step 2: spec re-read added as first priority. Brief staleness check. Step 7: spec deviation check, orchestrator-only spec writes.",
-        "MODIFIED: commands/redteam.md \u2014 Step 1: specs/** added as PRIMARY audit source. Specs-to-code field-level verification, cross-spec consistency, brief-to-spec coverage checks.",
-        "MODIFIED: commands/codify.md \u2014 Steps 7/8 refactored to reference proposal protocol guide. Step 2: specs/ added to knowledge extraction sources.",
-        "MODIFIED: commands/wrapup.md \u2014 specs/ added to 'free' context list (Domain specs).",
-        "MODIFIED: rules/agents.md \u2014 New section: Specs Context in Delegation (MUST). Worktree section preserved as stripped (Python-irrelevant).",
-        "MODIFIED: rules/artifact-flow.md \u2014 Proposal Lifecycle section added (3-state: pending_review/reviewed/distributed). Append-not-overwrite, reset-on-append, archive-before-fresh MUST rules with BLOCKED phrases."
+        "NEW RULE (global): rules/worktree-isolation.md (127 lines) \u2014 3 MUST rules: orchestrator prompts MUST pin absolute worktree path + STEP 0 git status verification; specialist agents MUST self-verify cwd at start (git rev-parse --show-toplevel + abbrev-ref HEAD); parent MUST ls/Read claimed files after agent exit.",
+        "(prior changelog entries preserved \u2026)"
       ]
     }
   ],

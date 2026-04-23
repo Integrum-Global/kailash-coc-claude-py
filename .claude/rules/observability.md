@@ -1,4 +1,6 @@
 ---
+priority: 10
+scope: path-scoped
 paths:
   - "**/*.py"
   - "**/*.rs"
@@ -9,6 +11,9 @@ paths:
 ---
 
 # Observability Rules
+
+
+<!-- slot:neutral-body -->
 
 If a code path is not logged, it does not exist. Post-deployment integration failures are almost always failures to observe what was already broken in dev. Logs are not a debugging convenience — they are the contract that lets the next session know what happened.
 
@@ -343,3 +348,5 @@ logger.info(f"User created: {uid} on {plan}")  # cannot filter, cannot aggregate
 - **No silent log-level downgrades.** MUST NOT change a WARN/ERROR to INFO to "clean up" CI output. Fix the root cause or document the suppression in the rule itself.
 
 **Why:** Downgrading log levels to silence noise is a Zero-Tolerance Rule 1 violation in disguise — the failure is still happening, the operator just stops seeing it.
+
+<!-- /slot:neutral-body -->

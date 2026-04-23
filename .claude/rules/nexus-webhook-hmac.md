@@ -1,4 +1,6 @@
 ---
+priority: 10
+scope: path-scoped
 paths:
   - "**/nexus/**"
   - "**/webhook*"
@@ -7,6 +9,9 @@ paths:
 ---
 
 # Nexus Webhook HMAC Rules
+
+
+<!-- slot:neutral-body -->
 
 HMAC webhook signatures verify that the bytes a third-party provider sent (Stripe, GitHub, Slack, Twilio, etc.) are the exact bytes the handler is about to process. The provider computes `HMAC(secret, raw_body)` and sends it in a header; the handler recomputes `HMAC(secret, received_raw_body)` and compares. Any mutation of the body between the provider and the handler — even whitespace-equivalent re-serialization — breaks the signature.
 
@@ -153,3 +158,5 @@ async def stripe_webhook(payload: dict):
 - `rules/agent-reasoning.md` — the workaround is the explicit intent: verification is externalized, not hidden.
 
 Origin: gh-coc-claude-rs#51 items 1A + 1C (2026-04-17). kailash-rs Nexus handlers receive pre-parsed JSON; `axum::extract::Json` consumes the raw body before the handler runs, and the handler signature accepts only `Query + Json` (no `HeaderMap`, no raw body access). The runtime fix is tracked as the extractor-trait architecture rework at `esperie-enterprise/kailash-rs#404` (D1 Option D — `NexusExtract` trait; shards S1–S8; cross-SDK followup `terrene-foundation/kailash-py#497`). Until S1–S8 land, every HMAC webhook consumer MUST externalize verification per this rule; when the extractor trait ships, this rule will be revised to document the DO pattern using `TypedHeader<HmacSignature> + Bytes`.
+
+<!-- /slot:neutral-body -->

@@ -1,12 +1,8 @@
 ---
 name: open-source-strategist
 description: "Open-source strategy advisor. Use for licensing, open/proprietary boundaries, or community building decisions."
-tools: Read, Write, Edit, Grep, Glob, Bash, Task
+tools: Read, Write, Edit, Grep, Glob, Bash, Task, WebSearch, WebFetch
 model: opus
-  - Glob
-  - Grep
-  - WebSearch
-  - WebFetch
 ---
 
 # Open Source Strategist

@@ -227,7 +227,7 @@ Plus `/wrapup` (session notes).
 
 ## Hooks
 
-**Location**: `scripts/hooks/` with registration in `.claude/settings.json`
+**Location**: `.claude/hooks/` with registration in `.claude/settings.json`
 
 **Purpose**: Deterministic enforcement outside the AI's context. CO L3 Tier 2.
 
@@ -245,7 +245,7 @@ Plus `/wrapup` (session notes).
 ### Hook Template (JavaScript)
 
 ```javascript
-// scripts/hooks/hook-name.js
+// .claude/hooks/hook-name.js
 const fs = require("fs");
 const path = require("path");
 
@@ -273,13 +273,13 @@ console.log(JSON.stringify(result));
     "UserPromptSubmit": [
       {
         "type": "command",
-        "command": "node scripts/hooks/user-prompt-rules-reminder.js"
+        "command": "node .claude/hooks/user-prompt-rules-reminder.js"
       }
     ],
     "PreToolUse": [
       {
         "type": "command",
-        "command": "node scripts/hooks/validate-bash-command.js",
+        "command": "node .claude/hooks/validate-bash-command.js",
         "matcher": { "tool_name": "Bash" }
       }
     ]

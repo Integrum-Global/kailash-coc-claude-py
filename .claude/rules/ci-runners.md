@@ -1,4 +1,6 @@
 ---
+priority: 10
+scope: path-scoped
 paths:
   - ".github/workflows/**"
   - "**/ci/**"
@@ -6,6 +8,9 @@ paths:
 ---
 
 # CI Runner Rules
+
+
+<!-- slot:neutral-body -->
 
 Self-hosted CI runner hygiene. Language-agnostic — applies to every project using GitHub Actions self-hosted runners regardless of SDK language.
 
@@ -168,3 +173,5 @@ Every `actions/upload-artifact@v*` step across ALL workflows MUST include `conti
 **Why:** The failure mode re-surfaces every ~12h on PR CI until someone re-discovers the fix. Codify once, apply everywhere.
 
 Origin: kailash-rs CI cascade waves 6-18 (commits `ecc50c4e..5429928c`, 2026-04-16/17). 12 consecutive waves fixed pre-existing failures hidden by fmt short-circuit. Wave 17 fixup to a shared crate didn't trigger Python/Node/Ruby binding CI because their paths filters excluded the shared-crates tree. Runner auto-update at a trivial commit orphaned one run and required a service restart. Recovery protocols for each MUST rule live in `skills/10-deployment-git/ci-runner-troubleshooting.md`.
+
+<!-- /slot:neutral-body -->

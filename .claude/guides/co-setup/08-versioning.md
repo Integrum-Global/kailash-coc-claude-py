@@ -209,4 +209,4 @@ VERSION tracks **COC artifact currency** — whether your agents, skills, rules,
 - [06 - Artifact Lifecycle](06-artifact-lifecycle.md) — When each step happens
 - `commands/sync.md` — /sync command (updates VERSION in Gate 2)
 - `commands/sync-to-build.md` — /sync-to-build command (updates VERSION)
-- `scripts/hooks/session-start.js` — Version check implementation
+- `.claude/hooks/session-start.js` — Version check implementation

@@ -1,4 +1,6 @@
 ---
+priority: 10
+scope: path-scoped
 paths:
   - "**/specs/**"
   - "**/specs/_index.md"
@@ -9,6 +11,8 @@ paths:
 ---
 
 # Specs Authority Rules
+
+<!-- slot:neutral-body -->
 
 The `specs/` directory is the single source of domain truth for a project. It contains detailed specification files organized by the project's own ontology — components, modules, user needs, domains — whatever structure fits the project. Phase commands read targeted spec files before acting and update them when domain truth changes.
 
@@ -202,13 +206,7 @@ Notifications are delivered to users in near-real-time.
 
 When delegating to a specialist, the orchestrator MUST read `_index.md`, select relevant spec files, and include their content in the delegation prompt. For specs over 200 lines, include only the relevant section with a note pointing to the full file.
 
-```
-# DO — include spec content in delegation prompt
-Agent(prompt: "Build user schema.\n\nFrom specs/data-model.md:\n[content]\n\nFrom specs/tenant-isolation.md:\n[content]")
-
-# DO NOT — delegate without specs context
-Agent(prompt: "Build user schema.")
-```
+See **Examples § Rule 7** below for the delegation-syntax DO / DO NOT block — the surrounding syntax differs per CLI runtime, so the block lives in the overlay-replaceable `examples` slot.
 
 **Why:** Specialists without spec context produce intent-misaligned output — e.g., schemas without tenant_id because multi-tenancy wasn't communicated (FM-4).
 
@@ -225,3 +223,21 @@ When a spec file exceeds 300 lines, it MUST be split into sub-domain files and `
 - Treat specs as optional documentation — specs prevent the 6 drift failure modes
 
 **BLOCKED:** "Specs can be written after implementation", "The code is the spec", "Plans already capture this, specs are redundant", "Updating specs for this minor change is overkill"
+
+<!-- /slot:neutral-body -->
+
+<!-- slot:examples -->
+
+## Examples
+
+### Rule 7 — Agent Delegation Includes Relevant Spec Files
+
+```
+# DO — include spec content in delegation prompt
+Agent(prompt: "Build user schema.\n\nFrom specs/data-model.md:\n[content]\n\nFrom specs/tenant-isolation.md:\n[content]")
+
+# DO NOT — delegate without specs context
+Agent(prompt: "Build user schema.")
+```
+
+<!-- /slot:examples -->

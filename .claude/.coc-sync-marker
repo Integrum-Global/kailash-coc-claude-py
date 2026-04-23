@@ -1,18 +1,26 @@
-{
-  "last_sync": "2026-04-21T06:46:50Z",
-  "loom_version": "2.8.26",
-  "template_version": "3.5.15",
-  "files_added": ["rules/build-repo-release-discipline.md"],
-  "files_modified": [],
-  "sdk_pins_bumped": {
-    "kailash": "2.8.11->2.8.12",
-    "kailash-mcp": "0.2.7->0.2.8",
-    "kailash-kaizen": "2.7.5->2.10.1",
-    "kailash-pact": "0.8.2->0.9.0",
-    "kailash-ml": "0.15.2->0.17.0",
-    "kailash-align": "0.3.2->0.4.0"
-  },
-  "deps_removed": ["kailash-trust"],
-  "uv_sync_status": "ok",
-  "hooks_verified": "12/12"
-}
+# COC Sync Marker — kailash-coc-claude-py
+timestamp: 2026-04-23T01:04:52.497Z
+source: loom/.claude
+variant: py
+clis: ["claude"]
+stats:
+  updated: 3
+  created: 2
+  unchanged: 684
+  composed: 170
+  preserved: 2
+  baselines_emitted:
+    cc: 0
+    codex: 0
+    gemini: 0
+  cli_artifacts:
+    codex:
+      prompts: 0
+      skills: 0
+    gemini:
+      commands: 0
+      skills: 0
+      agents: 0
+  mcp_guard:
+    policies_populated: false
+    predicates_extracted: 0

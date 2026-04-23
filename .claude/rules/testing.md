@@ -1,4 +1,6 @@
 ---
+priority: 10
+scope: path-scoped
 paths:
   - "tests/**"
   - "**/*test*"
@@ -11,6 +13,9 @@ paths:
 ---
 
 # Testing Rules
+
+
+<!-- slot:neutral-body -->
 
 ## Test-Once Protocol (Implementation Mode)
 
@@ -277,6 +282,62 @@ def test_write_performance(benchmark):   # benchmark fixture unavailable → Mod
 
 Origin: Session 2026-04-20 /redteam collection-gate sweep — a test file in a sub-package used `@pytest.mark.benchmark` + `benchmark` fixture without declaring `pytest-benchmark`; blocked 11,917 tests from collection. Fixed by adding `pytest-benchmark>=4.0.0` to the sub-package `[dev]` extras and registering `benchmark` in markers.
 
+## Env-Var Test Isolation
+
+Process-level environment variables are shared across every test running in the same process. When two tests both mutate the same env var (`monkeypatch.setenv`, `os.environ[...] = ...`, `std::env::set_var` in Rust), the test runner's scheduling order becomes a silent input to each test's observable result. In isolation and in serial, both tests pass; parallel scheduling on CI (pytest-xdist, cargo nextest thread-pool) produces flaky failures that look like real regressions.
+
+### MUST: Serialize Env-Var-Mutating Tests Via Test-Module Lock
+
+Any two tests that both mutate the SAME env var MUST serialize through a shared lock at test-module scope. The lock MUST be held for the entire read-then-mutate window, not just the mutate call.
+
+```python
+# DO — pytest-xdist-safe: function-scoped monkeypatch + module-scoped lock
+import threading
+import pytest
+
+_ENV_LOCK = threading.Lock()
+
+@pytest.fixture(autouse=False)
+def _env_serialized():
+    with _ENV_LOCK:
+        yield
+
+def test_reads_max_connections_from_env(monkeypatch, _env_serialized):
+    monkeypatch.setenv("DATAFLOW_MAX_CONNECTIONS", "7")
+    pool = build_pool()
+    assert pool.max_connections == 7
+
+def test_defaults_to_99_when_env_unset(monkeypatch, _env_serialized):
+    monkeypatch.delenv("DATAFLOW_MAX_CONNECTIONS", raising=False)
+    pool = build_pool()
+    assert pool.max_connections == 99
+
+# DO NOT — no serialization, parallel xdist worker re-orders the mutations
+def test_reads_max_connections_from_env(monkeypatch):
+    monkeypatch.setenv("DATAFLOW_MAX_CONNECTIONS", "7")
+    # if the sibling test runs between setenv and build_pool(), this test sees 99
+    pool = build_pool()
+    assert pool.max_connections == 7  # FLAKY on CI, green locally
+```
+
+**Alternatives that also satisfy this rule:**
+
+- `pytest-forked` (run each test in a fresh subprocess — hard isolation, highest cost)
+- `monkeypatch` with `scope="function"` (default) AND the module-scoped lock above (cheap, sufficient for most cases)
+- `pytest.MonkeyPatch.context()` inside the test body combined with the lock
+
+**BLOCKED rationalizations:**
+
+- "The tests pass in isolation, CI scheduling is the bug"
+- "Adding a lock is overkill for two tests"
+- "pytest defaults to one-test-per-worker anyway"
+- "We can mark the tests `@pytest.mark.serial` instead" (only if the marker is actually honored by the runner — xdist does not enforce it without `--dist=loadgroup` + group assignment)
+- "monkeypatch auto-restores, so serialization is redundant"
+
+**Why:** Env vars are the textbook example of shared process state. `monkeypatch.setenv` restores at fixture teardown — which is AFTER the test body runs — so the sibling test can observe either the mutated value or the original depending on xdist worker scheduling. The flakiness surfaces intermittently on CI where test scheduling depends on runner load, producing a class of "passes locally, fails on CI" bugs that waste a full CI cycle per iteration. The same failure mode applies in Rust with `std::env::set_var` across `cargo nextest` threads — the BUILD-side Rust form of this rule (with `tokio::sync::Mutex` to handle async guards across `.await`) lives in the kailash-rs BUILD repo's `testing.md`.
+
+Origin: kailash-rs PR #435 (2026-04-20) — `DATAFLOW_MAX_CONNECTIONS` env-var race between `test_reads_max_connections_from_env` and `test_defaults_to_99_when_env_unset` produced a flaky CI failure (expected=7, actual=99). Cross-language principle codified to loom global 2026-04-20; Python variant uses `monkeypatch` + `threading.Lock`, Rust variant uses `tokio::sync::Mutex` (see rs variant testing.md).
+
 ## 3-Tier Testing
 
 ### Tier 1 (Unit): Mocking allowed, <1s per test
@@ -485,3 +546,5 @@ Origin: BP-046 (kailash-rs ServiceClient, 2026-04-14, commit `d3a14a73`). The `p
 - Tests MUST NOT affect other tests (clean setup/teardown, isolated DBs)
   **Why:** Shared state between tests creates order-dependent results — tests pass individually but fail in CI where execution order differs.
 - Naming: `test_[feature]_[scenario]_[expected_result].py`
+
+<!-- /slot:neutral-body -->

@@ -1,4 +1,6 @@
 ---
+priority: 10
+scope: path-scoped
 paths:
   - "**/*.py"
   - "pyproject.toml"
@@ -7,6 +9,9 @@ paths:
 ---
 
 # Python Environment Rules
+
+
+<!-- slot:neutral-body -->
 
 Every Python project MUST use `.venv` at the project root, managed by `uv`. Global Python is BLOCKED.
 
@@ -223,3 +228,5 @@ hypothesis from root dev deps.
 **Why:** See MUST Rule 1 above. Pyenv/asdf/Homebrew shims silently redirect to the wrong interpreter, turning correctness bugs into lost debugging sessions.
 
 Origin: `workspaces/arbor-upstream-fixes/.session-notes` § "Traps / gotchas" (2026-04-11) — pyenv shim resolved `python3` to a different interpreter containing Rust bindings for a package also in source; tests "passed" against the wrong code.
+
+<!-- /slot:neutral-body -->

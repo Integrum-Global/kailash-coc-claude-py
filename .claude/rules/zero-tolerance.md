@@ -1,4 +1,12 @@
+---
+priority: 0
+scope: baseline
+---
+
 # Zero-Tolerance Rules
+
+
+<!-- slot:neutral-body -->
 
 ## Scope
 
@@ -259,3 +267,5 @@ ALL version locations updated atomically:
 **Why:** Half-implemented features present working UI with broken backend, causing users to trust outputs that are silently incomplete or wrong.
 
 **Iterative TODOs:** Permitted when actively tracked.
+
+<!-- /slot:neutral-body -->

@@ -1,4 +1,11 @@
+---
+priority: 0
+scope: baseline
+---
+
 # Agent Orchestration Rules
+
+<!-- slot:neutral-body -->
 
 ## Specialist Delegation (MUST)
 
@@ -61,31 +68,13 @@ Reviews happen at COC phase boundaries, not per-edit. Skip only when explicitly 
 - "The changes are straightforward, no review needed"
 - "Already reviewed informally during implementation"
 
-**Background agent pattern for MUST gates** — the review costs nearly zero parent context:
-
-```
-Agent({subagent_type: "reviewer", run_in_background: true, prompt: "Review all changes since last gate..."})
-Agent({subagent_type: "security-reviewer", run_in_background: true, prompt: "Security audit all changes..."})
-```
+**Background agent pattern for MUST gates** — the review costs nearly zero parent context. See **Examples § Quality Gates — Background Agent Pattern** below for the CLI-specific syntax.
 
 ### MUST: Reviewer Prompts Include Mechanical AST/Grep Sweep, Not Only Diff Review
 
 Every gate-level reviewer prompt MUST include explicit mechanical sweeps that verify ABSOLUTE state (not only the diff). LLM-judgment review of the diff catches what's wrong with the new code; mechanical sweeps catch what's missing from the OLD code that the spec also touched.
 
-```
-# DO — reviewer prompt enumerates mechanical sweeps
-Agent(subagent_type="reviewer", prompt="""
-... diff context ...
-Mechanical sweeps (run BEFORE LLM judgment):
-1. Parity grep — every `return TrainingResult(...)` call site must pass `device=...`
-2. `pytest --collect-only -q` exit 0 across all test dirs
-3. `pip check` — no new conflicts vs main
-4. For every public symbol in __all__ added by this PR — verify eager import
-""")
-
-# DO NOT — reviewer prompt only includes diff context
-Agent(subagent_type="reviewer", prompt="Review the diff between main and feat/X.")
-```
+See **Examples § Reviewer Mechanical Sweeps** below for the DO / DO NOT delegation block — the surrounding syntax differs per CLI runtime, so it lives in the overlay-replaceable `examples` slot.
 
 **BLOCKED rationalizations:**
 
@@ -106,27 +95,17 @@ Pre-existing failures MUST be fixed (see `rules/zero-tolerance.md` Rule 1). No w
 
 ## MUST: Worktree Isolation for Compiling Agents
 
-When launching agents that compile (Rust `cargo`, Python `.venv` installs, JS `node_modules`), MUST use `isolation: "worktree"` to avoid build directory lock contention.
-
-```
-# DO: Agent(isolation="worktree", prompt="implement feature X...")
-# DO NOT: two agents sharing target/ serialize on cargo's exclusive lock
-```
+When launching agents that compile (Rust `cargo`, Python `.venv` installs, JS `node_modules`), MUST use the CLI's worktree-isolation primitive to avoid build directory lock contention. See **Examples § Worktree Isolation for Compiling Agents** below for the CLI-specific delegation syntax.
 
 **Why:** Cargo holds an exclusive filesystem lock on `target/`. Two cargo processes in the same directory serialize completely. See `rules/worktree-isolation.md` + `skills/30-claude-code-patterns/worktree-orchestration.md § Rule 1`.
 
 ## MUST: Worktree Prompts Use Relative Paths Only
 
-Any absolute path in an `isolation: "worktree"` prompt MUST be anchored to the pinned worktree path — absolute paths pointing to the parent checkout are BLOCKED.
+Any absolute path in a worktree-isolation delegation prompt MUST be anchored to the pinned worktree path — absolute paths pointing to the parent checkout are BLOCKED.
 
-```python
-# DO — relative paths, resolve to worktree cwd
-Agent(isolation="worktree", prompt="Edit packages/kailash-ml/src/kailash_ml/trainable.py...")
-# DO NOT — absolute path rooted in parent checkout
-# (writes land in MAIN; worktree empty; auto-cleanup loses the work)
-```
+See **Examples § Worktree Prompts Use Relative Paths Only** below for the DO / DO NOT delegation syntax.
 
-**Why:** `isolation: "worktree"` sets cwd inside the worktree but file-write tools accept any absolute path — parent-rooted paths resolve there regardless of cwd. See `skills/30-claude-code-patterns/worktree-orchestration.md § Rule 2` for the 2026-04-19 three-shard ml-specialist post-mortem (Shard A lost 300+ LOC).
+**Why:** Worktree-isolation primitives set cwd inside the worktree but file-write tools accept any absolute path — parent-rooted paths resolve there regardless of cwd. See `skills/30-claude-code-patterns/worktree-orchestration.md § Rule 2` for the 2026-04-19 three-shard ml-specialist post-mortem (Shard A lost 300+ LOC).
 
 ## MUST: Recover Orphan Writes From Zero-Commit Worktree Agents
 
@@ -164,14 +143,9 @@ Every agent launched with `isolation: "worktree"` MUST receive an explicit instr
 
 ## MUST: Verify Agent Deliverables Exist After Exit
 
-When an agent reports completion of a file-writing task, the parent orchestrator MUST `ls` or `Read` the claimed file before trusting the completion claim. Agent "done" messages are NOT evidence of file creation.
+When an agent reports completion of a file-writing task, the parent orchestrator MUST `ls` or read the claimed file before trusting the completion claim. Agent "done" messages are NOT evidence of file creation.
 
-```python
-# DO — verify after Agent() returns
-Read("/abs/path/src/feature.py")  # raises if missing → retry
-
-# DO NOT — trust completion message
-```
+See **Examples § Verify Agent Deliverables Exist After Exit** below for the CLI-specific file-read verification syntax.
 
 **BLOCKED rationalizations:**
 
@@ -210,3 +184,60 @@ Origin: Session 2026-04-20 three-agent parallel-release cycle (kailash-ml 0.13.0
 - Custom API when Nexus exists — **Why:** Misses Nexus's session management, rate limiting, multi-channel deployment.
 - Custom agents when Kaizen exists — **Why:** Bypasses Kaizen's signature validation, tool safety, structured reasoning.
 - Custom governance when PACT exists — **Why:** Lacks PACT's D/T/R accountability grammar and verification gradient.
+
+<!-- /slot:neutral-body -->
+
+<!-- slot:examples -->
+
+## Examples
+
+### Quality Gates — Background Agent Pattern
+
+```
+Agent({subagent_type: "reviewer", run_in_background: true, prompt: "Review all changes since last gate..."})
+Agent({subagent_type: "security-reviewer", run_in_background: true, prompt: "Security audit all changes..."})
+```
+
+### Reviewer Mechanical Sweeps
+
+```
+# DO — reviewer prompt enumerates mechanical sweeps
+Agent(subagent_type="reviewer", prompt="""
+... diff context ...
+Mechanical sweeps (run BEFORE LLM judgment):
+1. Parity grep — every `return TrainingResult(...)` call site must pass `device=...`
+2. `pytest --collect-only -q` exit 0 across all test dirs
+3. `pip check` — no new conflicts vs main
+4. For every public symbol in __all__ added by this PR — verify eager import
+""")
+
+# DO NOT — reviewer prompt only includes diff context
+Agent(subagent_type="reviewer", prompt="Review the diff between main and feat/X.")
+```
+
+### Worktree Isolation for Compiling Agents
+
+```
+# DO: Agent(isolation="worktree", prompt="implement feature X...")
+# DO NOT: two agents sharing target/ serialize on cargo's exclusive lock
+```
+
+### Worktree Prompts Use Relative Paths Only
+
+```python
+# DO — relative paths, resolve to worktree cwd
+Agent(isolation="worktree", prompt="Edit packages/kailash-ml/src/kailash_ml/trainable.py...")
+# DO NOT — absolute path rooted in parent checkout
+# (writes land in MAIN; worktree empty; auto-cleanup loses the work)
+```
+
+### Verify Agent Deliverables Exist After Exit
+
+```python
+# DO — verify after Agent() returns
+Read("/abs/path/src/feature.py")  # raises if missing → retry
+
+# DO NOT — trust completion message
+```
+
+<!-- /slot:examples -->

@@ -1,4 +1,6 @@
 ---
+priority: 10
+scope: path-scoped
 paths:
   - "pyproject.toml"
   - "Cargo.toml"
@@ -12,6 +14,9 @@ paths:
 ---
 
 # Dependency Rules
+
+
+<!-- slot:neutral-body -->
 
 ## Latest Versions Always
 
@@ -317,3 +322,5 @@ cargo update -p some-transitive-crate
 **Why:** A phantom transitive dep — one installed by the lockfile but zero-imports in the project — that holds a secondary package at an old cap is a solver trap: every upgrade of the actually-imported deps is blocked by the phantom's constraint. Pinning at the manifest level locks the trap in permanently; the only fix that keeps the solver free is `uv lock --upgrade-package` / `cargo update -p` / `npm update` which lets the resolver drop the phantom when it's no longer required by any imported package. Manifest-level caps on unimported packages also silently violate `§ No Caps on Transitive Dependencies` above.
 
 Origin: kailash-py PR #530 (2026-04-19) — `google-generativeai 0.8.6` was installed by the lockfile with zero imports in the project, holding `protobuf` at an old cap that blocked the `kailash-align 0.3.2` release. Fix: `uv lock --upgrade-package google-generativeai` dropped it cleanly, protobuf upgraded, release unblocked.
+
+<!-- /slot:neutral-body -->

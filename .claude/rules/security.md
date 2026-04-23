@@ -1,4 +1,12 @@
+---
+priority: 0
+scope: baseline
+---
+
 # Security Rules
+
+
+<!-- slot:neutral-body -->
 
 ALL code changes in the repository.
 
@@ -216,3 +224,5 @@ Origin: kailash-py PR #522 / PR #529 (2026-04-19) — BP-049 validation sanitise
 ## Exceptions
 
 Security exceptions require: written justification, security-reviewer approval, documentation, and time-limited remediation plan.
+
+<!-- /slot:neutral-body -->

@@ -1,4 +1,6 @@
 ---
+priority: 10
+scope: path-scoped
 paths:
   - "**/kaizen/**"
   - "**/*agent*"
@@ -6,6 +8,9 @@ paths:
 ---
 
 # Agent Reasoning Architecture — LLM-First Rule
+
+
+<!-- slot:neutral-body -->
 
 ## Scope
 
@@ -271,3 +276,5 @@ def tool_handler(data):
     if data["type"] == "urgent":         # BLOCKED — LLM determines urgency
         return escalate(data)
 ```
+
+<!-- /slot:neutral-body -->

@@ -11,33 +11,33 @@
  *   node build-plugin.js --version 1.0.0
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const fs = require("fs");
+const path = require("path");
+const { execSync } = require("child_process");
 
 // Plugin configuration
-const PLUGIN_NAME = 'kailash-coc-claude-py';
-const PLUGIN_VERSION = process.env.PLUGIN_VERSION || '1.0.0';
+const PLUGIN_NAME = "kailash-coc-claude-py";
+const PLUGIN_VERSION = process.env.PLUGIN_VERSION || "1.0.0";
 
 // Directories to include in plugin
 const INCLUDE_DIRS = [
-  '.claude/agents',
-  '.claude/commands',
-  '.claude/rules',
-  '.claude/skills',
-  '.claude/guides',
-  'scripts/hooks',
-  'scripts/learning',
-  'scripts/ci',
-  'mcp-configs'
+  ".claude/agents",
+  ".claude/commands",
+  ".claude/rules",
+  ".claude/skills",
+  ".claude/guides",
+  ".claude/hooks",
+  "scripts/learning",
+  "scripts/ci",
+  "mcp-configs",
 ];
 
 // Files to include in plugin root
 const INCLUDE_FILES = [
-  '.claude/settings.json',
-  'CLAUDE.md',
-  'instructions/FLOW.md',
-  'instructions/SOP.md'
+  ".claude/settings.json",
+  "CLAUDE.md",
+  "instructions/FLOW.md",
+  "instructions/SOP.md",
 ];
 
 // Files to exclude (patterns)
@@ -49,7 +49,7 @@ const EXCLUDE_PATTERNS = [
   /\.backup/,
   /\.disabled$/,
   /\.test\.js$/,
-  /__tests__\//
+  /__tests__\//,
 ];
 
 /**
@@ -59,24 +59,25 @@ function createManifest() {
   return {
     name: PLUGIN_NAME,
     version: PLUGIN_VERSION,
-    description: 'Framework-specific Claude Code setup for Kailash SDK ecosystem (DataFlow, Nexus, Kaizen, MCP)',
-    author: 'Kailash Team',
-    license: 'MIT',
-    claude_code_version: '>=1.0.0',
+    description:
+      "Framework-specific Claude Code setup for Kailash SDK ecosystem (DataFlow, Nexus, Kaizen, MCP)",
+    author: "Kailash Team",
+    license: "MIT",
+    claude_code_version: ">=1.0.0",
     keywords: [
-      'kailash',
-      'sdk',
-      'dataflow',
-      'nexus',
-      'kaizen',
-      'mcp',
-      'workflow',
-      'database',
-      'ai-agents'
+      "kailash",
+      "sdk",
+      "dataflow",
+      "nexus",
+      "kaizen",
+      "mcp",
+      "workflow",
+      "database",
+      "ai-agents",
     ],
     repository: {
-      type: 'git',
-      url: 'https://github.com/terrene-foundation/kailash-coc-claude-py'
+      type: "git",
+      url: "https://github.com/terrene-foundation/kailash-coc-claude-py",
     },
     components: {
       agents: 25,
@@ -86,27 +87,27 @@ function createManifest() {
       hooks: 8,
       mcp_configs: 3,
       learning_scripts: 4,
-      ci_validators: 5
+      ci_validators: 5,
     },
     features: [
-      'hooks-infrastructure',
-      'continuous-learning',
-      'ci-validation',
-      'mcp-configurations',
-      'security-reviewer',
-      'package-manager-detection'
+      "hooks-infrastructure",
+      "continuous-learning",
+      "ci-validation",
+      "mcp-configurations",
+      "security-reviewer",
+      "package-manager-detection",
     ],
     dependencies: {
-      runtime: 'node >= 18.0.0',
-      optional: ['black', 'prettier', 'eslint']
+      runtime: "node >= 18.0.0",
+      optional: ["black", "prettier", "eslint"],
     },
     install: {
-      pre_install: 'scripts/plugin/pre-install.js',
-      post_install: 'scripts/plugin/post-install.js'
+      pre_install: "scripts/plugin/pre-install.js",
+      post_install: "scripts/plugin/post-install.js",
     },
     uninstall: {
-      pre_uninstall: 'scripts/plugin/pre-uninstall.js'
-    }
+      pre_uninstall: "scripts/plugin/pre-uninstall.js",
+    },
   };
 }
 
@@ -114,7 +115,7 @@ function createManifest() {
  * Check if file should be excluded
  */
 function shouldExclude(filePath) {
-  return EXCLUDE_PATTERNS.some(pattern => pattern.test(filePath));
+  return EXCLUDE_PATTERNS.some((pattern) => pattern.test(filePath));
 }
 
 /**
@@ -154,7 +155,7 @@ function copyDir(src, dest, fileList = []) {
  * Build the plugin package
  */
 function buildPlugin(outputDir) {
-  const projectRoot = path.resolve(__dirname, '../..');
+  const projectRoot = path.resolve(__dirname, "../..");
   const buildDir = path.join(outputDir, PLUGIN_NAME);
   const copiedFiles = [];
 
@@ -168,7 +169,7 @@ function buildPlugin(outputDir) {
   fs.mkdirSync(buildDir, { recursive: true });
 
   // Copy directories
-  console.log('\nCopying directories...');
+  console.log("\nCopying directories...");
   for (const dir of INCLUDE_DIRS) {
     const srcDir = path.join(projectRoot, dir);
     const destDir = path.join(buildDir, dir);
@@ -183,7 +184,7 @@ function buildPlugin(outputDir) {
   }
 
   // Copy individual files
-  console.log('\nCopying files...');
+  console.log("\nCopying files...");
   for (const file of INCLUDE_FILES) {
     const srcFile = path.join(projectRoot, file);
     const destFile = path.join(buildDir, file);
@@ -202,16 +203,16 @@ function buildPlugin(outputDir) {
   }
 
   // Create manifest
-  console.log('\nCreating manifest...');
+  console.log("\nCreating manifest...");
   const manifest = createManifest();
   manifest.files_count = copiedFiles.length;
   manifest.built_at = new Date().toISOString();
 
   fs.writeFileSync(
-    path.join(buildDir, 'plugin.json'),
-    JSON.stringify(manifest, null, 2)
+    path.join(buildDir, "plugin.json"),
+    JSON.stringify(manifest, null, 2),
   );
-  console.log('  ✓ plugin.json');
+  console.log("  ✓ plugin.json");
 
   // Create README for plugin
   const readme = `# ${PLUGIN_NAME}
@@ -243,7 +244,7 @@ cp -r ${PLUGIN_NAME}/scripts/* ~/scripts/
 
 ## Features
 
-${manifest.features.map(f => `- ${f}`).join('\n')}
+${manifest.features.map((f) => `- ${f}`).join("\n")}
 
 ## Documentation
 
@@ -252,17 +253,17 @@ See CLAUDE.md for complete documentation.
 Built: ${manifest.built_at}
 `;
 
-  fs.writeFileSync(path.join(buildDir, 'README.md'), readme);
-  console.log('  ✓ README.md');
+  fs.writeFileSync(path.join(buildDir, "README.md"), readme);
+  console.log("  ✓ README.md");
 
   // Create archive (if tar available)
-  console.log('\nCreating archive...');
+  console.log("\nCreating archive...");
   const archiveName = `${PLUGIN_NAME}-${PLUGIN_VERSION}.tar.gz`;
   const archivePath = path.join(outputDir, archiveName);
 
   try {
     execSync(`tar -czf "${archivePath}" -C "${outputDir}" "${PLUGIN_NAME}"`, {
-      stdio: 'pipe'
+      stdio: "pipe",
     });
     console.log(`  ✓ ${archiveName}`);
   } catch (e) {
@@ -270,7 +271,7 @@ Built: ${manifest.built_at}
   }
 
   // Summary
-  console.log('\n=== Build Summary ===');
+  console.log("\n=== Build Summary ===");
   console.log(`Plugin: ${PLUGIN_NAME}`);
   console.log(`Version: ${PLUGIN_VERSION}`);
   console.log(`Files: ${copiedFiles.length}`);
@@ -278,7 +279,9 @@ Built: ${manifest.built_at}
 
   if (fs.existsSync(archivePath)) {
     const stats = fs.statSync(archivePath);
-    console.log(`Archive: ${archiveName} (${(stats.size / 1024).toFixed(1)} KB)`);
+    console.log(
+      `Archive: ${archiveName} (${(stats.size / 1024).toFixed(1)} KB)`,
+    );
   }
 
   return {
@@ -287,7 +290,7 @@ Built: ${manifest.built_at}
     version: PLUGIN_VERSION,
     build_dir: buildDir,
     files_count: copiedFiles.length,
-    manifest: manifest
+    manifest: manifest,
   };
 }
 
@@ -298,7 +301,7 @@ function main() {
   const args = process.argv.slice(2);
 
   // Check for --help
-  if (args.includes('--help')) {
+  if (args.includes("--help")) {
     console.log(`
 Plugin Builder for Kailash COC Claude (Python)
 
@@ -317,14 +320,14 @@ Example:
   }
 
   // Parse arguments
-  let outputDir = path.join(process.cwd(), 'dist');
+  let outputDir = path.join(process.cwd(), "dist");
 
-  const outputIndex = args.indexOf('--output');
+  const outputIndex = args.indexOf("--output");
   if (outputIndex >= 0 && args[outputIndex + 1]) {
     outputDir = path.resolve(args[outputIndex + 1]);
   }
 
-  const versionIndex = args.indexOf('--version');
+  const versionIndex = args.indexOf("--version");
   if (versionIndex >= 0 && args[versionIndex + 1]) {
     process.env.PLUGIN_VERSION = args[versionIndex + 1];
   }

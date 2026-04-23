@@ -9,12 +9,12 @@
  * - No external dependencies beyond Node.js stdlib
  */
 
-const fs = require('fs');
-const path = require('path');
-const { spawn } = require('child_process');
+const fs = require("fs");
+const path = require("path");
+const { spawn } = require("child_process");
 
-const HOOKS_DIR = path.join(process.cwd(), 'scripts', 'hooks');
-const SETTINGS_PATH = path.join(process.cwd(), '.claude', 'settings.json');
+const HOOKS_DIR = path.join(process.cwd(), ".claude", "hooks");
+const SETTINGS_PATH = path.join(process.cwd(), ".claude", "settings.json");
 
 /**
  * Validate single hook script
@@ -25,79 +25,99 @@ function validateHookScript(filePath) {
   const fileName = path.basename(filePath);
 
   try {
-    const content = fs.readFileSync(filePath, 'utf8');
+    const content = fs.readFileSync(filePath, "utf8");
 
     // Check shebang
-    if (!content.startsWith('#!/usr/bin/env node')) {
-      warnings.push('Missing or non-standard shebang');
+    if (!content.startsWith("#!/usr/bin/env node")) {
+      warnings.push("Missing or non-standard shebang");
     }
 
     // Check for JSON handling
-    if (!content.includes('JSON.parse') && !content.includes('JSON.stringify')) {
-      warnings.push('No JSON parsing/serialization found');
+    if (
+      !content.includes("JSON.parse") &&
+      !content.includes("JSON.stringify")
+    ) {
+      warnings.push("No JSON parsing/serialization found");
     }
 
     // Check for exit codes - detect both literal and dynamic patterns
     const hasExitCodes =
-      content.includes('process.exit(0)') ||
-      content.includes('process.exit(2)') ||
-      content.includes('process.exit(1)') ||
-      /process\.exit\s*\(\s*\w+\s*\)/.test(content) ||  // Dynamic: process.exit(variable)
-      /process\.exit\s*\(\s*\w+\.\w+\s*\)/.test(content);  // Dynamic: process.exit(obj.prop)
+      content.includes("process.exit(0)") ||
+      content.includes("process.exit(2)") ||
+      content.includes("process.exit(1)") ||
+      /process\.exit\s*\(\s*\w+\s*\)/.test(content) || // Dynamic: process.exit(variable)
+      /process\.exit\s*\(\s*\w+\.\w+\s*\)/.test(content); // Dynamic: process.exit(obj.prop)
 
     if (!hasExitCodes) {
-      warnings.push('No exit codes found (expected process.exit with 0, 1, 2, or variable)');
+      warnings.push(
+        "No exit codes found (expected process.exit with 0, 1, 2, or variable)",
+      );
     }
 
     // Check for stdin handling
-    if (!content.includes('process.stdin')) {
-      warnings.push('No stdin handling (hooks receive JSON via stdin)');
+    if (!content.includes("process.stdin")) {
+      warnings.push("No stdin handling (hooks receive JSON via stdin)");
     }
 
     // Check for require statements (dependencies)
     const requires = content.match(/require\(['"]([\w-]+)['"]\)/g) || [];
-    const nonStdlib = requires.filter(r => {
+    const nonStdlib = requires.filter((r) => {
       const mod = r.match(/require\(['"](.+)['"]\)/)[1];
       // Node.js stdlib modules
-      const stdlib = ['fs', 'path', 'os', 'child_process', 'crypto', 'util', 'stream', 'events', 'http', 'https', 'url', 'querystring', 'buffer'];
-      return !stdlib.includes(mod) && !mod.startsWith('.');
+      const stdlib = [
+        "fs",
+        "path",
+        "os",
+        "child_process",
+        "crypto",
+        "util",
+        "stream",
+        "events",
+        "http",
+        "https",
+        "url",
+        "querystring",
+        "buffer",
+      ];
+      return !stdlib.includes(mod) && !mod.startsWith(".");
     });
 
     if (nonStdlib.length > 0) {
-      warnings.push(`External dependencies: ${nonStdlib.join(', ')}`);
+      warnings.push(`External dependencies: ${nonStdlib.join(", ")}`);
     }
 
     // Check for error handling
-    if (!content.includes('try') && !content.includes('catch')) {
-      warnings.push('No try/catch error handling');
+    if (!content.includes("try") && !content.includes("catch")) {
+      warnings.push("No try/catch error handling");
     }
 
     // Check for timeout handling (for PreToolUse hooks only)
     // Looking for setTimeout, Promise.race with timeout, or explicit timeout variable
     const hasTimeoutHandling =
-      content.includes('setTimeout') ||
-      content.includes('Promise.race') ||
+      content.includes("setTimeout") ||
+      content.includes("Promise.race") ||
       /timeout\s*[:=]\s*\d+/.test(content) ||
-      content.includes('AbortController');
+      content.includes("AbortController");
 
     // Only warn for actual PreToolUse hooks (validate-* scripts), not PreCompact or other hooks
-    const isPreToolUseHook = fileName.startsWith('validate-') && !fileName.includes('compact');
+    const isPreToolUseHook =
+      fileName.startsWith("validate-") && !fileName.includes("compact");
     if (isPreToolUseHook && !hasTimeoutHandling) {
-      warnings.push('PreToolUse hook should have timeout handling');
+      warnings.push("PreToolUse hook should have timeout handling");
     }
 
     return {
       file: fileName,
       errors,
       warnings,
-      valid: errors.length === 0
+      valid: errors.length === 0,
     };
   } catch (error) {
     return {
       file: fileName,
       errors: [`Read error: ${error.message}`],
       warnings: [],
-      valid: false
+      valid: false,
     };
   }
 }
@@ -112,21 +132,29 @@ function validateHooksConfig() {
 
   try {
     if (!fs.existsSync(SETTINGS_PATH)) {
-      errors.push('Missing .claude/settings.json');
+      errors.push("Missing .claude/settings.json");
       return { errors, warnings, valid: false };
     }
 
-    const settings = JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf8'));
+    const settings = JSON.parse(fs.readFileSync(SETTINGS_PATH, "utf8"));
 
     if (!settings.hooks) {
-      errors.push('No hooks configuration in settings.json');
+      errors.push("No hooks configuration in settings.json");
       return { errors, warnings, valid: false };
     }
 
     // Validate each hook type
-    const validTypes = ['PreToolUse', 'PostToolUse', 'Notification', 'Stop', 'SessionStart', 'SessionEnd', 'PreCompact'];
+    const validTypes = [
+      "PreToolUse",
+      "PostToolUse",
+      "Notification",
+      "Stop",
+      "SessionStart",
+      "SessionEnd",
+      "PreCompact",
+    ];
 
-    Object.keys(settings.hooks).forEach(hookType => {
+    Object.keys(settings.hooks).forEach((hookType) => {
       if (!validTypes.includes(hookType)) {
         warnings.push(`Unknown hook type: ${hookType}`);
       }
@@ -145,19 +173,30 @@ function validateHooksConfig() {
 
             // Check command field
             if (!hook.command) {
-              errors.push(`${hookType}[${configIndex}].hooks[${hookIndex}]: missing command field`);
+              errors.push(
+                `${hookType}[${configIndex}].hooks[${hookIndex}]: missing command field`,
+              );
             } else {
               // Check that script exists
               const scriptPath = hook.command;
-              if (scriptPath && !fs.existsSync(path.join(process.cwd(), scriptPath))) {
+              if (
+                scriptPath &&
+                !fs.existsSync(path.join(process.cwd(), scriptPath))
+              ) {
                 warnings.push(`${hookType}: script not found: ${scriptPath}`);
               }
             }
           });
 
           // Validate matcher (can be string pattern or object)
-          if (config.matcher !== undefined && typeof config.matcher !== 'string' && typeof config.matcher !== 'object') {
-            warnings.push(`${hookType}[${configIndex}]: matcher should be string or object`);
+          if (
+            config.matcher !== undefined &&
+            typeof config.matcher !== "string" &&
+            typeof config.matcher !== "object"
+          ) {
+            warnings.push(
+              `${hookType}[${configIndex}]: matcher should be string or object`,
+            );
           }
         }
         // Handle flat format: { command: "...", matcher: {...} }
@@ -165,13 +204,19 @@ function validateHooksConfig() {
           hookCount++;
 
           // Check that script exists
-          const scriptPath = config.command.includes(' ') ? config.command.split(' ')[1] : config.command;
-          if (scriptPath && !fs.existsSync(path.join(process.cwd(), scriptPath))) {
+          const scriptPath = config.command.includes(" ")
+            ? config.command.split(" ")[1]
+            : config.command;
+          if (
+            scriptPath &&
+            !fs.existsSync(path.join(process.cwd(), scriptPath))
+          ) {
             warnings.push(`${hookType}: script not found: ${scriptPath}`);
           }
-        }
-        else {
-          errors.push(`${hookType}[${configIndex}]: invalid hook format (missing command or hooks array)`);
+        } else {
+          errors.push(
+            `${hookType}[${configIndex}]: invalid hook format (missing command or hooks array)`,
+          );
         }
       });
     });
@@ -180,13 +225,13 @@ function validateHooksConfig() {
       errors,
       warnings,
       valid: errors.length === 0,
-      hookCount
+      hookCount,
     };
   } catch (error) {
     return {
       errors: [`Parse error: ${error.message}`],
       warnings: [],
-      valid: false
+      valid: false,
     };
   }
 }
@@ -196,12 +241,12 @@ function validateHooksConfig() {
  */
 function testHookExecution(hookPath, testInput) {
   return new Promise((resolve) => {
-    const child = spawn('node', [hookPath], {
-      stdio: ['pipe', 'pipe', 'pipe']
+    const child = spawn("node", [hookPath], {
+      stdio: ["pipe", "pipe", "pipe"],
     });
 
-    let stdout = '';
-    let stderr = '';
+    let stdout = "";
+    let stderr = "";
     let timedOut = false;
 
     const timeout = setTimeout(() => {
@@ -209,21 +254,21 @@ function testHookExecution(hookPath, testInput) {
       child.kill();
     }, 5000);
 
-    child.stdout.on('data', (data) => {
+    child.stdout.on("data", (data) => {
       stdout += data.toString();
     });
 
-    child.stderr.on('data', (data) => {
+    child.stderr.on("data", (data) => {
       stderr += data.toString();
     });
 
-    child.on('close', (code) => {
+    child.on("close", (code) => {
       clearTimeout(timeout);
       resolve({
         exitCode: code,
         stdout: stdout.trim(),
         stderr: stderr.trim(),
-        timedOut
+        timedOut,
       });
     });
 
@@ -241,11 +286,11 @@ async function validateAllHooks() {
     scripts: [],
     total: 0,
     valid: 0,
-    invalid: 0
+    invalid: 0,
   };
 
   if (fs.existsSync(HOOKS_DIR)) {
-    const files = fs.readdirSync(HOOKS_DIR).filter(f => f.endsWith('.js'));
+    const files = fs.readdirSync(HOOKS_DIR).filter((f) => f.endsWith(".js"));
     results.total = files.length;
 
     for (const file of files) {
@@ -267,38 +312,40 @@ async function validateAllHooks() {
  * Main execution
  */
 async function main() {
-  console.log('Validating hooks...\n');
+  console.log("Validating hooks...\n");
 
   const results = await validateAllHooks();
 
   // Output config validation
-  console.log('Configuration (.claude/settings.json):');
-  const configStatus = results.config.valid ? '✓' : '✗';
-  console.log(`${configStatus} ${results.config.hookCount || 0} hooks configured`);
+  console.log("Configuration (.claude/settings.json):");
+  const configStatus = results.config.valid ? "✓" : "✗";
+  console.log(
+    `${configStatus} ${results.config.hookCount || 0} hooks configured`,
+  );
 
-  results.config.errors.forEach(err => {
+  results.config.errors.forEach((err) => {
     console.log(`    ERROR: ${err}`);
   });
-  results.config.warnings.forEach(warn => {
+  results.config.warnings.forEach((warn) => {
     console.log(`    WARN: ${warn}`);
   });
 
   // Output script validation
-  console.log('\nScripts (scripts/hooks/):');
-  results.scripts.forEach(script => {
-    const status = script.valid ? '✓' : '✗';
+  console.log("\nScripts (.claude/hooks/):");
+  results.scripts.forEach((script) => {
+    const status = script.valid ? "✓" : "✗";
     console.log(`${status} ${script.file}`);
 
-    script.errors.forEach(err => {
+    script.errors.forEach((err) => {
       console.log(`    ERROR: ${err}`);
     });
-    script.warnings.forEach(warn => {
+    script.warnings.forEach((warn) => {
       console.log(`    WARN: ${warn}`);
     });
   });
 
   console.log(`\nSummary: ${results.valid}/${results.total} scripts valid`);
-  console.log(`Config: ${results.config.valid ? 'valid' : 'invalid'}`);
+  console.log(`Config: ${results.config.valid ? "valid" : "invalid"}`);
 
   // Exit with error if any invalid
   const hasErrors = !results.config.valid || results.invalid > 0;

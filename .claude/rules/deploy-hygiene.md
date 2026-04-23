@@ -1,4 +1,6 @@
 ---
+priority: 10
+scope: path-scoped
 paths:
   - "**/Dockerfile"
   - "**/*.dockerfile"
@@ -20,6 +22,9 @@ paths:
 ---
 
 # Deploy Hygiene — Committed ≠ Deployed
+
+
+<!-- slot:neutral-body -->
 
 For full DO/DO NOT examples, the 10-step checklist, the deployment-config.md schema, frontend deployment patterns (Vite, Docker, Next.js), and cache-layer troubleshooting, see `skills/10-deployment-git/application-deployment.md`. This rule loads only when infrastructure files are touched; the verbose details live in the skill.
 
@@ -136,3 +141,5 @@ Successful `/deploy` MUST update `deploy/.last-deployed` (or whatever `deploy_st
 - **SDK/library repos** (`type: sdk` in `deployment-config.md`) → use `/release` instead. This rule still applies, but "deployed" means "published to PyPI/crates.io/npm".
 - **No `deployment-config.md` exists** → run `/deploy --onboard` first.
 - **Legacy prose-only `deployment-config.md` (no YAML frontmatter)** → run `/deploy --onboard` to migrate; until migrated, the agent flags this in session notes and falls back to manual verification.
+
+<!-- /slot:neutral-body -->

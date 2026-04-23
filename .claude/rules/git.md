@@ -1,4 +1,12 @@
+---
+priority: 0
+scope: baseline
+---
+
 # Git Workflow Rules
+
+
+<!-- slot:neutral-body -->
 
 ## Conventional Commits
 
@@ -124,3 +132,41 @@ git commit --no-verify -m "fix(security): add null-byte rejection"
 - "The auto-stash bug is a known issue"
 
 **Why:** Recurring across sessions; without documentation each session re-discovers the workaround at high cost. With documentation the next agent finds it via `git log --grep`.
+
+## Commit-Message Claim Accuracy
+
+Commit bodies MUST describe ONLY changes actually present in the diff. Claiming a refactor, deletion, or side-effect that the diff does NOT contain is BLOCKED. If the claim was made in error, push a FOLLOW-UP commit that actually does what the prior message said — do NOT amend, do NOT ignore.
+
+```bash
+# DO — body describes exactly what the diff contains
+fix(dataflow): clamp user-SQL $N index at MAX_PARAMS = 65535
+
+Unclamped Vec resize on a parsed `$N` allows a malicious SQL string
+containing `$999999999` to trigger a 4GB allocation before PostgreSQL's
+int16 rejection fires. Clamp at the parser.
+
+# DO — follow-up commit corrects an earlier over-claiming body
+fix(dataflow): actually drop the unused `second_start` binding
+
+The prior commit's body claimed this cleanup but the diff only contained
+the MAX_PARAMS clamp. This commit truly removes the unused-binding
+suppression.
+
+# DO NOT — claim a change the diff does not contain
+fix(dataflow): clamp MAX_PARAMS and drop unused `second_start` binding
+# (diff only contains the clamp; the binding is still there)
+```
+
+**BLOCKED rationalizations:**
+
+- "No one reads commit bodies anyway"
+- "The claim describes the intent, the diff is close enough"
+- "I'll amend it in a follow-up that actually does the refactor"
+- "The body describes the PR as a whole, not this specific commit"
+- "Over-claiming is better than under-claiming"
+
+**Why:** `git log --grep` is the cheapest institutional-knowledge search across a repo — a body that claims something the diff doesn't contain poisons every future search that lands on it. The next session reads "dropped the warning-suppression" in the log, assumes it happened, and bases later decisions on a diff that never existed. Amending is BLOCKED because it loses the audit trail of the over-claim; a follow-up commit preserves both the original claim AND the correction so anyone tracing the history sees the full sequence.
+
+Origin: 2026-04-20 kailash-rs self-correction — a commit body claimed "also dropped the `let _ = second_start;` warning-suppression" but the actual diff only contained the MAX_PARAMS clamp. Caught during self-verification; follow-up commit truly dropped the binding. Cross-language principle — applies to every SDK and every language; `git log --grep` accuracy is universal.
+
+<!-- /slot:neutral-body -->

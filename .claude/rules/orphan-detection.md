@@ -1,4 +1,16 @@
+---
+priority: 10
+scope: path-scoped
+paths:
+  - "packages/**"
+  - "src/**"
+  - "**/tests/**"
+---
+
 # Orphan Detection Rules
+
+
+<!-- slot:neutral-body -->
 
 A class that no production code calls is a lie. Beautifully implemented orphans accumulate when a feature is built top-down — facade + accessor + documentation ship, but the wiring from the product's hot path to the new class never lands. The orphan keeps passing unit tests against itself, and the security/audit/governance promise it was supposed to deliver never executes once.
 
@@ -196,3 +208,5 @@ Origin: kailash-rs PR #427 (2026-04-19). See playbook § §7–§8.
 - Land a `db.X` / `app.X` facade without the production call site in the same PR — **Why:** The PR review is the only structural gate before shipping.
 - Skip the consumer check on the grounds that "downstream consumers will use it" — **Why:** Downstream use ≠ framework use. The hot path is the security boundary.
 - Mark a wired manager as "fully tested" based on Tier 1 unit tests alone — **Why:** Tier 1 mocks the framework's call; it cannot detect "the framework never calls the manager in production."
+
+<!-- /slot:neutral-body -->

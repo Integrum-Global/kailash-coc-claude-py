@@ -1,4 +1,11 @@
+---
+priority: 0
+scope: baseline
+---
+
 # Worktree Isolation Rules
+
+<!-- slot:neutral-body -->
 
 This rule targets **orchestrator behavior** — the parent session that spawns agents with `isolation: "worktree"`. It governs session-spawn-time decisions (what to pass in the delegation prompt, how to verify deliverables), NOT file-edit-time behavior. It loads universally because orchestration happens in sessions that rarely edit the `agents/`, `commands/`, or rule files it used to be path-scoped to — exactly the sessions where its absence caused the failure mode to recur.
 
@@ -10,34 +17,9 @@ This rule mandates a self-verification step at agent start AND a pre-flight chec
 
 ### 1. Orchestrator Prompts MUST Pin The Worktree Path
 
-Any delegation that uses `isolation: "worktree"` MUST include the absolute worktree path in the prompt AND MUST instruct the agent to verify `git -C <worktree> status` at the start of its run. Passing the isolation flag without the explicit path is BLOCKED.
+Any delegation that uses worktree isolation MUST include the absolute worktree path in the prompt AND MUST instruct the agent to verify `git -C <worktree> status` at the start of its run. Passing the isolation flag without the explicit path is BLOCKED.
 
-```python
-# DO — explicit path + verification instruction
-worktree = "/Users/me/repos/myproject/.claude/worktrees/agent-feature-abc123"
-Agent(
-    isolation="worktree",
-    prompt=f"""
-Working directory: {worktree}
-
-STEP 0 — verify isolation before touching any file:
-  git -C {worktree} status
-If the output shows "not a git repository" OR the branch does not
-match the worktree's expected branch, STOP and report "worktree
-isolation broken" — do NOT fall back to the main checkout.
-
-All file paths you write MUST be absolute and begin with {worktree}/.
-""",
-)
-
-# DO NOT — isolation flag without pinned path
-Agent(
-    isolation="worktree",
-    prompt="Implement feature X — use the framework-specialist patterns.",
-)
-# Agent starts in process.cwd() (main checkout), edits main's tree,
-# reports success. Worktree is empty; main has half-done code.
-```
+See **Examples § Rule 1 — Orchestrator Prompts Pin The Worktree Path** below for the DO / DO NOT delegation syntax.
 
 **BLOCKED rationalizations:**
 
@@ -78,17 +60,9 @@ Read the prompt, start editing files…
 
 ### 3. Parent MUST Verify Deliverables Exist After Agent Exit
 
-When an agent reports completion of a file-writing task, the parent orchestrator MUST verify the claimed files exist at the worktree path via `ls` or `Read` before trusting the completion claim. Agent completion messages are NOT evidence of file creation.
+When an agent reports completion of a file-writing task, the parent orchestrator MUST verify the claimed files exist at the worktree path via the CLI's filesystem-read primitive before trusting the completion claim. Agent completion messages are NOT evidence of file creation.
 
-```python
-# DO — verify after agent returns
-result = Agent(isolation="worktree", prompt=f"Write {worktree}/src/feature.py...")
-assert_file_exists(f"{worktree}/src/feature.py")  # parent checks
-
-# DO NOT — trust "done" and proceed
-result = Agent(isolation="worktree", prompt="...")
-# Parent commits based on result.completion_message without ls
-```
+See **Examples § Rule 3 — Parent Verifies Deliverables After Agent Exit** below for the DO / DO NOT delegation syntax.
 
 **BLOCKED rationalizations:**
 
@@ -101,30 +75,9 @@ result = Agent(isolation="worktree", prompt="...")
 
 ### 4. Worktree Prompts MUST NOT Reference The Parent-Checkout Path
 
-Any absolute path in an `isolation: "worktree"` prompt MUST be anchored to the pinned worktree path (see Rule 1). Absolute paths pointing to the parent checkout (`/Users/<you>/repos/<project>/<subpath>` with no worktree prefix) are BLOCKED — agents resolve them against the filesystem root, silently bypassing the worktree and writing into the parent. Relative paths are the safer default because they always resolve to the agent's cwd (the worktree).
+Any absolute path in a worktree-isolation delegation prompt MUST be anchored to the pinned worktree path (see Rule 1). Absolute paths pointing to the parent checkout (`/Users/<you>/repos/<project>/<subpath>` with no worktree prefix) are BLOCKED — agents resolve them against the filesystem root, silently bypassing the worktree and writing into the parent. Relative paths are the safer default because they always resolve to the agent's cwd (the worktree).
 
-```python
-# DO — relative paths, resolve to worktree cwd
-Agent(
-    isolation="worktree",
-    prompt="Edit packages/kailash-ml/src/kailash_ml/trainable.py at line 370..."
-)
-
-# DO — absolute paths anchored to the PINNED worktree path (Rule 1 style)
-worktree = "/Users/me/repos/myproject/.claude/worktrees/agent-feature-abc123"
-Agent(
-    isolation="worktree",
-    prompt=f"Edit {worktree}/packages/kailash-ml/src/kailash_ml/trainable.py at line 370..."
-)
-
-# DO NOT — absolute paths pointing to the PARENT checkout
-Agent(
-    isolation="worktree",
-    prompt="Edit /Users/me/repos/myproject/packages/kailash-ml/src/kailash_ml/trainable.py at line 370..."
-)
-# ↑ writes land in the MAIN checkout; the worktree stays empty; auto-cleanup
-#   deletes the empty worktree; agent's work is either silently on main OR lost.
-```
+See **Examples § Rule 4 — Worktree Prompts Do Not Reference Parent-Checkout Path** below for the DO / DO NOT delegation syntax.
 
 **BLOCKED rationalizations:**
 
@@ -137,26 +90,9 @@ Agent(
 
 ### 5. Worktree Agents MUST Commit Incremental Progress
 
-Every agent launched with `isolation: "worktree"` MUST receive an explicit instruction in its prompt to `git commit` after each major milestone (each file written, each test batch passed, each draft brief completed, each config edit made), NOT only at completion. The orchestrator MUST then verify the branch has ≥1 commit before declaring the agent's work landed. Worktrees with zero commits auto-clean on agent exit and the work is unrecoverable — **this applies equally to compile work, prose/markdown drafting, one-line config edits, and every other agent task; "my agent is just writing markdown, commit discipline is overkill" is BLOCKED.**
+Every agent launched with worktree isolation MUST receive an explicit instruction in its prompt to `git commit` after each major milestone (each file written, each test batch passed, each draft brief completed, each config edit made), NOT only at completion. The orchestrator MUST then verify the branch has ≥1 commit before declaring the agent's work landed. Worktrees with zero commits auto-clean on agent exit and the work is unrecoverable — **this applies equally to compile work, prose/markdown drafting, one-line config edits, and every other agent task; "my agent is just writing markdown, commit discipline is overkill" is BLOCKED.**
 
-```python
-# DO — prompt includes incremental commit discipline
-Agent(
-    isolation="worktree",
-    prompt="""...
-**Commit discipline (MUST):**
-- After each file is complete, run `git add <file> && git commit -m "wip(shard-X): <what>"`.
-- Do NOT hold all work in the worktree's index until the final report.
-- If you exit without committing (budget exhaustion / crash / interruption),
-  the worktree is auto-cleaned and ALL work is lost.
-""",
-)
-
-# DO NOT — trust that the agent commits at completion
-Agent(isolation="worktree", prompt="Implement feature X. Report when done.")
-# ↑ agent writes 4 files, hits budget on file 5, emits truncated message,
-#   never reaches `git commit`, worktree auto-cleaned — all 5 files lost.
-```
+See **Examples § Rule 5 — Worktree Agents Commit Incremental Progress** below for the DO / DO NOT delegation syntax.
 
 **BLOCKED rationalizations:**
 
@@ -190,3 +126,98 @@ Agent(isolation="worktree", prompt="Implement feature X. Report when done.")
 - `rules/testing.md` § "Verified Numerical Claims In Session Notes" — same principle, applied to file deliverables.
 
 Origin: kailash-py session 2026-04-19 — ml-specialist, dataflow-specialist, and kaizen-specialist each drifted back to the main tree during PRs #502-#508; kaizen round 6 and ml-specialist round 7 reported "Now let me write X..." completions with no actual file writes. The self-verify + parent-verify protocol closed both failure modes. Generalises to any compile-heavy language with parallel-agent contention (Rust `target/`, Python `.venv/`, JS `node_modules/`).
+
+<!-- /slot:neutral-body -->
+
+<!-- slot:examples -->
+
+## Examples
+
+### Rule 1 — Orchestrator Prompts Pin The Worktree Path
+
+```python
+# DO — explicit path + verification instruction
+worktree = "/Users/me/repos/myproject/.claude/worktrees/agent-feature-abc123"
+Agent(
+    isolation="worktree",
+    prompt=f"""
+Working directory: {worktree}
+
+STEP 0 — verify isolation before touching any file:
+  git -C {worktree} status
+If the output shows "not a git repository" OR the branch does not
+match the worktree's expected branch, STOP and report "worktree
+isolation broken" — do NOT fall back to the main checkout.
+
+All file paths you write MUST be absolute and begin with {worktree}/.
+""",
+)
+
+# DO NOT — isolation flag without pinned path
+Agent(
+    isolation="worktree",
+    prompt="Implement feature X — use the framework-specialist patterns.",
+)
+# Agent starts in process.cwd() (main checkout), edits main's tree,
+# reports success. Worktree is empty; main has half-done code.
+```
+
+### Rule 3 — Parent Verifies Deliverables After Agent Exit
+
+```python
+# DO — verify after agent returns
+result = Agent(isolation="worktree", prompt=f"Write {worktree}/src/feature.py...")
+assert_file_exists(f"{worktree}/src/feature.py")  # parent checks
+
+# DO NOT — trust "done" and proceed
+result = Agent(isolation="worktree", prompt="...")
+# Parent commits based on result.completion_message without ls
+```
+
+### Rule 4 — Worktree Prompts Do Not Reference Parent-Checkout Path
+
+```python
+# DO — relative paths, resolve to worktree cwd
+Agent(
+    isolation="worktree",
+    prompt="Edit packages/kailash-ml/src/kailash_ml/trainable.py at line 370..."
+)
+
+# DO — absolute paths anchored to the PINNED worktree path (Rule 1 style)
+worktree = "/Users/me/repos/myproject/.claude/worktrees/agent-feature-abc123"
+Agent(
+    isolation="worktree",
+    prompt=f"Edit {worktree}/packages/kailash-ml/src/kailash_ml/trainable.py at line 370..."
+)
+
+# DO NOT — absolute paths pointing to the PARENT checkout
+Agent(
+    isolation="worktree",
+    prompt="Edit /Users/me/repos/myproject/packages/kailash-ml/src/kailash_ml/trainable.py at line 370..."
+)
+# ↑ writes land in the MAIN checkout; the worktree stays empty; auto-cleanup
+#   deletes the empty worktree; agent's work is either silently on main OR lost.
+```
+
+### Rule 5 — Worktree Agents Commit Incremental Progress
+
+```python
+# DO — prompt includes incremental commit discipline
+Agent(
+    isolation="worktree",
+    prompt="""...
+**Commit discipline (MUST):**
+- After each file is complete, run `git add <file> && git commit -m "wip(shard-X): <what>"`.
+- Do NOT hold all work in the worktree's index until the final report.
+- If you exit without committing (budget exhaustion / crash / interruption),
+  the worktree is auto-cleaned and ALL work is lost.
+""",
+)
+
+# DO NOT — trust that the agent commits at completion
+Agent(isolation="worktree", prompt="Implement feature X. Report when done.")
+# ↑ agent writes 4 files, hits budget on file 5, emits truncated message,
+#   never reaches `git commit`, worktree auto-cleaned — all 5 files lost.
+```
+
+<!-- /slot:examples -->

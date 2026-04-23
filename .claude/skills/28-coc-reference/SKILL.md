@@ -1,7 +1,7 @@
 ---
 name: coc-reference
 description: "COC template implementation reference — how the five layers are implemented in Kailash COC templates (agents, skills, rules, hooks, commands). Use when asking about template structure, not COC concepts (use co-reference for specs)."
-allowed-tools:
+tools:
   - Read
   - Glob
   - Grep

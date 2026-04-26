@@ -1,8 +1,8 @@
 {
-  "version": "3.5.20",
+  "version": "3.5.21",
   "type": "coc-use-template",
   "description": "COC USE template for Python SDK projects",
-  "released": "2026-04-26",
+  "released": "2026-04-27",
   "upstream": {
     "name": "kailash",
     "type": "coc-source",
@@ -22,6 +22,15 @@
     }
   },
   "changelog": [
+    {
+      "version": "3.5.21",
+      "date": "2026-04-27",
+      "summary": "PATCH: track .claude/hooks/lib/ in git. Prior .gitignore had `lib/` ignore with whitelist pinned to the legacy `scripts/hooks/lib/` path, leaving the v2.9.x canonical `.claude/hooks/lib/` payload (7 sibling modules: env-utils, learning-utils, workspace-utils, version-utils, release-drift, runtime, template-resolver) untracked. Downstream consumers that cloned post-v2.9.0 saw an empty `.claude/hooks/lib/` dir; CC startup hooks crashed with 'Cannot find module ./lib/<sibling>'. Fix: replaced `!scripts/hooks/lib/` whitelist with `!.claude/hooks/lib/` (legacy `scripts/hooks/` is obsoleted via .coc-obsoleted from v2.9.1).",
+      "changes": [
+        "GLOBAL .gitignore: removed `!scripts/hooks/lib/` whitelist (legacy path obsoleted); added `!.claude/hooks/lib/` so the v2.9.x sibling modules are tracked.",
+        "GLOBAL .claude/hooks/lib/: first commit of the 7 sibling modules to git history. Files have been on working tree since v2.9.0 sync but were masked from `git add` by the gitignore."
+      ]
+    },
     {
       "version": "3.5.20",
       "date": "2026-04-26",

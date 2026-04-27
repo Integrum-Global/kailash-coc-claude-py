@@ -37,3 +37,16 @@
 
 # VERSION changelog references specific SDK file fixes by path
 .claude/VERSION
+
+# loom 2.9.x sync — files containing legitimate src/kailash/ references
+# (rule examples teaching SDK structure, hook scanning logic, and skill content
+# that documents BUILD repo conventions for downstream developers)
+.claude/commands/cc-audit.md
+.claude/hooks/session-start.js
+.claude/rules/build-repo-release-discipline.md
+.claude/rules/ci-runners.md
+.claude/rules/deployment.md
+.claude/skills/10-deployment-git/multi-package-release-wave.md
+.claude/skills/12-testing-strategies/SKILL.md
+.claude/skills/26-eatp-reference/eatp-trust-posture-canonical.md
+.claude/skills/30-claude-code-patterns/sdk-upstream-donation.md

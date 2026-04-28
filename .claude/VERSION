@@ -1,27 +1,51 @@
 {
-  "version": "3.5.23",
+  "version": "3.5.25",
   "type": "coc-use-template",
   "description": "COC USE template for Python SDK projects",
-  "released": "2026-04-27",
+  "released": "2026-04-28",
   "upstream": {
     "name": "kailash",
     "type": "coc-source",
-    "version": "2.9.3",
+    "version": "2.9.4",
     "build_version": "2.11.3",
-    "synced_at": "2026-04-27T16:00:00+00:00",
+    "synced_at": "2026-04-28T03:35:00+08:00",
     "sdk_packages": {
       "kailash": "2.11.3",
-      "kailash-dataflow": "2.3.1",
+      "kailash-dataflow": "2.3.2",
       "kailash-nexus": "2.3.0",
       "kailash-kaizen": "2.13.1",
       "kailash-pact": "0.11.0",
       "kailash-mcp": "0.2.10",
-      "kailash-ml": "1.4.2",
+      "kailash-ml": "1.5.1",
       "kailash-align": "0.7.0",
       "kaizen-agents": "0.9.4"
     }
   },
   "changelog": [
+    {
+      "version": "3.5.25",
+      "date": "2026-04-28",
+      "summary": "PATCH: Sync loom 2.9.4 — 3 follow-ups + /decisive→/autonomize rename. (1) rules/agents.md slimmed 315→196 (≤200 cap per rule-authoring.md MUST NOT). (2) rules/testing.md slimmed 293→200; new __all__/re-export sub-clause widened cross-language with Python ast.parse + Rust syn::parse_file/cargo doc references. (3) commands/decisive.md → commands/autonomize.md (rename emphasises autonomous-execution posture; same body). decisive.md purged via .coc-obsoleted. No SDK pin changes (already at all BUILD versions). No pyproject.toml diff.",
+      "changes": [
+        "GLOBAL rules/agents.md: 315→196 lines (≤200 cap). Same MUST clauses, BLOCKED lists collapsed to single-line slash-separated phrases, examples interleaved with MUST sections, full body slot:neutral-body wrapped for cross-CLI overlay.",
+        "GLOBAL rules/testing.md: 293→200 lines. Same content cuts; new __all__/re-export structural-enumeration sub-clause widened cross-language.",
+        "ADDED: .claude/commands/autonomize.md (renamed from decisive.md). PURGED: .claude/commands/decisive.md via .coc-obsoleted v2.9.4 entry.",
+        "No SDK pin changes (pyproject.toml already at all BUILD-tip versions: kailash 2.11.3, kaizen 2.13.1, mcp 0.2.10, dataflow 2.3.2, pact 0.11.0, ml 1.5.1, nexus 2.3.0, align 0.7.0, kaizen-agents 0.9.4)."
+      ]
+    },
+    {
+      "version": "3.5.24",
+      "date": "2026-04-28",
+      "summary": "PATCH: Gate 2 distribute of kailash-py W6+W7 codify cycle (loom 2.9.3, no version bump). 7 artifact files modified: rules/agents.md (+MUST sub-clause: audit/closure-parity verification specialist requires Bash+Read), rules/testing.md (+MUST sub-clause: __all__/re-export symbol counts use AST-based structural enumeration), guides/co-setup/06-artifact-lifecycle.md, hooks/validate-prod-deploy.js (py overlay), skills/01-core-sdk/runtime-progress.md, skills/04-kaizen/{kaizen-llm-deployment,kaizen-ml-integration}.md. SDK PIN: kailash-dataflow 2.3.1→2.3.2 (W7-002 emit_train_end structural sanitization), kailash-ml 1.4.2→1.5.1 (W7-001 LineageGraph + minor catch-up). All other pins unchanged. uv sync ran clean.",
+      "changes": [
+        "ARTIFACT: rules/agents.md +MUST sub-clause (audit/closure-parity tool inventory).",
+        "ARTIFACT: rules/testing.md +MUST sub-clause (__all__ AST enumeration).",
+        "ARTIFACT: 5 other files (composed via slot-keyed overlay or py variant replacement).",
+        "SDK PIN: kailash-dataflow 2.3.1→2.3.2.",
+        "SDK PIN: kailash-ml 1.4.2→1.5.1.",
+        "uv sync ran clean."
+      ]
+    },
     {
       "version": "3.5.23",
       "date": "2026-04-27",

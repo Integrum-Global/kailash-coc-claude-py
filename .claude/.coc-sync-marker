@@ -1,52 +1,37 @@
 # COC Sync Marker — kailash-coc-claude-py
-timestamp: 2026-04-26T14:55:53.636Z
+timestamp: 2026-04-28T12:05:00+08:00
 source: loom/.claude
-loom_version: 2.9.1
+loom_version: 2.9.5
 variant: py
-clis: [claude]
+clis: ["claude"]
 stats:
-  updated: 0
-  created: 0
-  unchanged: 705
-  composed: 171
-  variant_replacements: 0
-  variant_only: 24
-  preserved: 2
+  artifacts_total: 684
+  composed: 2          # rules/deployment.md, rules/ci-runners.md (slot-keyed py overlays)
+  variant_full_overlays: 174   # py FULL-FILE replacements applied
+  variant_only_added: 18       # py-only files (no global)
+  preserved:
+    - CLAUDE.md (template-owned)
+    - settings.json (per-template hook paths)
+    - VERSION (template-owned)
+    - README.md, CONTRIBUTING.md, SECURITY.md, ENTERPRISE_BRIEF.md, LICENSE
+    - pyproject.toml, uv.lock, conftest.py, deploy/, docs/, mcp-configs/, scripts/, tests/, workspaces/
   baselines_emitted:
-    cc: 0
-    codex: 0
-    gemini: 0
-  baseline_emission_bytes:
-    block_cap_bytes: 61440
-    warn_cap_bytes: 32768
-    codex:
-      rules: null
-      bytes: null
-      tier: n/a
-      headroom_bytes: null
-      headroom_pct: null
-    gemini:
-      rules: null
-      bytes: null
-      tier: n/a
-      headroom_bytes: null
-      headroom_pct: null
-  cli_artifacts:
-    codex:
-      prompts: 0
-      skills: 0
-    gemini:
-      commands: 0
-      skills: 0
-      agents: 0
-  mcp_guard:
-    policies_populated: false
-    predicates_extracted: 0
-obsoleted_purged:
-  []  # idempotent run — no obsoleted paths present (already purged in prior sync)
-obsoleted_paths_declared: 3  # see .coc-obsoleted in this dir + manifest 'obsoleted:' section
-verification:
-  findings: 0
-  hooks_resolved: 12
-  hooks_total: 12
-
+    cc: 0           # CLAUDE.md preserved, not emitted
+    codex: 0        # CC-only template
+    gemini: 0       # CC-only template
+files_purged:
+  - .claude/commands/decisive.md (renamed to autonomize.md per .coc-obsoleted v2.9.4)
+files_added_this_sync:
+  - .claude/commands/autonomize.md
+  - .claude/commands/sweep.md
+files_updated_this_sync:
+  - .claude/rules/agents.md (slot:neutral-body wrapped, 196 lines)
+  - .claude/rules/testing.md (slot:neutral-body wrapped, 200 lines, cross-language __all__ AST clause)
+sdk_pin_diffs: none
+hooks_resolved: 12/12
+notes: |
+  Gate 2 distribute v2.9.5. Single-CLI legacy template; baseline emission
+  N/A (CLAUDE.md preserved). Slot-keyed py variant overlays composed via
+  compose.mjs (deployment.md, ci-runners.md). 9 "BUILD-leak" matches are
+  legitimate Origin/reference strings + a DO-NOT code example — verified
+  not to be real leakage.
